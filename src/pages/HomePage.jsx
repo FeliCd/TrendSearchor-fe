@@ -2,6 +2,7 @@ import HeroSection from '@/components/home/HeroSection';
 import StatsSection from '@/components/home/StatsSection';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import CTASection from '@/components/home/CTASection';
+import TrendingChartsSection from '@/components/home/TrendingChartsSection';
 import { ArrowUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,6 +29,7 @@ export default function HomePage() {
     <div className="bg-[#0d1117] text-[#e6edf3] relative">
       <HeroSection />
       <StatsSection />
+      <TrendingChartsSection />
       <FeaturesSection />
       <CTASection />
 
