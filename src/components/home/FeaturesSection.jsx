@@ -1,4 +1,8 @@
+import { motion } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
 import { BarChart3, Bell, Bookmark, GitCompare, Search, Shield } from 'lucide-react';
+import FeatureCard from './FeatureCard';
 
 const features = [
   {
@@ -39,32 +43,44 @@ const features = [
   },
 ];
 
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
 export default function FeaturesSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-60px' });
+
   return (
     <section className="py-20 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-14">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="text-center mb-14"
+        >
           <h2 className="font-display font-bold text-3xl text-[#e6edf3] mb-4">
             Everything researchers need
           </h2>
           <p className="text-[#8b949e] max-w-xl mx-auto text-sm leading-relaxed">
             From broad trend discovery to deep paper analysis — TrendScholar covers the full research intelligence workflow.
           </p>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map(({ icon: Icon, title, description, color }) => (
-            <div
-              key={title}
-              className="card hover:border-[#30363d] transition-all duration-200 group"
-            >
-              <div className={`inline-flex p-2.5 rounded-lg border ${color} mb-4`}>
-                <Icon className="w-5 h-5" />
-              </div>
-              <h3 className="font-semibold text-[#e6edf3] mb-2 text-sm">{title}</h3>
-              <p className="text-[#8b949e] text-xs leading-relaxed">{description}</p>
-            </div>
+        </motion.div>
+
+        <motion.div
+          ref={ref}
+          variants={container}
+          initial="hidden"
+          animate={isInView ? 'show' : 'hidden'}
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
+        >
+          {features.map((props) => (
+            <FeatureCard key={props.title} {...props} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

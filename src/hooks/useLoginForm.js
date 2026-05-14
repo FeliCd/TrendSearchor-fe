@@ -4,37 +4,29 @@ import { authService } from '@/services/authService';
 
 export function useLoginForm() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-    
     try {
       await authService.login(formData);
-      navigate('/dashboard'); // Redirect after successful login
+      navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || err.response?.data?.error || 'Login failed. Please check your credentials.');
+      setError(
+        err.response?.data?.message || err.response?.data?.error || 'Login failed. Please check your credentials.'
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  return {
-    formData,
-    error,
-    isLoading,
-    handleChange,
-    handleSubmit
-  };
+  return { formData, error, isLoading, handleChange, handleSubmit };
 }

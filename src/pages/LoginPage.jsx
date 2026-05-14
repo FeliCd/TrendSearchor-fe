@@ -1,7 +1,11 @@
-import { Lock, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { User, ArrowRight } from 'lucide-react';
 import { useLoginForm } from '@/hooks/useLoginForm';
 import AuthLayout from '@/components/auth/AuthLayout';
-import InputField from '@/components/auth/InputField';
+import FormInput from '@/components/ui/FormInput';
+import PasswordInput from '@/components/ui/PasswordInput';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import Alert from '@/components/ui/Alert';
 
 export default function LoginPage() {
   const { formData, error, isLoading, handleChange, handleSubmit } = useLoginForm();
@@ -9,56 +13,77 @@ export default function LoginPage() {
   return (
     <AuthLayout
       title="Welcome back"
-      subtitle="Enter your credentials to access your account"
-      icon={<Lock className="h-6 w-6 text-primary-500" />}
+      subtitle="Sign in to access your dashboard and continue exploring research trends"
       footerText="Don't have an account?"
-      footerLinkText="Sign up now"
+      footerLinkText="Create an account"
       footerLinkTo="/register"
     >
-      {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
-          {error}
-        </div>
-      )}
-      
-      <form className="space-y-6" onSubmit={handleSubmit}>
-        <InputField
+      {error && <Alert variant="error" message={error} />}
+
+      <form className="space-y-5" onSubmit={handleSubmit}>
+        <FormInput
           id="username"
           name="username"
-          label="Username"
+          label="Username or Email"
           placeholder="admin"
           value={formData.username}
           onChange={handleChange}
           icon={User}
-        />
-
-        <InputField
-          id="password"
-          name="password"
-          type="password"
-          label="Password"
-          placeholder="••••••••"
-          value={formData.password}
-          onChange={handleChange}
-          icon={Lock}
-          extraContent={
-            <a href="#" className="font-medium text-primary-400 hover:text-primary-300 transition-colors">
-              Forgot password?
-            </a>
-          }
+          autoFocus
+          autoComplete="username"
         />
 
         <div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0d1117] focus:ring-primary-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Signing in...' : 'Sign in'}
-          </button>
+          <div className="flex items-center justify-between mb-1.5">
+            <label htmlFor="password" className="text-sm font-medium text-[#c9d1d9]">
+              Password
+            </label>
+            <Link
+              to="/forgot-password"
+              className="text-xs text-[#4A90E2] hover:text-[#6ba3e0] transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <PasswordInput
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            autoComplete="current-password"
+          />
         </div>
+
+        <div className="flex items-center">
+          <input
+            id="remember"
+            name="remember"
+            type="checkbox"
+            className="w-4 h-4 rounded border-white/20 bg-[#161b22] text-[#4A90E2]
+              focus:ring-2 focus:ring-[#4A90E2]/50 focus:ring-offset-0 cursor-pointer"
+          />
+          <label htmlFor="remember" className="ml-2 text-sm text-[#8b949e] cursor-pointer select-none">
+            Keep me signed in
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold text-[#0d1117] bg-white
+            hover:bg-[#f0f6fc] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200
+            flex items-center justify-center gap-2 mt-1"
+        >
+          {isLoading ? (
+            <LoadingSpinner label="Signing in..." />
+          ) : (
+            <>
+              Sign in
+              <ArrowRight className="w-4 h-4" />
+            </>
+          )}
+        </button>
       </form>
     </AuthLayout>
   );
 }
-

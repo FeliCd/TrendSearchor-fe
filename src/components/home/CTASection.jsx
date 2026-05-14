@@ -1,11 +1,18 @@
 import { ArrowRight, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 export default function CTASection() {
   return (
     <section className="py-20 px-4">
       <div className="max-w-3xl mx-auto text-center">
-        <div className="card border-primary-600/30 relative overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 32, scale: 0.97 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="card border-primary-600/30 relative overflow-hidden"
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-primary-600/10 to-transparent pointer-events-none" />
           <BookOpen className="w-10 h-10 text-primary-400 mx-auto mb-4" />
           <h2 className="font-display font-bold text-2xl text-[#e6edf3] mb-3">
@@ -23,7 +30,7 @@ export default function CTASection() {
               Explore dashboard
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

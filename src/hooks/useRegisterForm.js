@@ -15,8 +15,12 @@ export function useRegisterForm() {
   });
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,39 +28,25 @@ export function useRegisterForm() {
     setGlobalError('');
     setSuccessMsg('');
     setIsLoading(true);
-    
+
     try {
       await authService.register(formData);
       setSuccessMsg('Registration successful! Redirecting to login...');
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
       if (err.response?.status === 400 && typeof err.response.data === 'object') {
-        // Validation errors from backend
         setErrors(err.response.data);
-      } else if (err.response?.data && typeof err.response.data === 'string') {
-        // String error message (e.g., Username already taken)
-        setGlobalError(err.response.data);
       } else {
-        setGlobalError('Registration failed. Please try again.');
+        setGlobalError(
+          typeof err.response?.data === 'string'
+            ? err.response.data
+            : 'Registration failed. Please try again.'
+        );
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  return {
-    formData,
-    errors,
-    globalError,
-    successMsg,
-    isLoading,
-    handleChange,
-    handleSubmit
-  };
+  return { formData, errors, globalError, successMsg, isLoading, handleChange, handleSubmit };
 }

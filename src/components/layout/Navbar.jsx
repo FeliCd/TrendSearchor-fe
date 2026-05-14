@@ -1,89 +1,125 @@
-import { Search, Bell, BookOpen, TrendingUp, BarChart3, Menu, X } from 'lucide-react';
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { cn } from '@/utils/cn';
-
-const navLinks = [
-  { label: 'Dashboard', href: '/dashboard', icon: BarChart3 },
-  { label: 'Trends', href: '/trends', icon: TrendingUp },
-  { label: 'Search', href: '/search', icon: Search },
-];
+import { Menu, X, LogIn, UserPlus, User, LogOut } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import Logo from './Logo';
+import NavbarSearchBar from './NavbarSearchBar';
+import MobileMenu from './MobileMenu';
+import { authService } from '@/services/authService';
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { pathname } = useLocation();
+  const [scrolled, setScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 80);
+      setShowUserMenu(false);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    setIsLoggedIn(!!localStorage.getItem('accessToken'));
+    
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await authService.logout();
+    setIsLoggedIn(false);
+  };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#21262d] bg-[#0d1117]/80 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center shadow-lg shadow-primary-600/30 group-hover:bg-primary-500 transition-colors">
-              <BookOpen className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-display font-bold text-lg text-[#e6edf3] tracking-tight">
-              Trend<span className="text-primary-400">Scholar</span>
-            </span>
+    <div className="sticky top-4 z-50 px-4 sm:px-6 mx-auto w-full sm:w-fit transition-all duration-300">
+      <div className={`bg-[#0d1117]/80 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl transition-all duration-300 ${scrolled ? 'shadow-black/50 bg-[#0d1117]/95' : 'shadow-black/20'}`}>
+        <div className="flex items-center justify-between h-14 px-4 sm:px-6 gap-4 sm:gap-8">
+
+          <Link to="/" className="group flex-shrink-0">
+            <Logo variant="navbar" />
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map(({ label, href, icon: Icon }) => (
-              <Link
-                key={href}
-                to={href}
-                className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
-                  pathname === href
-                    ? 'bg-primary-600/20 text-primary-400'
-                    : 'text-[#8b949e] hover:text-[#e6edf3] hover:bg-white/5'
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </Link>
-            ))}
-          </nav>
+          <NavbarSearchBar scrolled={scrolled} />
 
-          {/* Actions */}
-          <div className="flex items-center gap-2">
-            <button className="relative p-2 rounded-lg text-[#8b949e] hover:text-[#e6edf3] hover:bg-white/5 transition-all">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-accent-500 rounded-full"></span>
-            </button>
-            <Link to="/login" className="hidden md:block btn-secondary text-xs px-4 py-2">
-              Sign in
-            </Link>
-            <Link to="/register" className="hidden md:block btn-primary text-xs px-4 py-2">
-              Get started
-            </Link>
+          <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+            {isLoggedIn ? (
+              <div className="relative" ref={menuRef}>
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-[#161b22] border border-white/10 hover:border-white/20 transition-all overflow-hidden focus:outline-none focus:ring-2 focus:ring-[#4A90E2]/50"
+                >
+                  <User className="w-5 h-5 text-[#8b949e]" />
+                </button>
+                
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-3 w-48 bg-[#161b22] border border-white/10 rounded-xl shadow-2xl py-1 z-50">
+                    <div className="px-4 py-2.5 border-b border-white/5">
+                      <p className="text-sm font-semibold text-white">My Account</p>
+                    </div>
+                    <div className="py-1">
+                      <Link 
+                        to="/dashboard" 
+                        onClick={() => setShowUserMenu(false)}
+                        className="block px-4 py-2 text-sm text-[#e6edf3] hover:text-white hover:bg-white/5 transition-colors"
+                      >
+                        Dashboard
+                      </Link>
+                      <button 
+                        onClick={handleLogout} 
+                        className="w-full text-left px-4 py-2 text-sm text-[#f85149] hover:text-[#ff7b72] hover:bg-white/5 transition-colors flex items-center gap-2"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium
+                    text-[#8b949e] hover:text-white hover:bg-white/5 transition-all duration-300"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>Sign In</span>
+                </Link>
+                <Link
+                  to="/register"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold
+                    text-white bg-[#4A90E2] hover:bg-[#357ABD] transition-all duration-300
+                    shadow-lg shadow-[#4A90E2]/20 border border-[#4A90E2]/50 hover:border-[#4A90E2]"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span>Sign Up</span>
+                </Link>
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1 sm:hidden">
             <button
-              className="md:hidden p-2 rounded-lg text-[#8b949e] hover:bg-white/5"
               onClick={() => setMobileOpen(!mobileOpen)}
+              className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/[0.06] transition-all"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile menu */}
-        {mobileOpen && (
-          <div className="md:hidden border-t border-[#21262d] py-3 space-y-1 animate-fade-in">
-            {navLinks.map(({ label, href, icon: Icon }) => (
-              <Link
-                key={href}
-                to={href}
-                className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-[#8b949e] hover:text-[#e6edf3] hover:bg-white/5 transition-all"
-                onClick={() => setMobileOpen(false)}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </Link>
-            ))}
-          </div>
-        )}
+        {mobileOpen && <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />}
       </div>
-    </header>
+    </div>
   );
 }
