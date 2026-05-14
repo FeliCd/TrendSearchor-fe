@@ -4,7 +4,7 @@ import { useState } from 'react';
 export default function HeroSection() {
   const [query, setQuery] = useState('');
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e) => {
     e.preventDefault();
     if (query.trim()) {
       window.location.href = `/search?q=${encodeURIComponent(query)}`;
