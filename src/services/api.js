@@ -1,9 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  timeout: 10000,
-  withCredentials: true,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -24,8 +23,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('accessToken');
-      // Prevent redirect loops on auth endpoints
-      if (!error.config?._skipRedirect) {
+      const url = error.config?.url || '';
+        if (!url.includes('/api/auth/')) {
         window.location.href = '/login';
       }
     }

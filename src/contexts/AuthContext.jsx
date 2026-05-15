@@ -40,27 +40,19 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = useCallback(async (credentials) => {
-    setIsLoading(true);
-    try {
-      const data = await authService.login(credentials);
-      // Backend should return { accessToken, user: { ... } }
-      // If user object is in response, use it; otherwise fetch /me
-      let userData = data?.user || null;
+    const data = await authService.login(credentials);
+    let userData = data?.user || null;
 
-      if (!userData) {
-        try {
-          userData = await authService.getMe();
-        } catch {
-          // Fallback: extract from login response if backend sends role
-          userData = { username: credentials.username, role: data?.role };
-        }
+    if (!userData) {
+      try {
+        userData = await authService.getMe();
+      } catch {
+        userData = { username: credentials.username, role: data?.role };
       }
-
-      setUser(userData);
-      return data;
-    } finally {
-      setIsLoading(false);
     }
+
+    setUser(userData);
+    return data;
   }, []);
 
   const logout = useCallback(async () => {

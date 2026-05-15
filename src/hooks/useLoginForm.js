@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { getDashboardPath } from '@/utils/roleUtils';
-import { authService } from '@/services/authService';
 
 export function useLoginForm() {
   const { login } = useAuth();
@@ -42,18 +41,19 @@ export function useLoginForm() {
     setIsLoading(true);
     try {
       const data = await login(formData);
-      let role = data?.user?.role || data?.role;
-      if (!role) {
-        const userData = await authService.getMe();
-        role = userData.role;
+      const role = data?.user?.role || data?.role;
+      if (role) {
+        navigate(getDashboardPath(role));
+      } else {
+        setGlobalError('Unable to determine user role. Please contact support.');
       }
-      navigate(getDashboardPath(role));
     } catch (err) {
-      setGlobalError(
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        'Login failed. Please check your credentials.'
-      );
+      console.error('[Login Error]', err);
+      const message = err.response?.data?.message
+        || err.response?.data?.error
+        || (err.code === 'ERR_NETWORK' ? 'Network error. Please check your connection.' : null)
+        || (err.message || 'Login failed. Please check your credentials.');
+      setGlobalError(message);
     } finally {
       setIsLoading(false);
     }
