@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 10000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
