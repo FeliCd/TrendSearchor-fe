@@ -12,6 +12,7 @@ export function useRegisterForm() {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
+    confirmPassword: '',
     dob: '',
     mail: '',
     phone: '',
@@ -48,6 +49,12 @@ export function useRegisterForm() {
       errs.password = 'Password is required';
     } else if (!isValidPassword(formData.password)) {
       errs.password = 'Must be ≥9 chars with 1 uppercase, 1 number, 1 special char';
+    }
+
+    if (!formData.confirmPassword) {
+      errs.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      errs.confirmPassword = 'Passwords do not match';
     }
 
     if (!formData.phone.trim()) {
