@@ -1,0 +1,80 @@
+import {
+  LayoutDashboard,
+  Users,
+  TrendingUp,
+  Settings,
+  Search,
+  BookOpen,
+  BarChart2,
+  GraduationCap,
+  FlaskConical,
+  User,
+  Shield,
+} from 'lucide-react';
+
+export const ROLE_SIDEBAR_CONFIG = {
+  ADMIN: {
+    roleLabel: 'Admin Panel',
+    subtitle: 'Management',
+    accentColor: '[#4A90E2]',
+    avatarBgColor: 'bg-[#246E52]',
+    HeaderIcon: Shield,
+    navItems: [
+      { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
+      { to: '/admin/users', label: 'User Management', icon: Users },
+      { to: '/admin/trends', label: 'Trends & Analytics', icon: TrendingUp },
+      { to: '/admin/settings', label: 'Settings', icon: Settings },
+    ],
+  },
+  LECTURER: {
+    roleLabel: 'Lecturer',
+    subtitle: 'Academic Portal',
+    accentColor: 'emerald-400',
+    avatarBgColor: 'bg-emerald-500',
+    HeaderIcon: GraduationCap,
+    navItems: [
+      { to: '/lecturer', label: 'Dashboard', icon: LayoutDashboard, end: true },
+      { to: '/lecturer/search', label: 'Search', icon: Search },
+      { to: '/lecturer/trends', label: 'Trends', icon: TrendingUp },
+      { to: '/lecturer/courses', label: 'My Courses', icon: BookOpen },
+    ],
+  },
+  STUDENT: {
+    roleLabel: 'Student',
+    subtitle: 'Student Portal',
+    accentColor: 'blue-400',
+    avatarBgColor: 'bg-blue-500',
+    HeaderIcon: User,
+    navItems: [
+      { to: '/student', label: 'Dashboard', icon: LayoutDashboard, end: true },
+      { to: '/student/search', label: 'Search', icon: Search },
+      { to: '/student/trends', label: 'Trends', icon: TrendingUp },
+      { to: '/student/courses', label: 'My Courses', icon: BookOpen },
+    ],
+  },
+  RESEARCHER: {
+    roleLabel: 'Researcher',
+    subtitle: 'Research Portal',
+    accentColor: 'purple-400',
+    avatarBgColor: 'bg-purple-500',
+    HeaderIcon: FlaskConical,
+    navItems: [
+      { to: '/researcher', label: 'Dashboard', icon: LayoutDashboard, end: true },
+      { to: '/researcher/search', label: 'Search', icon: Search },
+      { to: '/researcher/trends', label: 'Trends', icon: TrendingUp },
+      { to: '/researcher/analytics', label: 'Analytics', icon: BarChart2 },
+    ],
+  },
+  USER: {
+    roleLabel: 'My Account',
+    subtitle: 'User Portal',
+    accentColor: 'white',
+    avatarBgColor: 'bg-white/10',
+    HeaderIcon: User,
+    navItems: [
+      { to: '/user', label: 'Dashboard', icon: LayoutDashboard, end: true },
+      { to: '/user/search', label: 'Search', icon: Search },
+      { to: '/user/trends', label: 'Trends', icon: TrendingUp },
+    ],
+  },
+};

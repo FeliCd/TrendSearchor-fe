@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
@@ -23,7 +24,10 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('accessToken');
-      window.location.href = '/login';
+      // Prevent redirect loops on auth endpoints
+      if (!error.config?._skipRedirect) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

@@ -23,7 +23,7 @@ export default function FormInput({
       <div className="relative">
         {Icon && (
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Icon className={`w-4 h-4 ${error ? 'text-red-400/60' : 'text-[#8b949e]'}`} />
+            {typeof Icon === 'function' ? <Icon /> : <Icon className={`w-4 h-4 ${error ? 'text-red-400/60' : 'text-[#8b949e]'}`} />}
           </div>
         )}
         <input

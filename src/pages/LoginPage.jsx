@@ -8,7 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Alert from '@/components/ui/Alert';
 
 export default function LoginPage() {
-  const { formData, error, isLoading, handleChange, handleSubmit } = useLoginForm();
+  const { formData, errors, globalError, isLoading, rememberMe, handleChange, handleSubmit } = useLoginForm();
 
   return (
     <AuthLayout
@@ -18,7 +18,7 @@ export default function LoginPage() {
       footerLinkText="Create an account"
       footerLinkTo="/register"
     >
-      {error && <Alert variant="error" message={error} />}
+      {globalError && <Alert variant="error" message={globalError} />}
 
       <form className="space-y-5" onSubmit={handleSubmit}>
         <FormInput
@@ -31,6 +31,7 @@ export default function LoginPage() {
           icon={User}
           autoFocus
           autoComplete="username"
+          error={errors.username}
         />
 
         <div>
@@ -51,18 +52,21 @@ export default function LoginPage() {
             value={formData.password}
             onChange={handleChange}
             autoComplete="current-password"
+            error={errors.password}
           />
         </div>
 
         <div className="flex items-center">
           <input
-            id="remember"
-            name="remember"
+            id="rememberMe"
+            name="rememberMe"
             type="checkbox"
+            checked={rememberMe}
+            onChange={handleChange}
             className="w-4 h-4 rounded border-white/20 bg-[#161b22] text-[#4A90E2]
               focus:ring-2 focus:ring-[#4A90E2]/50 focus:ring-offset-0 cursor-pointer"
           />
-          <label htmlFor="remember" className="ml-2 text-sm text-[#8b949e] cursor-pointer select-none">
+          <label htmlFor="rememberMe" className="ml-2 text-sm text-[#8b949e] cursor-pointer select-none">
             Keep me signed in
           </label>
         </div>

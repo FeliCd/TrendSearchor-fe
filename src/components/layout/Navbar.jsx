@@ -1,17 +1,20 @@
 import { Menu, X, LogIn, UserPlus, User, LogOut } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
 import NavbarSearchBar from './NavbarSearchBar';
 import MobileMenu from './MobileMenu';
-import { authService } from '@/services/authService';
+import { useAuth } from '@/contexts/AuthContext';
+import { ROLES, ROLE_LABELS } from '@/constants/roles';
+import { getDashboardPath } from '@/utils/roleUtils';
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const menuRef = useRef(null);
+  const navigate = useNavigate();
+  const { user, isLoading, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,15 +23,14 @@ export default function Navbar() {
     };
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
-    setIsLoggedIn(!!localStorage.getItem('accessToken'));
-    
+
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setShowUserMenu(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('mousedown', handleClickOutside);
@@ -36,8 +38,13 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = async () => {
-    await authService.logout();
-    setIsLoggedIn(false);
+    await logout();
+    navigate('/login');
+  };
+
+  const getDashboardPath = () => {
+    if (!user) return '/dashboard';
+    return getDashboardPath(user.role);
   };
 
   return (
@@ -52,7 +59,9 @@ export default function Navbar() {
           <NavbarSearchBar scrolled={scrolled} />
 
           <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
-            {isLoggedIn ? (
+            {isLoading ? (
+              <div className="w-9 h-9 rounded-full bg-[#161b22] border border-white/10 animate-pulse" />
+            ) : user ? (
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
@@ -60,22 +69,23 @@ export default function Navbar() {
                 >
                   <User className="w-5 h-5 text-[#8b949e]" />
                 </button>
-                
+
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-3 w-48 bg-[#161b22] border border-white/10 rounded-xl shadow-2xl py-1 z-50">
+                  <div className="absolute right-0 mt-3 w-56 bg-[#161b22] border border-white/10 rounded-xl shadow-2xl py-1 z-50">
                     <div className="px-4 py-2.5 border-b border-white/5">
-                      <p className="text-sm font-semibold text-white">My Account</p>
+                      <p className="text-sm font-semibold text-white">{user.username}</p>
+                      <p className="text-xs text-[#8b949e] mt-0.5">{ROLE_LABELS[user.role] || user.role}</p>
                     </div>
                     <div className="py-1">
-                      <Link 
-                        to="/dashboard" 
+                      <Link
+                        to={getDashboardPath()}
                         onClick={() => setShowUserMenu(false)}
                         className="block px-4 py-2 text-sm text-[#e6edf3] hover:text-white hover:bg-white/5 transition-colors"
                       >
                         Dashboard
                       </Link>
-                      <button 
-                        onClick={handleLogout} 
+                      <button
+                        onClick={handleLogout}
                         className="w-full text-left px-4 py-2 text-sm text-[#f85149] hover:text-[#ff7b72] hover:bg-white/5 transition-colors flex items-center gap-2"
                       >
                         <LogOut className="w-4 h-4" />
@@ -118,7 +128,15 @@ export default function Navbar() {
           </div>
         </div>
 
-        {mobileOpen && <MobileMenu open={mobileOpen} onClose={() => setMobileOpen(false)} />}
+        {mobileOpen && (
+          <MobileMenu
+            open={mobileOpen}
+            onClose={() => setMobileOpen(false)}
+            isAuthenticated={!!user}
+            user={user}
+            onLogout={handleLogout}
+          />
+        )}
       </div>
     </div>
   );

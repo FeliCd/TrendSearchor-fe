@@ -1,17 +1,21 @@
 import { Link } from 'react-router-dom';
-import { Search, LogIn, UserPlus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Search, LogIn, UserPlus, LogOut, User } from 'lucide-react';
 import { useState } from 'react';
 
-export default function MobileMenu({ onClose }) {
+export default function MobileMenu({ onClose, isAuthenticated, user, onLogout }) {
   const [query, setQuery] = useState('');
-  const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (query.trim()) {
-      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
-      setQuery('');
+      window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
+      onClose();
+    }
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to sign out?')) {
+      onLogout();
       onClose();
     }
   };
@@ -36,27 +40,56 @@ export default function MobileMenu({ onClose }) {
           </button>
         </form>
 
-        <div className="flex gap-2 pt-2 border-t border-white/[0.06]">
-          <Link
-            to="/login"
-            onClick={onClose}
-            className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg
-              text-sm font-medium text-white/70 hover:text-white hover:bg-white/[0.06] transition-all
-              border border-white/10"
-          >
-            <LogIn className="w-4 h-4" />
-            Sign In
-          </Link>
-          <Link
-            to="/register"
-            onClick={onClose}
-            className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg
-              text-sm font-semibold text-[#0d1117] bg-white hover:bg-white/90 transition-all"
-          >
-            <UserPlus className="w-4 h-4" />
-            Sign Up
-          </Link>
-        </div>
+        {isAuthenticated ? (
+          <>
+            <div className="flex items-center gap-3 px-4 py-2.5 bg-white/[0.03] rounded-lg border border-white/6">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#161b22] border border-white/10">
+                <User className="w-4 h-4 text-[#8b949e]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">{user?.username || 'My Account'}</p>
+                <Link
+                  to="/dashboard"
+                  onClick={onClose}
+                  className="text-xs text-[#4A90E2] hover:text-[#6ba3e0] transition-colors"
+                >
+                  View Dashboard
+                </Link>
+              </div>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg
+                text-sm font-medium text-[#f85149] hover:text-[#ff7b72] hover:bg-white/[0.06] transition-all
+                border border-white/10"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </button>
+          </>
+        ) : (
+          <div className="flex gap-2 pt-2 border-t border-white/[0.06]">
+            <Link
+              to="/login"
+              onClick={onClose}
+              className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg
+                text-sm font-medium text-white/70 hover:text-white hover:bg-white/[0.06] transition-all
+                border border-white/10"
+            >
+              <LogIn className="w-4 h-4" />
+              Sign In
+            </Link>
+            <Link
+              to="/register"
+              onClick={onClose}
+              className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg
+                text-sm font-semibold text-[#0d1117] bg-white hover:bg-white/90 transition-all"
+            >
+              <UserPlus className="w-4 h-4" />
+              Sign Up
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
