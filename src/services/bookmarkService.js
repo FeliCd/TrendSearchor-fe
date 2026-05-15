@@ -6,8 +6,8 @@ export const bookmarkService = {
     return response.data;
   },
 
-  addPaperBookmark: async (paperId) => {
-    const response = await api.post('/api/bookmarks', { type: 'PAPER', paperId });
+  addPaperBookmark: async (externalId) => {
+    const response = await api.post('/api/bookmarks', { type: 'PAPER', externalId });
     return response.data;
   },
 
@@ -16,8 +16,8 @@ export const bookmarkService = {
     return response.data;
   },
 
-  removePaperBookmark: async (paperId) => {
-    await api.delete(`/api/bookmarks/paper/${paperId}`);
+  removePaperBookmark: async (externalId) => {
+    await api.delete(`/api/bookmarks/paper/${encodeURIComponent(externalId)}`);
   },
 
   removeKeywordBookmark: async (keywordId) => {
@@ -33,8 +33,13 @@ export const bookmarkService = {
     return response.data;
   },
 
-  checkPaperBookmark: async (paperId) => {
-    const response = await api.get(`/api/bookmarks/check/paper/${paperId}`);
+  checkPaperBookmark: async (externalId) => {
+    const response = await api.get(`/api/bookmarks/check/paper/${encodeURIComponent(externalId)}`);
+    return response.data;
+  },
+
+  checkKeywordBookmark: async (keywordId) => {
+    const response = await api.get(`/api/bookmarks/check/keyword/${keywordId}`);
     return response.data;
   },
 };

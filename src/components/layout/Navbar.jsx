@@ -1,4 +1,4 @@
-import { Menu, X, LogIn, UserPlus, User, LogOut } from 'lucide-react';
+import { Menu, X, LogIn, UserPlus, User, LogOut, UserCircle } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
@@ -80,6 +80,14 @@ export default function Navbar() {
                         className="block px-4 py-2 text-sm text-[#e6edf3] hover:text-white hover:bg-white/5 transition-colors"
                       >
                         Dashboard
+                      </Link>
+                      <Link
+                        to={`${dashboardPath}/profile`}
+                        onClick={() => setShowUserMenu(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-[#e6edf3] hover:text-white hover:bg-white/5 transition-colors"
+                      >
+                        <UserCircle className="w-4 h-4" />
+                        My Profile
                       </Link>
                       <button
                         onClick={handleLogout}

@@ -11,6 +11,7 @@ import {
   User,
   Shield,
   Bell,
+  UserCircle,
 } from 'lucide-react';
 
 export const ROLE_SIDEBAR_CONFIG = {
@@ -25,6 +26,7 @@ export const ROLE_SIDEBAR_CONFIG = {
       { to: '/admin/users', label: 'User Management', icon: Users },
       { to: '/admin/trends', label: 'Trends & Analytics', icon: TrendingUp },
       { to: '/admin/settings', label: 'Settings', icon: Settings },
+      { to: '/admin/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
   LECTURER: {
@@ -39,6 +41,7 @@ export const ROLE_SIDEBAR_CONFIG = {
       { to: '/lecturer/trends', label: 'Trends', icon: TrendingUp },
       { to: '/lecturer/bookmarks', label: 'Bookmarks', icon: BookOpen },
       { to: '/lecturer/notifications', label: 'Notifications', icon: Bell },
+      { to: '/lecturer/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
   STUDENT: {
@@ -53,6 +56,7 @@ export const ROLE_SIDEBAR_CONFIG = {
       { to: '/student/trends', label: 'Trends', icon: TrendingUp },
       { to: '/student/bookmarks', label: 'Bookmarks', icon: BookOpen },
       { to: '/student/notifications', label: 'Notifications', icon: Bell },
+      { to: '/student/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
   RESEARCHER: {
@@ -66,6 +70,8 @@ export const ROLE_SIDEBAR_CONFIG = {
       { to: '/researcher/search', label: 'Search Papers', icon: Search },
       { to: '/researcher/trends', label: 'Trends', icon: TrendingUp },
       { to: '/researcher/analytics', label: 'Analytics', icon: BarChart2 },
+      { to: '/researcher/bookmarks', label: 'Bookmarks', icon: BookOpen },
+      { to: '/researcher/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
   USER: {
@@ -80,6 +86,7 @@ export const ROLE_SIDEBAR_CONFIG = {
       { to: '/user/trends', label: 'Trends', icon: TrendingUp },
       { to: '/user/bookmarks', label: 'Bookmarks', icon: BookOpen },
       { to: '/user/notifications', label: 'Notifications', icon: Bell },
+      { to: '/user/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
 };

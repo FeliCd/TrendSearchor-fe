@@ -4,6 +4,7 @@ import { dashboardService } from '@/services/dashboardService';
 import DashboardLayout from '@/components/ui/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
 import TrendList from '@/components/ui/TrendList';
+import RecentSearches from '@/components/ui/RecentSearches';
 
 export default function UserDashboardPage() {
   const [stats, setStats] = useState(null);
@@ -37,6 +38,9 @@ export default function UserDashboardPage() {
             <StatCard label="Journals" value={stats?.totalJournals?.toLocaleString() || '—'} icon={Clock} color="text-purple-400" bg="bg-purple-500/10" />
           </div>
           <TrendList trends={stats?.topKeywords || []} />
+          <div className="mt-6">
+            <RecentSearches />
+          </div>
         </>
       )}
     </DashboardLayout>

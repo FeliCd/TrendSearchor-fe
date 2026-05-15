@@ -30,6 +30,7 @@ const PaperSearchPage = lazy(() => import('@/pages/researcher/PaperSearchPage'))
 const TrendsPage = lazy(() => import('@/pages/researcher/TrendsPage'));
 const BookmarksPage = lazy(() => import('@/pages/user/BookmarksPage'));
 const NotificationsPage = lazy(() => import('@/pages/user/NotificationsPage'));
+const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 
 function PageLoader() {
   return (
@@ -75,6 +76,7 @@ function AnimatedRoutes() {
             <Route path="/admin/users" element={<UserManagementPage />} />
             <Route path="/admin/trends" element={<AdminTrendsPage />} />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
+            <Route path="/admin/profile" element={<ProfilePage />} />
           </Route>
         </Route>
 
@@ -85,6 +87,8 @@ function AnimatedRoutes() {
             <Route path="/researcher/search" element={<PaperSearchPage />} />
             <Route path="/researcher/trends" element={<TrendsPage />} />
             <Route path="/researcher/analytics" element={<ResearcherDashboardPage />} />
+            <Route path="/researcher/bookmarks" element={<BookmarksPage />} />
+            <Route path="/researcher/profile" element={<ProfilePage />} />
           </Route>
         </Route>
 
@@ -96,6 +100,7 @@ function AnimatedRoutes() {
             <Route path="/lecturer/trends" element={<TrendsPage />} />
             <Route path="/lecturer/bookmarks" element={<BookmarksPage />} />
             <Route path="/lecturer/notifications" element={<NotificationsPage />} />
+            <Route path="/lecturer/profile" element={<ProfilePage />} />
           </Route>
         </Route>
 
@@ -107,6 +112,7 @@ function AnimatedRoutes() {
             <Route path="/student/trends" element={<TrendsPage />} />
             <Route path="/student/bookmarks" element={<BookmarksPage />} />
             <Route path="/student/notifications" element={<NotificationsPage />} />
+            <Route path="/student/profile" element={<ProfilePage />} />
           </Route>
         </Route>
 
@@ -118,6 +124,7 @@ function AnimatedRoutes() {
             <Route path="/user/trends" element={<TrendsPage />} />
             <Route path="/user/bookmarks" element={<BookmarksPage />} />
             <Route path="/user/notifications" element={<NotificationsPage />} />
+            <Route path="/user/profile" element={<ProfilePage />} />
           </Route>
         </Route>
       </Routes>
