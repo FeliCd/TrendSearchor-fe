@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { getDashboardPath } from '@/utils/roleUtils';
+import { authService } from '@/services/authService';
 
 export function useLoginForm() {
   const { login } = useAuth();
@@ -41,7 +42,11 @@ export function useLoginForm() {
     setIsLoading(true);
     try {
       const data = await login(formData);
-      const role = data?.user?.role || data?.role;
+      let role = data?.user?.role || data?.role;
+      if (!role) {
+        const userData = await authService.getMe();
+        role = userData.role;
+      }
       navigate(getDashboardPath(role));
     } catch (err) {
       setGlobalError(
