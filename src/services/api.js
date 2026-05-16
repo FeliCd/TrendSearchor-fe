@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  timeout: 10000,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -12,7 +11,7 @@ const api = axios.create({
 // Request interceptor – attach JWT
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
-  if (token) {
+  if (token && token.trim()) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -24,8 +23,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('accessToken');
-      // Prevent redirect loops on auth endpoints
-      if (!error.config?._skipRedirect) {
+      const url = error.config?.url || '';
+        if (!url.includes('/api/auth/')) {
         window.location.href = '/login';
       }
     }

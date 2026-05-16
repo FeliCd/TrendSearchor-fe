@@ -10,6 +10,8 @@ import {
   FlaskConical,
   User,
   Shield,
+  Bell,
+  UserCircle,
 } from 'lucide-react';
 
 export const ROLE_SIDEBAR_CONFIG = {
@@ -24,6 +26,7 @@ export const ROLE_SIDEBAR_CONFIG = {
       { to: '/admin/users', label: 'User Management', icon: Users },
       { to: '/admin/trends', label: 'Trends & Analytics', icon: TrendingUp },
       { to: '/admin/settings', label: 'Settings', icon: Settings },
+      { to: '/admin/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
   LECTURER: {
@@ -34,9 +37,11 @@ export const ROLE_SIDEBAR_CONFIG = {
     HeaderIcon: GraduationCap,
     navItems: [
       { to: '/lecturer', label: 'Dashboard', icon: LayoutDashboard, end: true },
-      { to: '/lecturer/search', label: 'Search', icon: Search },
+      { to: '/lecturer/search', label: 'Search Papers', icon: Search },
       { to: '/lecturer/trends', label: 'Trends', icon: TrendingUp },
-      { to: '/lecturer/courses', label: 'My Courses', icon: BookOpen },
+      { to: '/lecturer/bookmarks', label: 'Bookmarks', icon: BookOpen },
+      { to: '/lecturer/notifications', label: 'Notifications', icon: Bell },
+      { to: '/lecturer/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
   STUDENT: {
@@ -47,9 +52,11 @@ export const ROLE_SIDEBAR_CONFIG = {
     HeaderIcon: User,
     navItems: [
       { to: '/student', label: 'Dashboard', icon: LayoutDashboard, end: true },
-      { to: '/student/search', label: 'Search', icon: Search },
+      { to: '/student/search', label: 'Search Papers', icon: Search },
       { to: '/student/trends', label: 'Trends', icon: TrendingUp },
-      { to: '/student/courses', label: 'My Courses', icon: BookOpen },
+      { to: '/student/bookmarks', label: 'Bookmarks', icon: BookOpen },
+      { to: '/student/notifications', label: 'Notifications', icon: Bell },
+      { to: '/student/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
   RESEARCHER: {
@@ -60,9 +67,11 @@ export const ROLE_SIDEBAR_CONFIG = {
     HeaderIcon: FlaskConical,
     navItems: [
       { to: '/researcher', label: 'Dashboard', icon: LayoutDashboard, end: true },
-      { to: '/researcher/search', label: 'Search', icon: Search },
+      { to: '/researcher/search', label: 'Search Papers', icon: Search },
       { to: '/researcher/trends', label: 'Trends', icon: TrendingUp },
       { to: '/researcher/analytics', label: 'Analytics', icon: BarChart2 },
+      { to: '/researcher/bookmarks', label: 'Bookmarks', icon: BookOpen },
+      { to: '/researcher/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
   USER: {
@@ -73,8 +82,11 @@ export const ROLE_SIDEBAR_CONFIG = {
     HeaderIcon: User,
     navItems: [
       { to: '/user', label: 'Dashboard', icon: LayoutDashboard, end: true },
-      { to: '/user/search', label: 'Search', icon: Search },
+      { to: '/user/search', label: 'Search Papers', icon: Search },
       { to: '/user/trends', label: 'Trends', icon: TrendingUp },
+      { to: '/user/bookmarks', label: 'Bookmarks', icon: BookOpen },
+      { to: '/user/notifications', label: 'Notifications', icon: Bell },
+      { to: '/user/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
 };
