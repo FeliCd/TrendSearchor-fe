@@ -1,4 +1,4 @@
-import { Menu, X, LogIn, UserPlus, User, LogOut, UserCircle } from 'lucide-react';
+import { Menu, X, LogIn, UserPlus, User, LogOut } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
@@ -42,7 +42,10 @@ export default function Navbar() {
     navigate('/login');
   };
 
-  const dashboardPath = user ? getDashboardPath(user.role) : '/dashboard';
+  const getDashboardPath = () => {
+    if (!user) return '/dashboard';
+    return getDashboardPath(user.role);
+  };
 
   return (
     <div className="sticky top-4 z-50 px-4 sm:px-6 mx-auto w-full sm:w-fit transition-all duration-300">
@@ -75,19 +78,11 @@ export default function Navbar() {
                     </div>
                     <div className="py-1">
                       <Link
-                        to={dashboardPath}
+                        to={getDashboardPath()}
                         onClick={() => setShowUserMenu(false)}
                         className="block px-4 py-2 text-sm text-[#e6edf3] hover:text-white hover:bg-white/5 transition-colors"
                       >
                         Dashboard
-                      </Link>
-                      <Link
-                        to={`${dashboardPath}/profile`}
-                        onClick={() => setShowUserMenu(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-[#e6edf3] hover:text-white hover:bg-white/5 transition-colors"
-                      >
-                        <UserCircle className="w-4 h-4" />
-                        My Profile
                       </Link>
                       <button
                         onClick={handleLogout}

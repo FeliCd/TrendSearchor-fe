@@ -42,18 +42,13 @@ export function useLoginForm() {
     try {
       const data = await login(formData);
       const role = data?.user?.role || data?.role;
-      if (role) {
-        navigate(getDashboardPath(role));
-      } else {
-        setGlobalError('Unable to determine user role. Please contact support.');
-      }
+      navigate(getDashboardPath(role));
     } catch (err) {
-      console.error('[Login Error]', err);
-      const message = err.response?.data?.message
-        || err.response?.data?.error
-        || (err.code === 'ERR_NETWORK' ? 'Network error. Please check your connection.' : null)
-        || (err.message || 'Login failed. Please check your credentials.');
-      setGlobalError(message);
+      setGlobalError(
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        'Login failed. Please check your credentials.'
+      );
     } finally {
       setIsLoading(false);
     }
