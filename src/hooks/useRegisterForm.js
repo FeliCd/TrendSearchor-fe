@@ -18,6 +18,7 @@ export function useRegisterForm() {
     phone: '',
     gender: 'MALE',
     workplace: '',
+    role: '',
   });
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState('');
@@ -69,6 +70,10 @@ export function useRegisterForm() {
 
     if (!formData.gender) errs.gender = 'Gender is required';
     if (!formData.workplace.trim()) errs.workplace = 'Workplace / University is required';
+    if (!formData.role) errs.role = 'Account type is required';
+    else if (!['STUDENT', 'RESEARCHER'].includes(formData.role)) {
+      errs.role = 'Account type must be Student/Lecturer or Researcher';
+    }
 
     setErrors(errs);
     return Object.keys(errs).length === 0;

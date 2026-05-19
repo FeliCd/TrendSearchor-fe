@@ -10,17 +10,22 @@ export default function StudentDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadStats = async () => {
-      try {
-        const data = await dashboardService.getUserDashboard();
-        setStats(data);
-      } catch (err) {
-        console.error('Failed to load dashboard:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadStats();
+    let cancelled = false;
+    setLoading(true);
+    dashboardService.getUserDashboard()
+      .then((data) => {
+        if (!cancelled) setStats(data);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error('Failed to load dashboard:', err);
+          setStats({});
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   return (
