@@ -81,36 +81,6 @@ function MagneticButton({ children, className, ...props }) {
   );
 }
 
-// ── Floating particle orbs ──────────────────────────────────────────────────
-function FloatingOrbs() {
-  const orbs = [
-    { size: 320, x: '60%', y: '-5%', color: 'rgba(74,144,226,0.09)', delay: 0, dur: 14 },
-    { size: 240, x: '-5%', y: '30%', color: 'rgba(36,110,82,0.08)', delay: 2, dur: 11 },
-    { size: 180, x: '80%', y: '60%', color: 'rgba(189,16,224,0.05)', delay: 4, dur: 16 },
-  ];
-
-  return (
-      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-        {orbs.map((orb, i) => (
-            <motion.div
-                key={i}
-                className="absolute rounded-full"
-                style={{
-                  width: orb.size,
-                  height: orb.size,
-                  left: orb.x,
-                  top: orb.y,
-                  background: `radial-gradient(circle, ${orb.color} 0%, transparent 70%)`,
-                  filter: 'blur(40px)',
-                }}
-                animate={{ y: [0, 30, 0], x: [0, 15, 0], scale: [1, 1.05, 1] }}
-                transition={{ duration: orb.dur, delay: orb.delay, repeat: Infinity, ease: 'easeInOut' }}
-            />
-        ))}
-      </div>
-  );
-}
-
 // ── Main Section ────────────────────────────────────────────────────────────
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 28, filter: 'blur(4px)' },
@@ -121,8 +91,6 @@ const fadeUp = (delay = 0) => ({
 export default function HeroSection() {
   return (
       <section className="relative overflow-hidden pt-16 pb-24 px-4">
-        <FloatingOrbs />
-
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
           <motion.div

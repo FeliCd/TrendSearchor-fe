@@ -7,9 +7,10 @@ import { ArrowUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 
+// Animated dot-grid background
 function GridBackground() {
     return (
-        <div className="fixed inset-0 -z-20 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
             {/* Base dark */}
             <div className="absolute inset-0 bg-[#0d1117]" />
             {/* Dot grid */}
@@ -72,7 +73,7 @@ export default function HomePage() {
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
     return (
-        <div className="bg-[#0d1117] text-[#e6edf3] relative min-h-screen">
+        <div className="bg-[#0d1117] text-[#e6edf3] relative min-h-screen overflow-hidden">
             <GridBackground />
             <ScrollProgressBar />
 
