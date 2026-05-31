@@ -7,7 +7,6 @@ import { ArrowUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 
-// Animated dot-grid background
 function GridBackground() {
     return (
         <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
@@ -82,21 +81,6 @@ export default function HomePage() {
             <TrendingChartsSection />
             <FeaturesSection />
             <CTASection />
-
-            {/* Divider glow lines between sections */}
-            <div className="pointer-events-none">
-                {[...Array(4)].map((_, i) => (
-                    <div
-                        key={i}
-                        className="absolute left-0 right-0 h-px"
-                        style={{
-                            top: `${25 * (i + 1)}%`,
-                            background:
-                                'linear-gradient(90deg, transparent, rgba(74,144,226,0.08), rgba(36,110,82,0.08), transparent)',
-                        }}
-                    />
-                ))}
-            </div>
 
             <AnimatePresence>
                 {showTopBtn && (

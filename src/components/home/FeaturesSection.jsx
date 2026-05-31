@@ -1,4 +1,4 @@
-import { motion, useInView, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { BarChart3, Bell, Bookmark, GitCompare, Search, Shield } from 'lucide-react';
 
@@ -10,7 +10,7 @@ const features = [
         'Interactive charts showing publication volume for any keyword across years. Compare multiple topics side-by-side.',
     color: '#4A90E2',
     bg: 'rgba(74,144,226,0.07)',
-    glow: 'rgba(74,144,226,0.25)',
+    glow: 'rgba(74,144,226,0.22)',
   },
   {
     icon: Search,
@@ -19,7 +19,7 @@ const features = [
         'Search by keyword, author, or journal with multi-condition filtering. Sort by relevance, year, or citation count.',
     color: '#246E52',
     bg: 'rgba(36,110,82,0.07)',
-    glow: 'rgba(36,110,82,0.25)',
+    glow: 'rgba(36,110,82,0.22)',
   },
   {
     icon: GitCompare,
@@ -28,7 +28,7 @@ const features = [
         'Compare growth trajectories of multiple research topics on the same chart to identify dominant and emerging themes.',
     color: '#F5A623',
     bg: 'rgba(245,166,35,0.07)',
-    glow: 'rgba(245,166,35,0.25)',
+    glow: 'rgba(245,166,35,0.22)',
   },
   {
     icon: Bell,
@@ -37,7 +37,7 @@ const features = [
         'Follow journals and topics. Get notified when new papers matching your interests are published.',
     color: '#F97316',
     bg: 'rgba(249,115,22,0.07)',
-    glow: 'rgba(249,115,22,0.25)',
+    glow: 'rgba(249,115,22,0.22)',
   },
   {
     icon: Bookmark,
@@ -46,7 +46,7 @@ const features = [
         'Save papers and keywords with personal notes. Organize your reference list and revisit them anytime.',
     color: '#BD10E0',
     bg: 'rgba(189,16,224,0.07)',
-    glow: 'rgba(189,16,224,0.25)',
+    glow: 'rgba(189,16,224,0.22)',
   },
   {
     icon: Shield,
@@ -55,64 +55,40 @@ const features = [
         'Researcher, Lecturer/Student, and Admin roles. Advanced analytics unlocked for Researchers.',
     color: '#06B6D4',
     bg: 'rgba(6,182,212,0.07)',
-    glow: 'rgba(6,182,212,0.25)',
+    glow: 'rgba(6,182,212,0.22)',
   },
 ];
 
-// 3-D tilt card
-function TiltCard({ feature, delay }) {
-  const ref = useRef(null);
+function FeatureCard({ feature, delay }) {
   const [hovered, setHovered] = useState(false);
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const rotateX = useSpring(useTransform(mouseY, [-60, 60], [8, -8]), { stiffness: 200, damping: 22 });
-  const rotateY = useSpring(useTransform(mouseX, [-60, 60], [-8, 8]), { stiffness: 200, damping: 22 });
-
-  const handleMouseMove = (e) => {
-    const rect = ref.current.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left - rect.width / 2);
-    mouseY.set(e.clientY - rect.top - rect.height / 2);
-  };
-
-  const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-    setHovered(false);
-  };
-
   const { icon: Icon, title, description, color, bg, glow } = feature;
 
   return (
       <motion.div
-          ref={ref}
           variants={{
-            hidden: { opacity: 0, y: 32, scale: 0.94 },
-            show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] } },
+            hidden: { opacity: 0, y: 28, scale: 0.95 },
+            show: {
+              opacity: 1, y: 0, scale: 1,
+              transition: { duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] },
+            },
           }}
+          onHoverStart={() => setHovered(true)}
+          onHoverEnd={() => setHovered(false)}
+          className="relative rounded-2xl p-6 border cursor-default overflow-hidden
+        transition-colors duration-300"
           style={{
-            rotateX,
-            rotateY,
-            transformStyle: 'preserve-3d',
-            perspective: 800,
-          }}
-          onMouseMove={handleMouseMove}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={handleMouseLeave}
-          className="relative rounded-2xl p-6 border cursor-default transition-colors duration-300 overflow-hidden group"
-          animate={{
-            borderColor: hovered ? `${color}30` : 'rgba(255,255,255,0.06)',
             background: hovered ? bg : '#161b22',
+            borderColor: hovered ? `${color}35` : 'rgba(255,255,255,0.06)',
             boxShadow: hovered
-                ? `0 0 40px ${glow}, 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)`
-                : '0 2px 8px rgba(0,0,0,0.2)',
+                ? `0 0 36px ${glow}, 0 4px 24px rgba(0,0,0,0.25)`
+                : '0 2px 8px rgba(0,0,0,0.15)',
+            transition: 'background 0.3s, border-color 0.3s, box-shadow 0.3s',
           }}
-          transition={{ duration: 0.35 }}
       >
-        {/* Corner accent */}
+        {/* Corner glow */}
         <motion.div
-            className="absolute top-0 right-0 w-20 h-20 rounded-bl-[40px]"
-            style={{ background: `radial-gradient(circle at top right, ${color}15, transparent 70%)` }}
+            className="absolute top-0 right-0 w-24 h-24 rounded-bl-full pointer-events-none"
+            style={{ background: `radial-gradient(circle at top right, ${color}12, transparent 70%)` }}
             animate={{ opacity: hovered ? 1 : 0 }}
             transition={{ duration: 0.3 }}
         />
@@ -121,18 +97,15 @@ function TiltCard({ feature, delay }) {
         <motion.div
             className="relative inline-flex items-center justify-center w-11 h-11 rounded-xl mb-5"
             style={{ background: bg, border: `1px solid ${color}25` }}
-            animate={hovered ? { scale: 1.08, y: -2 } : { scale: 1, y: 0 }}
+            animate={hovered ? { scale: 1.1, y: -2 } : { scale: 1, y: 0 }}
             transition={{ duration: 0.3 }}
         >
           <Icon className="w-5 h-5" style={{ color }} />
-          {hovered && (
-              <motion.div
-                  className="absolute inset-0 rounded-xl"
-                  initial={{ boxShadow: 'none' }}
-                  animate={{ boxShadow: `0 0 16px ${glow}` }}
-                  transition={{ duration: 0.3 }}
-              />
-          )}
+          <motion.div
+              className="absolute inset-0 rounded-xl"
+              animate={hovered ? { boxShadow: `0 0 18px ${glow}` } : { boxShadow: 'none' }}
+              transition={{ duration: 0.3 }}
+          />
         </motion.div>
 
         <motion.h3
@@ -143,7 +116,7 @@ function TiltCard({ feature, delay }) {
         </motion.h3>
         <p className="text-[#8b949e] text-sm leading-relaxed">{description}</p>
 
-        {/* Bottom gradient line on hover */}
+        {/* Bottom accent line */}
         <motion.div
             className="absolute bottom-0 left-0 right-0 h-[2px]"
             style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
@@ -171,7 +144,11 @@ export default function FeaturesSection() {
           >
             <motion.span
                 className="inline-block text-xs font-semibold uppercase tracking-[0.15em] px-3 py-1 rounded-full mb-4"
-                style={{ color: '#4A90E2', background: 'rgba(74,144,226,0.1)', border: '1px solid rgba(74,144,226,0.2)' }}
+                style={{
+                  color: '#4A90E2',
+                  background: 'rgba(74,144,226,0.1)',
+                  border: '1px solid rgba(74,144,226,0.2)',
+                }}
             >
               Features
             </motion.span>
@@ -193,7 +170,7 @@ export default function FeaturesSection() {
               className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
           >
             {features.map((f, i) => (
-                <TiltCard key={f.title} feature={f} delay={i * 0.07} />
+                <FeatureCard key={f.title} feature={f} delay={i * 0.07} />
             ))}
           </motion.div>
         </div>

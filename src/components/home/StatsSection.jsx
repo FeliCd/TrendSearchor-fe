@@ -1,5 +1,5 @@
 import { BookOpen, Users, TrendingUp, Database } from 'lucide-react';
-import { motion, useInView, useMotionValue, useTransform, animate } from 'framer-motion';
+import { motion, useInView, animate } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 
 const stats = [
@@ -45,7 +45,6 @@ const stats = [
   },
 ];
 
-// Animated counter hook
 function useCounter(target, inView, decimals = 0) {
   const [val, setVal] = useState(0);
 
@@ -129,22 +128,6 @@ export default function StatsSection() {
 
   return (
       <section ref={ref} className="py-14 relative">
-        {/* Top / bottom borders with gradient fade */}
-        <div
-            className="absolute top-0 inset-x-0 h-px"
-            style={{
-              background:
-                  'linear-gradient(90deg, transparent 0%, rgba(74,144,226,0.2) 30%, rgba(36,110,82,0.2) 70%, transparent 100%)',
-            }}
-        />
-        <div
-            className="absolute bottom-0 inset-x-0 h-px"
-            style={{
-              background:
-                  'linear-gradient(90deg, transparent 0%, rgba(74,144,226,0.1) 50%, transparent 100%)',
-            }}
-        />
-
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {stats.map((stat, i) => (

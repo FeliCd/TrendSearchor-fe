@@ -1,7 +1,7 @@
 import { ArrowRight, Sparkles, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
-import { useEffect, useState, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import HeroSearchBar from './HeroSearchBar';
 import TrendingKeywords from './TrendingKeywords';
 
@@ -43,41 +43,6 @@ function TypewriterWord() {
           transition={{ duration: 0.9, repeat: Infinity }}
       />
     </span>
-  );
-}
-
-// ── Magnetic button wrapper ─────────────────────────────────────────────────
-function MagneticButton({ children, className, ...props }) {
-  const ref = useRef(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 300, damping: 20 });
-  const sy = useSpring(y, { stiffness: 300, damping: 20 });
-
-  const handleMouseMove = (e) => {
-    const rect = ref.current.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    x.set((e.clientX - cx) * 0.35);
-    y.set((e.clientY - cy) * 0.35);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-      <motion.div
-          ref={ref}
-          style={{ x: sx, y: sy }}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          className={className}
-          {...props}
-      >
-        {children}
-      </motion.div>
   );
 }
 
@@ -145,18 +110,16 @@ export default function HeroSection() {
               {...fadeUp(0.46)}
               className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-10"
           >
-            <MagneticButton>
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
               <Link
                   to="/register"
                   className="group relative flex items-center gap-2 px-7 py-3.5 rounded-xl
                 text-sm font-semibold text-white overflow-hidden
-                shadow-lg shadow-emerald-900/30 transition-shadow duration-300
-                hover:shadow-emerald-700/40"
-                  style={{
-                    background: 'linear-gradient(135deg, #246E52 0%, #1e5943 100%)',
-                  }}
+                shadow-lg shadow-emerald-900/30 hover:shadow-emerald-700/40
+                transition-shadow duration-300"
+                  style={{ background: 'linear-gradient(135deg, #246E52 0%, #1e5943 100%)' }}
               >
-                {/* Shimmer */}
+                {/* Shimmer sweep */}
                 <motion.div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100"
                     style={{
@@ -171,9 +134,9 @@ export default function HeroSection() {
                 Get Started Free
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-            </MagneticButton>
+            </motion.div>
 
-            <MagneticButton>
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
               <Link
                   to="/dashboard"
                   className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm
@@ -183,7 +146,7 @@ export default function HeroSection() {
               >
                 Explore Dashboard
               </Link>
-            </MagneticButton>
+            </motion.div>
           </motion.div>
 
           {/* Social proof */}
@@ -195,7 +158,7 @@ export default function HeroSection() {
               {['#4A90E2', '#246E52', '#F5A623', '#BD10E0'].map((c, i) => (
                   <div
                       key={i}
-                      className="w-6 h-6 rounded-full border-2 border-[#0d1117]"
+                      className="w-6 h-6 rounded-full border-2"
                       style={{ background: `${c}33`, borderColor: c, boxShadow: `0 0 6px ${c}55` }}
                   />
               ))}
