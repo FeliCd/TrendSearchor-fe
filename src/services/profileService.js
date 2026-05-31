@@ -15,4 +15,9 @@ export const profileService = {
     const response = await api.post('/api/auth/change-password', passwordData);
     return response.data;
   },
+
+  changeRole: async (newRole) => {
+    const response = await api.post('/api/profile/change-role', { role: newRole }, { timeout: 5000 });
+    return response.data;
+  },
 };

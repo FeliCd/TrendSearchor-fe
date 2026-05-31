@@ -26,6 +26,11 @@ const LecturerDashboardPage = lazy(() => import('@/pages/lecturer/LecturerDashbo
 const StudentDashboardPage = lazy(() => import('@/pages/student/StudentDashboardPage'));
 const ResearcherDashboardPage = lazy(() => import('@/pages/researcher/ResearcherDashboardPage'));
 const UserDashboardPage = lazy(() => import('@/pages/user/UserDashboardPage'));
+const PaperSearchPage = lazy(() => import('@/pages/researcher/PaperSearchPage'));
+const TrendsPage = lazy(() => import('@/pages/researcher/TrendsPage'));
+const BookmarksPage = lazy(() => import('@/pages/user/BookmarksPage'));
+const NotificationsPage = lazy(() => import('@/pages/user/NotificationsPage'));
+const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 
 function PageLoader() {
   return (
@@ -71,26 +76,7 @@ function AnimatedRoutes() {
             <Route path="/admin/users" element={<UserManagementPage />} />
             <Route path="/admin/trends" element={<AdminTrendsPage />} />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
-          </Route>
-        </Route>
-
-        {/* ─── LECTURER routes ─── */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.LECTURER]} />}>
-          <Route element={<Suspense fallback={<PageLoader />}><LecturerLayout /></Suspense>}>
-            <Route path="/lecturer" element={<LecturerDashboardPage />} end />
-            <Route path="/lecturer/search" element={<LecturerDashboardPage />} />
-            <Route path="/lecturer/trends" element={<LecturerDashboardPage />} />
-            <Route path="/lecturer/courses" element={<LecturerDashboardPage />} />
-          </Route>
-        </Route>
-
-        {/* ─── STUDENT routes ─── */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.STUDENT]} />}>
-          <Route element={<Suspense fallback={<PageLoader />}><StudentLayout /></Suspense>}>
-            <Route path="/student" element={<StudentDashboardPage />} end />
-            <Route path="/student/search" element={<StudentDashboardPage />} />
-            <Route path="/student/trends" element={<StudentDashboardPage />} />
-            <Route path="/student/courses" element={<StudentDashboardPage />} />
+            <Route path="/admin/profile" element={<ProfilePage />} />
           </Route>
         </Route>
 
@@ -98,9 +84,35 @@ function AnimatedRoutes() {
         <Route element={<ProtectedRoute allowedRoles={[ROLES.RESEARCHER]} />}>
           <Route element={<Suspense fallback={<PageLoader />}><ResearcherLayout /></Suspense>}>
             <Route path="/researcher" element={<ResearcherDashboardPage />} end />
-            <Route path="/researcher/search" element={<ResearcherDashboardPage />} />
-            <Route path="/researcher/trends" element={<ResearcherDashboardPage />} />
+            <Route path="/researcher/search" element={<PaperSearchPage />} />
+            <Route path="/researcher/trends" element={<TrendsPage />} />
             <Route path="/researcher/analytics" element={<ResearcherDashboardPage />} />
+            <Route path="/researcher/bookmarks" element={<BookmarksPage />} />
+            <Route path="/researcher/profile" element={<ProfilePage />} />
+          </Route>
+        </Route>
+
+        {/* ─── LECTURER routes ─── */}
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.LECTURER]} />}>
+          <Route element={<Suspense fallback={<PageLoader />}><LecturerLayout /></Suspense>}>
+            <Route path="/lecturer" element={<LecturerDashboardPage />} end />
+            <Route path="/lecturer/search" element={<PaperSearchPage />} />
+            <Route path="/lecturer/trends" element={<TrendsPage />} />
+            <Route path="/lecturer/bookmarks" element={<BookmarksPage />} />
+            <Route path="/lecturer/notifications" element={<NotificationsPage />} />
+            <Route path="/lecturer/profile" element={<ProfilePage />} />
+          </Route>
+        </Route>
+
+        {/* ─── STUDENT routes ─── */}
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.STUDENT]} />}>
+          <Route element={<Suspense fallback={<PageLoader />}><StudentLayout /></Suspense>}>
+            <Route path="/student" element={<StudentDashboardPage />} end />
+            <Route path="/student/search" element={<PaperSearchPage />} />
+            <Route path="/student/trends" element={<TrendsPage />} />
+            <Route path="/student/bookmarks" element={<BookmarksPage />} />
+            <Route path="/student/notifications" element={<NotificationsPage />} />
+            <Route path="/student/profile" element={<ProfilePage />} />
           </Route>
         </Route>
 
@@ -108,8 +120,11 @@ function AnimatedRoutes() {
         <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
           <Route element={<Suspense fallback={<PageLoader />}><UserLayout /></Suspense>}>
             <Route path="/user" element={<UserDashboardPage />} end />
-            <Route path="/user/search" element={<UserDashboardPage />} />
-            <Route path="/user/trends" element={<UserDashboardPage />} />
+            <Route path="/user/search" element={<PaperSearchPage />} />
+            <Route path="/user/trends" element={<TrendsPage />} />
+            <Route path="/user/bookmarks" element={<BookmarksPage />} />
+            <Route path="/user/notifications" element={<NotificationsPage />} />
+            <Route path="/user/profile" element={<ProfilePage />} />
           </Route>
         </Route>
       </Routes>

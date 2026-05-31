@@ -7,7 +7,7 @@ export default function DashboardShell({ sidebarConfig }) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[#010409]">
+    <div className="flex bg-[#010409]">
       <div className="fixed inset-y-0 left-0 z-40 flex-shrink-0">
         <div className="flex h-full">
           <DashboardSidebar
@@ -26,7 +26,8 @@ export default function DashboardShell({ sidebarConfig }) {
       </button>
 
       <main
-        className={`flex-1 min-w-0 transition-all duration-300 ${
+        id="dashboard-main"
+        className={`flex-1 min-w-0 transition-all duration-300 overflow-y-auto scroll-smooth scrollbar-thin ${
           collapsed ? 'ml-[68px]' : 'ml-[240px]'
         }`}
       >
