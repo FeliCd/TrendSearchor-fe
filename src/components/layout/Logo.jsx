@@ -20,8 +20,8 @@ export default function Logo({ variant = 'navbar', showText = true, className = 
         />
       </div>
       {showText && (
-        <span className={`font-bold ${textSize} text-white tracking-tight whitespace-nowrap`}>
-          Trend<span className="text-[#4A90E2]">Searchor</span>
+        <span className={`font-bold ${textSize} text-[#0b1c30] tracking-wide whitespace-nowrap leading-none mt-0.5`} style={{ fontFamily: "'M PLUS U', sans-serif" }}>
+          trendsearchor
         </span>
       )}
     </div>

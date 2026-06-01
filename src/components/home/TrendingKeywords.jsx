@@ -26,20 +26,20 @@ export default function TrendingKeywords({ onKeywordClick }) {
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-2">
-      <span className="flex items-center gap-1.5 text-xs text-[#8b949e]">
+      <span className="flex items-center gap-1.5 text-xs text-[#76777d]">
         <TrendingUp className="w-3.5 h-3.5 text-[#246E52]" />
         Trending:
       </span>
       {loading ? (
-        <Loader2 className="w-3.5 h-3.5 text-[#8b949e] animate-spin" />
+        <Loader2 className="w-3.5 h-3.5 text-[#76777d] animate-spin" />
       ) : (
         keywords.map((kw) => (
           <button
             key={kw}
             onClick={() => onKeywordClick?.(kw)}
-            className="px-3 py-1 rounded-full bg-white/5 hover:bg-[#4A90E2]/20
-              border border-white/10 hover:border-[#4A90E2]/30 text-xs text-[#8b949e]
-              hover:text-[#4A90E2] transition-all"
+            className="px-3 py-1 rounded-full bg-white hover:bg-[#e5eeff]
+              border border-[#c6c6cd]/60 hover:border-[#0058be]/30 text-xs text-[#45464d]
+              hover:text-[#0058be] transition-all shadow-sm"
           >
             {kw}
           </button>

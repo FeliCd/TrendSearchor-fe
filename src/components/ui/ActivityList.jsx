@@ -1,6 +1,6 @@
 import SectionCard from '@/components/ui/SectionCard';
 
-export default function ActivityList({ items, avatarField = 'username', actionField = 'action', timeField = 'time', getAvatar, getAction, getTime }) {
+export default function ActivityList({ items, avatarField = 'mail', actionField = 'action', timeField = 'time', getAvatar, getAction, getTime }) {
   return (
     <SectionCard title="Recent Activity">
       <div className="divide-y divide-white/[0.04]">

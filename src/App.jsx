@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { Suspense, lazy } from 'react';
 import RootLayout from '@/components/layout/RootLayout';
@@ -72,10 +72,8 @@ function AnimatedRoutes() {
         {/* ─── ADMIN routes ─── */}
         <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
           <Route element={<Suspense fallback={<PageLoader />}><AdminLayout /></Suspense>}>
-            <Route path="/admin" element={<AdminDashboardPage />} end />
+            <Route path="/admin" element={<Navigate to="/admin/users" replace />} end />
             <Route path="/admin/users" element={<UserManagementPage />} />
-            <Route path="/admin/trends" element={<AdminTrendsPage />} />
-            <Route path="/admin/settings" element={<AdminSettingsPage />} />
             <Route path="/admin/profile" element={<ProfilePage />} />
           </Route>
         </Route>

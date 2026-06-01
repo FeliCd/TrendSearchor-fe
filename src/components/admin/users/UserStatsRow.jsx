@@ -10,7 +10,7 @@ const STAT_CONFIG = [
     bgColor: 'bg-blue-500/[0.08]',
     borderColor: 'border-blue-500/15',
     iconColor: 'text-blue-400',
-    textColor: 'text-white',
+    textColor: 'text-[#0b1c30]',
     glow: 'shadow-blue-500/10',
   },
   {
@@ -20,38 +20,8 @@ const STAT_CONFIG = [
     bgColor: 'bg-red-500/[0.08]',
     borderColor: 'border-red-500/15',
     iconColor: 'text-red-400',
-    textColor: 'text-white',
+    textColor: 'text-[#0b1c30]',
     glow: 'shadow-red-500/10',
-  },
-  {
-    key: ROLES.LECTURER,
-    label: 'Lecturers',
-    icon: GraduationCap,
-    bgColor: 'bg-emerald-500/[0.08]',
-    borderColor: 'border-emerald-500/15',
-    iconColor: 'text-emerald-400',
-    textColor: 'text-white',
-    glow: 'shadow-emerald-500/10',
-  },
-  {
-    key: ROLES.STUDENT,
-    label: 'Students',
-    icon: UserCheck,
-    bgColor: 'bg-blue-500/[0.08]',
-    borderColor: 'border-blue-500/15',
-    iconColor: 'text-blue-400',
-    textColor: 'text-white',
-    glow: 'shadow-blue-500/10',
-  },
-  {
-    key: ROLES.RESEARCHER,
-    label: 'Researchers',
-    icon: FlaskConical,
-    bgColor: 'bg-purple-500/[0.08]',
-    borderColor: 'border-purple-500/15',
-    iconColor: 'text-purple-400',
-    textColor: 'text-white',
-    glow: 'shadow-purple-500/10',
   },
   {
     key: USER_STATUS.ACTIVE,
@@ -93,7 +63,7 @@ export default function UserStatsRow({ users, allUsers }) {
   const stats = buildStats(users, allUsers);
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7 gap-3 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         return (
@@ -102,15 +72,15 @@ export default function UserStatsRow({ users, allUsers }) {
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
-            className={`group relative overflow-hidden rounded-xl px-4 py-3.5 ${stat.bgColor} border ${stat.borderColor}
-              hover:border-white/15 transition-all duration-300 cursor-default`}
+            className={`group relative overflow-hidden rounded-xl px-4 py-3.5 bg-white border border-[#c6c6cd]/40
+              hover:border-[#0b1c30]/20 transition-all duration-300 cursor-default shadow-sm`}
           >
             {/* Subtle top accent line */}
             <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-current/${stat.iconColor.includes('blue') ? 'blue' : stat.iconColor.includes('red') ? 'red' : stat.iconColor.includes('emerald') ? 'emerald' : stat.iconColor.includes('purple') ? 'purple' : 'yellow'}-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
 
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[10px] uppercase tracking-widest text-[#8b949e] mb-1.5 font-medium">{stat.label}</p>
+                <p className="text-[10px] uppercase tracking-widest text-[#76777d] mb-1.5 font-medium">{stat.label}</p>
                 <p className={`text-2xl font-bold ${stat.textColor} leading-none tracking-tight`}>
                   {stat.value}
                 </p>
@@ -123,7 +93,7 @@ export default function UserStatsRow({ users, allUsers }) {
 
             {/* Hover shimmer */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1500ms] bg-gradient-to-r from-transparent via-white/[0.03] to-transparent" />
+              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1500ms] bg-gradient-to-r from-transparent via-black/[0.02] to-transparent" />
             </div>
           </motion.div>
         );

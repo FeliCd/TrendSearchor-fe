@@ -7,7 +7,7 @@ export function useLoginForm() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -22,12 +22,16 @@ export function useLoginForm() {
       if (next[name]) delete next[name];
       return next;
     });
-    if (name === 'username' || name === 'password') setGlobalError('');
+    if (name === 'email' || name === 'password') setGlobalError('');
   };
 
   const validate = () => {
     const errs = {};
-    if (!formData.username.trim()) errs.username = 'Username is required.';
+    if (!formData.email.trim()) {
+      errs.email = 'Email is required.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errs.email = 'Please enter a valid email address.';
+    }
     if (!formData.password) errs.password = 'Password is required.';
     return errs;
   };
@@ -52,7 +56,7 @@ export function useLoginForm() {
       const message = err.response?.data?.message
         || err.response?.data?.error
         || (err.code === 'ERR_NETWORK' ? 'Network error. Please check your connection.' : null)
-        || (err.message || 'Login failed. Please check your credentials.');
+        || (err.message || 'Sign in failed. Please check your credentials.');
       setGlobalError(message);
     } finally {
       setIsLoading(false);

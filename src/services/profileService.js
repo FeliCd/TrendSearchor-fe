@@ -20,4 +20,11 @@ export const profileService = {
     const response = await api.post('/api/profile/change-role', { role: newRole }, { timeout: 5000 });
     return response.data;
   },
+
+  uploadAvatar: async (formData) => {
+    const response = await api.post('/api/profile/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
 };

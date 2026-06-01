@@ -3,52 +3,42 @@
 
 export const COLORS = {
   bg: {
-    primary: '#0d1117',      // Main page background (GitHub dark)
-    surface: '#161b22',       // Card/form backgrounds
-    surfaceHover: '#21262d',  // Elevated surface
+    primary:   '#f8f9ff',  // Main page canvas
+    surface:   '#ffffff',  // Card / form backgrounds
+    surfaceHover: '#eff4ff', // Elevated surface
   },
   border: {
-    subtle: 'border-white/10',
-    focus: 'border-[#4A90E2]/50',
+    subtle: 'border-[#c6c6cd]',
+    focus: 'border-[#0058be]/50',
     error: 'border-red-500/50',
-    card: 'border-[#21262d]',
-    cardHover: 'border-[#30363d]',
+    card: 'border-[#c6c6cd]/40',
+    cardHover: 'border-[#0058be]/30',
   },
   text: {
-    primary: '#e6edf3',      // Headings / primary text
-    secondary: '#c9d1d9',     // Labels / body text
-    muted: '#8b949e',         // Placeholder / muted text
-    faint: '#484f58',         // Disabled text
-    accent: '#4A90E2',        // Links / interactive accent (blue)
-    accentHover: '#6ba3e0',   // Accent hover state
-    emerald: '#246E52',       // Secondary accent (emerald)
-    emeraldHover: '#1e5943',  // Emerald hover
-  },
-  // Tailwind opacity helpers for existing palette
-  alpha: {
-    subtle: 'white/[0.06]',
-    faintBorder: 'white/[0.06]',
+    primary:   '#0b1c30',   // Headings / primary text
+    secondary: '#45464d',   // Labels / body text
+    muted:    '#76777d',    // Placeholder / muted text
+    faint:    '#9ca3af',    // Disabled text
+    accent:   '#0058be',    // Links / interactive (secondary blue)
+    accentHover: '#004395', // Accent hover
   },
 };
 
 export const CLASSES = {
-  // Input
-  inputBase: `w-full pl-10 pr-4 py-2.5 bg-[#161b22] border border-white/10 rounded-lg text-[#c9d1d9]
-    text-sm placeholder:text-[#484f58] focus:outline-none focus:ring-2 focus:ring-[#4A90E2]/50
-    focus:border-[#4A90E2]/50 transition-all`,
+  inputBase: `w-full pl-10 pr-4 py-2.5 bg-white border border-[#c6c6cd] rounded-xl text-sm text-[#0b1c30]
+    placeholder:text-[#76777d] focus:outline-none focus:ring-2 focus:ring-[#0058be]/40
+    focus:border-[#0058be] transition-all`,
   inputError: `border-red-500/50 focus:ring-red-500/30 focus:border-red-500/50`,
 
-  // Button
-  btnPrimary: `w-full py-2.5 px-4 rounded-lg text-sm font-semibold text-[#0d1117] bg-white
-    hover:bg-[#f0f6fc] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200
+  btnPrimary: `w-full py-2.5 px-4 rounded-xl text-sm font-semibold text-white bg-[#0058be]
+    hover:bg-[#004395] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200
     flex items-center justify-center gap-2`,
-  btnPrimaryInline: `inline-flex items-center gap-2 px-5 py-2.5 bg-[#246E52] hover:bg-[#1e5943]
-    text-white font-semibold text-sm rounded-lg transition-all duration-200 shadow-lg shadow-emerald-500/20`,
-  btnSecondary: `inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 hover:bg-white/10
-    text-[#e6edf3] font-semibold text-sm rounded-lg border border-white/10 transition-all duration-200`,
+  btnPrimaryInline: `inline-flex items-center gap-2 px-5 py-2.5 bg-[#0058be] hover:bg-[#004395]
+    text-white font-semibold text-sm rounded-lg transition-all duration-200 shadow-sm shadow-[#0058be]/20`,
+  btnSecondary: `inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-[#eff4ff]
+    text-[#0b1c30] font-semibold text-sm rounded-lg border border-[#c6c6cd] transition-all duration-200`,
 
-  // Card
-  card: `bg-[#161b22] border border-[#21262d] rounded-xl p-6`,
+  card: `bg-white border border-[#c6c6cd]/40 rounded-xl p-6`,
 };
 
 export const BREAKPOINTS = {

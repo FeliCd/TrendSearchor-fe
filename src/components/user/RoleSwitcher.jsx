@@ -25,12 +25,12 @@ export default function RoleSwitcher({ onSwitch, onToast }) {
 
   return (
     <div className="space-y-6">
-      <div className="p-4 rounded-xl bg-[#0d1117]/50 border border-white/5">
+      <div className="p-4 rounded-xl bg-[#f8f9ff] border border-[#c6c6cd]/40">
         <div className="flex items-center gap-2 mb-1">
-          <Shield className="w-4 h-4 text-[#4A90E2]" />
-          <p className="text-sm font-medium text-white">Switch Account Type</p>
+          <Shield className="w-4 h-4 text-[#0058be]" />
+          <p className="text-sm font-bold text-[#0b1c30]">Switch Account Type</p>
         </div>
-        <p className="text-xs text-[#8b949e]">Choose between Student/Lecturer or Researcher to access different features.</p>
+        <p className="text-xs text-[#76777d]">Choose between Student/Lecturer or Researcher to access different features.</p>
       </div>
       <div className="space-y-3">
         {roleOptions.map((opt) => {
@@ -38,28 +38,28 @@ export default function RoleSwitcher({ onSwitch, onToast }) {
           return (
             <button key={opt.value} onClick={() => handleSwitch(opt.value)} disabled={saving || isCurrent}
               className={`w-full p-4 rounded-xl border text-left transition-all ${
-                isCurrent ? 'border-[#4A90E2]/40 bg-[#4A90E2]/5 cursor-default' : 'border-white/10 bg-[#0d1117]/50 hover:border-[#4A90E2]/40 hover:bg-[#0d1117]'
+                isCurrent ? 'border-[#0058be]/40 bg-[#0058be]/5 cursor-default' : 'border-[#c6c6cd]/40 bg-white hover:border-[#0058be]/40 hover:bg-[#f8f9ff]'
               }`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isCurrent ? 'bg-[#4A90E2]/20 text-[#4A90E2]' : 'bg-white/5 text-[#8b949e]'}`}>
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isCurrent ? 'bg-[#0058be]/10 text-[#0058be]' : 'bg-[#f8f9ff] text-[#76777d] border border-[#c6c6cd]/40'}`}>
                     {opt.icon}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className={`text-sm font-semibold ${isCurrent ? 'text-[#4A90E2]' : 'text-white'}`}>{opt.label}</p>
-                      {isCurrent && <span className="text-xs px-2 py-0.5 rounded-full bg-[#4A90E2]/20 text-[#4A90E2] font-medium">Current</span>}
+                      <p className={`text-sm font-bold ${isCurrent ? 'text-[#0058be]' : 'text-[#0b1c30]'}`}>{opt.label}</p>
+                      {isCurrent && <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#0058be]/10 text-[#0058be] font-bold uppercase tracking-wider">Current</span>}
                     </div>
-                    <p className="text-xs text-[#8b949e] mt-0.5">{opt.description}</p>
+                    <p className="text-xs text-[#76777d] mt-0.5">{opt.description}</p>
                   </div>
                 </div>
-                {!isCurrent && (saving ? <Loader2 className="w-4 h-4 text-[#4A90E2] animate-spin" /> : <RefreshCw className="w-4 h-4 text-[#4A90E2]" />)}
+                {!isCurrent && (saving ? <Loader2 className="w-4 h-4 text-[#0058be] animate-spin" /> : <RefreshCw className="w-4 h-4 text-[#0058be]" />)}
               </div>
             </button>
           );
         })}
       </div>
-      <p className="text-xs text-[#8b949e] text-center">Switching account type will redirect you to the corresponding dashboard.</p>
+      <p className="text-xs text-[#76777d] text-center">Switching account type will redirect you to the corresponding dashboard.</p>
     </div>
   );
 }

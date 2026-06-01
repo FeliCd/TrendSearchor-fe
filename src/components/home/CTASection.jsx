@@ -13,7 +13,7 @@ function AnimatedBorderCard({ children }) {
             <motion.div
                 className="absolute inset-0 rounded-3xl"
                 style={{
-                    background: `conic-gradient(from ${angle}deg at 50% 50%, #4A90E2, #246E52, #BD10E0, #4A90E2)`,
+                    background: `conic-gradient(from ${angle}deg at 50% 50%, #0058be, #009668, #BD10E0, #0058be)`,
                     opacity: 0.35,
                 }}
                 animate={{ rotate: 360 }}
@@ -21,8 +21,8 @@ function AnimatedBorderCard({ children }) {
             />
             {/* Inner card */}
             <div
-                className="relative rounded-3xl overflow-hidden"
-                style={{ background: '#161b22' }}
+                className="relative rounded-3xl overflow-hidden shadow-xl"
+                style={{ background: '#ffffff' }}
             >
                 {children}
             </div>
@@ -58,14 +58,14 @@ export default function CTASection() {
                             <motion.div
                                 className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl mx-auto mb-6"
                                 style={{
-                                    background: 'rgba(74,144,226,0.1)',
-                                    border: '1px solid rgba(74,144,226,0.25)',
+                                    background: '#e5eeff',
+                                    border: '1px solid #cce0ff',
                                 }}
                                 animate={{ y: [0, -6, 0] }}
                                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                                 whileHover={{ scale: 1.1, rotate: 10 }}
                             >
-                                <BookOpen className="w-8 h-8 text-[#4A90E2]" />
+                                <BookOpen className="w-8 h-8 text-[#0058be]" />
                                 <motion.div
                                     className="absolute inset-0 rounded-2xl"
                                     animate={{ boxShadow: ['0 0 0px rgba(74,144,226,0)', '0 0 24px rgba(74,144,226,0.3)', '0 0 0px rgba(74,144,226,0)'] }}
@@ -78,11 +78,11 @@ export default function CTASection() {
                                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                                 transition={{ delay: 0.2, duration: 0.5 }}
                             >
-                                <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#e6edf3] mb-3">
+                                <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#0b1c30] mb-3">
                                     Start tracking research trends today
                                 </h2>
-                                <p className="text-[#8b949e] text-sm mb-10 max-w-md mx-auto leading-relaxed">
-                                    Join researchers and lecturers using TrendScholar to stay on top of the
+                                <p className="text-[#45464d] text-sm mb-10 max-w-md mx-auto leading-relaxed">
+                                    Join researchers and lecturers using TrendSearchor to stay on top of the
                                     scientific landscape.
                                 </p>
                             </motion.div>
@@ -106,10 +106,10 @@ export default function CTASection() {
                                         className="relative flex items-center gap-2 px-8 py-3.5 rounded-xl
                       text-sm font-semibold text-white z-10"
                                         style={{
-                                            background: 'linear-gradient(135deg, #4A90E2 0%, #246E52 100%)',
+                                            background: 'linear-gradient(135deg, #0058be 0%, #009668 100%)',
                                             boxShadow: primaryHovered
-                                                ? '0 0 32px rgba(74,144,226,0.45), 0 4px 20px rgba(0,0,0,0.3)'
-                                                : '0 4px 16px rgba(74,144,226,0.2)',
+                                                ? '0 0 32px rgba(0,88,190,0.45), 0 4px 20px rgba(0,0,0,0.1)'
+                                                : '0 4px 16px rgba(0,88,190,0.2)',
                                             transition: 'box-shadow 0.35s',
                                         }}
                                     >
@@ -135,8 +135,8 @@ export default function CTASection() {
                                     <Link
                                         to="/dashboard"
                                         className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm
-                      font-semibold text-[#8b949e] border border-white/10
-                      hover:border-[#4A90E2]/30 hover:text-[#e6edf3] hover:bg-white/[0.03]
+                      font-semibold text-[#45464d] border border-[#c6c6cd]/60
+                      hover:border-[#0058be]/30 hover:text-[#0b1c30] hover:bg-[#f8f9ff]
                       transition-all duration-300"
                                     >
                                         Explore dashboard
@@ -152,8 +152,8 @@ export default function CTASection() {
                                 className="flex items-center justify-center gap-5 mt-10"
                             >
                                 {['No credit card', 'Free tier forever', 'Cancel anytime'].map((t, i) => (
-                                    <div key={i} className="flex items-center gap-1.5 text-xs text-[#8b949e]">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-[#246E52]" />
+                                    <div key={i} className="flex items-center gap-1.5 text-xs text-[#76777d]">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#009668]" />
                                         {t}
                                     </div>
                                 ))}

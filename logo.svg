@@ -1,25 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
-  <defs>
-    <linearGradient id="trend-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#246E52"/>
-      <stop offset="100%" stop-color="#4A90E2"/>
-    </linearGradient>
-  </defs>
-  <!-- Background circle -->
-  <circle cx="50" cy="50" r="48" fill="url(#trend-grad)"/>
-  <!-- Upward trending chart line -->
-  <polyline
-    points="20,72 36,55 52,62 68,38 80,28"
-    fill="none"
-    stroke="white"
-    stroke-width="5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
-  <!-- Arrow tip -->
-  <polygon
-    points="80,28 76,22 83,21 84,29"
-    fill="white"
-  />
+<svg fill="#0058be" width="800px" height="800px" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg">
+  <title>TrendSearchor</title>
+  <path d="M9.0423,19.1661A2.5212,2.5212,0,1,1,6.5212,16.645H9.0423Z"/>
+  <path d="M10.3127,19.1661a2.5212,2.5212,0,0,1,5.0423,0v6.3127a2.5212,2.5212,0,1,1-5.0423,0Z"/>
+  <path d="M12.8339,9.0423A2.5212,2.5212,0,1,1,15.355,6.5212V9.0423Z"/>
+  <path d="M12.8339,10.3127a2.5212,2.5212,0,0,1,0,5.0423H6.5212a2.5212,2.5212,0,1,1,0-5.0423Z"/>
+  <path d="M22.9577,12.8339a2.5212,2.5212,0,1,1,2.5211,2.5211H22.9577Z"/>
+  <path d="M21.6873,12.8339a2.5212,2.5212,0,0,1-5.0423,0V6.5212a2.5212,2.5212,0,1,1,5.0423,0Z"/>
+  <path d="M19.1661,22.9577a2.5212,2.5212,0,1,1-2.5211,2.5211V22.9577Z"/>
+  <path d="M19.1661,21.6873a2.5212,2.5212,0,0,1,0-5.0423h6.3127a2.5212,2.5212,0,1,1,0,5.0423Z"/>
 </svg>

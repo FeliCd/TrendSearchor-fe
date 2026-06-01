@@ -47,7 +47,7 @@ export function AuthProvider({ children }) {
       try {
         userData = await authService.getMe();
       } catch {
-        userData = { username: credentials.username, role: data?.role };
+        userData = { email: credentials.email, role: data?.role };
       }
     }
 

@@ -18,14 +18,11 @@ export const ROLE_SIDEBAR_CONFIG = {
   ADMIN: {
     roleLabel: 'Admin Panel',
     subtitle: 'Management',
-    accentColor: '[#4A90E2]',
+    accentColor: '[#0058be]',
     avatarBgColor: 'bg-[#246E52]',
     HeaderIcon: Shield,
     navItems: [
-      { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
-      { to: '/admin/users', label: 'User Management', icon: Users },
-      { to: '/admin/trends', label: 'Trends & Analytics', icon: TrendingUp },
-      { to: '/admin/settings', label: 'Settings', icon: Settings },
+      { to: '/admin/users', label: 'User Management', icon: Users, end: false },
       { to: '/admin/profile', label: 'My Profile', icon: UserCircle },
     ],
   },

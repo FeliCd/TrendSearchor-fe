@@ -25,8 +25,8 @@ export const authService = {
     }
   },
 
-  requestPasswordReset: async (emailOrUsername) => {
-    const response = await api.post('/api/auth/forgot-password', { emailOrUsername });
+  requestPasswordReset: async ({ mail }) => {
+    const response = await api.post('/api/auth/forgot-password', { mail });
     return response.data;
   },
 

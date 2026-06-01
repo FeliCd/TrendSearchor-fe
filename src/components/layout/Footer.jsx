@@ -29,11 +29,11 @@ const SOCIAL_LINKS = [
 function FooterLinkGroup({ title, links }) {
   return (
     <div className="space-y-3">
-      <h4 className="text-xs font-semibold text-white uppercase tracking-wider">{title}</h4>
+      <h4 className="text-xs font-semibold text-[#0b1c30] uppercase tracking-wider">{title}</h4>
       <ul className="space-y-2">
         {links.map(({ label, href }) => (
           <li key={label}>
-            <a href={href} className="text-sm text-[#8b949e] hover:text-white transition-colors">
+            <a href={href} className="text-sm text-[#45464d] hover:text-[#0b1c30] transition-colors">
               {label}
             </a>
           </li>
@@ -45,14 +45,14 @@ function FooterLinkGroup({ title, links }) {
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/[0.06] bg-[#0d1117]">
+    <footer className="border-t border-[#c6c6cd]/40 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           <div className="lg:col-span-2 space-y-4">
             <Link to="/" className="inline-block group">
               <Logo variant="footer" />
             </Link>
-            <p className="text-[#8b949e] text-sm leading-relaxed max-w-xs">
+            <p className="text-[#45464d] text-sm leading-relaxed max-w-xs">
               AI-powered scientific journal trend tracking platform. Stay ahead of the curve with real-time insights from millions of research publications.
             </p>
             <div className="flex items-center gap-3">
@@ -61,8 +61,8 @@ export default function Footer() {
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="w-8 h-8 rounded-lg bg-[#161b22] border border-white/10 flex items-center
-                    justify-center text-[#8b949e] hover:text-white hover:border-white/20 transition-all"
+                  className="w-8 h-8 rounded-lg bg-[#f8f9ff] border border-[#c6c6cd]/60 flex items-center
+                    justify-center text-[#76777d] hover:text-[#0058be] hover:border-[#0058be]/30 transition-all"
                 >
                   <Icon className="w-4 h-4" />
                 </a>
@@ -75,11 +75,11 @@ export default function Footer() {
           <FooterLinkGroup title="Company" links={COMPANY_LINKS} />
         </div>
 
-        <div className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-[#8b949e]">
+        <div className="mt-12 pt-8 border-t border-[#c6c6cd]/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-[#76777d]">
             © {new Date().getFullYear()} TrendSearchor. All rights reserved.
           </p>
-          <p className="text-xs text-[#8b949e]">
+          <p className="text-xs text-[#76777d]">
             Data powered by Semantic Scholar · OpenAlex · Crossref
           </p>
         </div>

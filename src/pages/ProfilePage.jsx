@@ -10,19 +10,15 @@ import { profileService } from '@/services/profileService';
 import { ROLE_LABELS } from '@/constants/roles';
 import { getDashboardPath } from '@/utils/roleUtils';
 import { useAuth } from '@/contexts/AuthContext';
+import UserStatsCard from '@/components/user/UserStatsCard';
 
-const TABS = [
-  { id: 'profile', label: 'Profile Info', icon: User },
-  { id: 'role', label: 'Account Type', icon: RefreshCw },
-  { id: 'password', label: 'Change Password', icon: Key },
-];
+
 
 export default function ProfilePage() {
   const { refreshUser } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
-  const [tab, setTab] = useState('profile');
   const [toast, setToast] = useState(null);
 
   const showToast = (message, type = 'success') => {
@@ -38,8 +34,8 @@ export default function ProfilePage() {
   }, []);
 
   if (loading) {
-    return <div className="min-h-screen bg-[#010409] flex items-center justify-center">
-      <Loader2 className="w-8 h-8 text-[#4A90E2] animate-spin" />
+    return <div className="min-h-[60vh] flex items-center justify-center">
+      <Loader2 className="w-8 h-8 text-[#0058be] animate-spin" />
     </div>;
   }
 
@@ -51,22 +47,42 @@ export default function ProfilePage() {
   return (
     <DashboardLayout title="My Profile" description="Manage your personal information and security settings.">
       {toast && <Toast message={toast.message} type={toast.type} />}
-      <div className="max-w-3xl">
-        <div className="bg-[#161b22] border border-white/10 rounded-2xl overflow-hidden">
-          <div className="flex border-b border-white/10">
-            {TABS.map((t) => (
-              <button key={t.id} onClick={() => setTab(t.id)}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium transition-all ${
-                  tab === t.id ? 'text-[#4A90E2] border-b-2 border-[#4A90E2] bg-white/[0.02]' : 'text-[#8b949e] hover:text-white hover:bg-white/[0.03]'
-                }`}>
-                <t.icon className="w-4 h-4" />{t.label}
-              </button>
-            ))}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Left Column (40%) - Profile Information */}
+        <div className="lg:col-span-2">
+          <div className="bg-white border border-[#c6c6cd]/60 shadow-sm rounded-2xl p-6 h-full">
+            <ProfileForm initialProfile={profile} onSuccess={refreshUser} onToast={showToast} />
           </div>
-          <div className="p-6">
-            {tab === 'profile' && <ProfileForm initialProfile={profile} onSuccess={refreshUser} onToast={showToast} />}
-            {tab === 'role' && <RoleSwitcher onSwitch={handleRoleSwitch} onToast={showToast} />}
-            {tab === 'password' && <PasswordForm onToast={showToast} />}
+        </div>
+
+        {/* Right Column (60%) */}
+        <div className="lg:col-span-3 flex flex-col gap-6">
+          {/* Top 30% - Stats */}
+          <div>
+            <UserStatsCard />
+          </div>
+
+          {/* Bottom 70% - Account Type & Security side-by-side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
+            <div className="bg-white border border-[#c6c6cd]/60 shadow-sm rounded-2xl p-6 h-full flex flex-col">
+              <h2 className="text-lg font-bold text-[#0b1c30] mb-6 flex items-center gap-2">
+                <RefreshCw className="w-5 h-5 text-[#0058be]" />
+                Account Type
+              </h2>
+              <div className="flex-1">
+                <RoleSwitcher onSwitch={handleRoleSwitch} onToast={showToast} />
+              </div>
+            </div>
+
+            <div className="bg-white border border-[#c6c6cd]/60 shadow-sm rounded-2xl p-6 h-full flex flex-col">
+              <h2 className="text-lg font-bold text-[#0b1c30] mb-6 flex items-center gap-2">
+                <Key className="w-5 h-5 text-[#0058be]" />
+                Security & Password
+              </h2>
+              <div className="flex-1">
+                <PasswordForm onToast={showToast} />
+              </div>
+            </div>
           </div>
         </div>
       </div>

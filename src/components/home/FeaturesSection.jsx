@@ -77,11 +77,11 @@ function FeatureCard({ feature, delay }) {
           className="relative rounded-2xl p-6 border cursor-default overflow-hidden
         transition-colors duration-300"
           style={{
-            background: hovered ? bg : '#161b22',
-            borderColor: hovered ? `${color}35` : 'rgba(255,255,255,0.06)',
+            background: hovered ? bg : '#ffffff',
+            borderColor: hovered ? `${color}35` : 'rgba(198,198,205,0.4)',
             boxShadow: hovered
-                ? `0 0 36px ${glow}, 0 4px 24px rgba(0,0,0,0.25)`
-                : '0 2px 8px rgba(0,0,0,0.15)',
+                ? `0 0 36px ${glow}, 0 4px 24px rgba(0,0,0,0.1)`
+                : '0 2px 8px rgba(0,0,0,0.05)',
             transition: 'background 0.3s, border-color 0.3s, box-shadow 0.3s',
           }}
       >
@@ -110,11 +110,11 @@ function FeatureCard({ feature, delay }) {
 
         <motion.h3
             className="font-semibold text-base mb-2 transition-colors duration-300"
-            style={{ color: hovered ? color : '#e6edf3' }}
+            style={{ color: hovered ? color : '#0b1c30' }}
         >
           {title}
         </motion.h3>
-        <p className="text-[#8b949e] text-sm leading-relaxed">{description}</p>
+        <p className="text-[#45464d] text-sm leading-relaxed">{description}</p>
 
         {/* Bottom accent line */}
         <motion.div
@@ -152,11 +152,11 @@ export default function FeaturesSection() {
             >
               Features
             </motion.span>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-[#e6edf3] mb-4">
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-[#0b1c30] mb-4">
               Everything researchers need
             </h2>
-            <p className="text-[#8b949e] max-w-xl mx-auto text-sm leading-relaxed">
-              From broad trend discovery to deep paper analysis — TrendScholar covers the full
+            <p className="text-[#45464d] max-w-xl mx-auto text-sm leading-relaxed">
+              From broad trend discovery to deep paper analysis — TrendSearchor covers the full
               research intelligence workflow.
             </p>
           </motion.div>

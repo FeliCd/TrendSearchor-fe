@@ -1,58 +1,52 @@
-const AVATAR_COLORS = [
-  'bg-blue-600/30 border-blue-500/30 text-blue-300',
-  'bg-emerald-600/30 border-emerald-500/30 text-emerald-300',
-  'bg-purple-600/30 border-purple-500/30 text-purple-300',
-  'bg-red-600/30 border-red-500/30 text-red-300',
-  'bg-yellow-600/30 border-yellow-500/30 text-yellow-300',
-  'bg-cyan-600/30 border-cyan-500/30 text-cyan-300',
-  'bg-pink-600/30 border-pink-500/30 text-pink-300',
-];
+import React from 'react';
 
 /**
- * Returns a stable color class based on username hash.
+ * Returns initials from a full name or email.
  */
-export function getAvatarColor(username, fallback = 'bg-gray-600') {
-  if (!username) return fallback;
-  let hash = 0;
-  for (let i = 0; i < username.length; i++) {
-    hash = username.charCodeAt(i) + ((hash << 5) - hash);
+export function getInitials(identifier) {
+  if (!identifier) return '?';
+  const parts = identifier.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
   }
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+  const emailPrefix = identifier.includes('@') ? identifier.split('@')[0] : identifier;
+  return emailPrefix.slice(0, 2).toUpperCase();
 }
 
 /**
- * Returns initials from a username.
+ * Shared avatar component that supports image URLs and falls back to initials.
+ * Supports both new API (user, profile) and legacy API (identifier).
  */
-export function getInitials(username) {
-  if (!username) return '?';
-  const parts = username.trim().split(/\s+/);
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return username.slice(0, 2).toUpperCase();
-}
-
-/**
- * Shared avatar component.
- * @param {string} username
- * @param {string} size - sm | md | lg | xl (default: md)
- * @param {string} className
- */
-export default function UserAvatar({ username, size = 'md', className = '' }) {
+export default function UserAvatar({ user, profile, identifier, size = 'md', className = '' }) {
   const sizeClasses = {
     xs: 'w-6 h-6 text-[10px]',
     sm: 'w-8 h-8 text-xs',
-    md: 'w-9 h-9 text-xs',
-    lg: 'w-12 h-12 text-sm',
-    xl: 'w-14 h-14 text-base',
+    md: 'w-9 h-9 text-sm',
+    lg: 'w-12 h-12 text-lg',
+    xl: 'w-24 h-24 text-3xl',
+    '2xl': 'w-32 h-32 text-4xl',
+    full: 'w-full h-full text-4xl',
   };
   const sz = sizeClasses[size] || sizeClasses.md;
 
+  const avatarUrl = profile?.avatarUrl || user?.avatarUrl;
+
+  if (avatarUrl) {
+    return (
+      <div className={`rounded-full overflow-hidden flex-shrink-0 ${sz} ${className}`}>
+        <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+      </div>
+    );
+  }
+
+  const name = identifier || profile?.fullName || user?.fullName || user?.mail || '?';
+  const firstLetter = name[0].toUpperCase();
+
   return (
     <div
-      className={`rounded-xl flex items-center justify-center font-bold border flex-shrink-0
-        transition-transform duration-200 group-hover:scale-105
-        ${getAvatarColor(username)} ${sz} ${className}`}
+      className={`rounded-full flex items-center justify-center font-bold flex-shrink-0 bg-[#f8f9ff] text-[#0058be] ${sz} ${className}`}
     >
-      {getInitials(username)}
+      {firstLetter}
     </div>
   );
 }

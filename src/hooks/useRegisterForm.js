@@ -7,7 +7,7 @@ export function useRegisterForm() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    username: '',
+    fullName: '',
     password: '',
     confirmPassword: '',
     dob: '',
@@ -31,10 +31,10 @@ export function useRegisterForm() {
   const validate = () => {
     const errs = {};
 
-    if (!formData.username.trim()) {
-      errs.username = 'Username is required';
-    } else if (formData.username.trim().length < 3) {
-      errs.username = 'Username must be at least 3 characters';
+    if (!formData.fullName.trim()) {
+      errs.fullName = 'Full name is required';
+    } else if (formData.fullName.trim().length < 3) {
+      errs.fullName = 'Full name must be at least 3 characters';
     }
 
     if (!formData.mail.trim()) {
@@ -78,10 +78,10 @@ export function useRegisterForm() {
 
   const validateStep1 = () => {
     const errs = {};
-    if (!formData.username.trim()) {
-      errs.username = 'Username is required';
-    } else if (formData.username.trim().length < 3) {
-      errs.username = 'Username must be at least 3 characters';
+    if (!formData.fullName.trim()) {
+      errs.fullName = 'Full name is required';
+    } else if (formData.fullName.trim().length < 3) {
+      errs.fullName = 'Full name must be at least 3 characters';
     }
     if (!formData.mail.trim()) {
       errs.mail = 'Email is required';
@@ -112,7 +112,8 @@ export function useRegisterForm() {
 
     setIsLoading(true);
     try {
-      await authService.register(formData);
+      const { confirmPassword, ...payload } = formData;
+      await authService.register(payload);
       setSuccessMsg('Account created! Redirecting to sign in...');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {

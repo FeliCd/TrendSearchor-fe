@@ -20,7 +20,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <ActivityList items={[]} getAction={(item) => `${item.username} ${item.action}`} />
+        <ActivityList items={[]} getAction={(item) => `${item.mail} ${item.action}`} />
         <div className="bg-[#0d1117]/60 border border-white/[0.06] rounded-xl">
           <div className="px-5 py-4 border-b border-white/[0.06]">
             {<h2 className="text-sm font-semibold text-white">Search Volume (30 days)</h2>}

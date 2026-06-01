@@ -33,12 +33,12 @@ function TypewriterWord() {
 
   return (
       <span className="relative">
-      <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4A90E2] to-[#246E52]">
+      <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0058be] to-[#009668]">
         {displayed}
       </span>
       <motion.span
           className="inline-block w-[3px] h-[1em] ml-1 align-middle rounded-sm"
-          style={{ background: '#4A90E2', verticalAlign: 'middle' }}
+          style={{ background: '#0058be', verticalAlign: 'middle' }}
           animate={{ opacity: [1, 0, 1] }}
           transition={{ duration: 0.9, repeat: Infinity }}
       />
@@ -62,24 +62,24 @@ export default function HeroSection() {
               {...fadeUp(0)}
               whileHover={{ scale: 1.04 }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full
-            bg-[#161b22] border border-[#4A90E2]/20 text-[#8b949e] text-xs
-            font-medium mb-10 cursor-default shadow-lg shadow-[#4A90E2]/5"
+            bg-[#f8f9ff] border border-[#0058be]/20 text-[#45464d] text-xs
+            font-medium mb-10 cursor-default shadow-sm shadow-[#0058be]/10"
           >
             <motion.div
                 animate={{ rotate: [0, 15, -15, 0] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#4A90E2]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#0058be]" />
             </motion.div>
             <span>Powered by Semantic Scholar · OpenAlex · Crossref</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#246E52] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#009668] animate-pulse" />
           </motion.div>
 
           {/* Headline */}
           <motion.h1
               {...fadeUp(0.1)}
               className="font-display font-extrabold text-4xl sm:text-5xl
-            md:text-[3.75rem] leading-[1.1] tracking-tight text-[#e6edf3] mb-6"
+            md:text-[3.75rem] leading-[1.1] tracking-tight text-[#0b1c30] mb-6"
           >
             Track the pulse of{' '}
             <br className="hidden sm:block" />
@@ -89,7 +89,7 @@ export default function HeroSection() {
           {/* Sub */}
           <motion.p
               {...fadeUp(0.2)}
-              className="text-[#8b949e] text-base sm:text-lg leading-relaxed
+              className="text-[#45464d] text-base sm:text-lg leading-relaxed
             max-w-2xl mx-auto mb-10"
           >
             Discover emerging research trends, track publication patterns across journals,
@@ -115,9 +115,9 @@ export default function HeroSection() {
                   to="/register"
                   className="group relative flex items-center gap-2 px-7 py-3.5 rounded-xl
                 text-sm font-semibold text-white overflow-hidden
-                shadow-lg shadow-emerald-900/30 hover:shadow-emerald-700/40
+                shadow-lg shadow-[#009668]/30 hover:shadow-[#009668]/40
                 transition-shadow duration-300"
-                  style={{ background: 'linear-gradient(135deg, #246E52 0%, #1e5943 100%)' }}
+                  style={{ background: 'linear-gradient(135deg, #009668 0%, #007a55 100%)' }}
               >
                 {/* Shimmer sweep */}
                 <motion.div
@@ -140,8 +140,8 @@ export default function HeroSection() {
               <Link
                   to="/dashboard"
                   className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm
-                font-semibold text-[#8b949e] bg-[#161b22] border border-white/10
-                hover:border-[#4A90E2]/40 hover:text-[#e6edf3] hover:bg-[#1c2333]
+                font-semibold text-[#45464d] bg-white border border-[#c6c6cd]/60
+                hover:border-[#0058be]/40 hover:text-[#0b1c30] hover:bg-[#f8f9ff]
                 transition-all duration-300"
               >
                 Explore Dashboard
@@ -152,19 +152,19 @@ export default function HeroSection() {
           {/* Social proof */}
           <motion.div
               {...fadeUp(0.55)}
-              className="flex items-center justify-center gap-3 mt-10 text-xs text-[#8b949e]"
+              className="flex items-center justify-center gap-3 mt-10 text-xs text-[#76777d]"
           >
             <div className="flex -space-x-1.5">
-              {['#4A90E2', '#246E52', '#F5A623', '#BD10E0'].map((c, i) => (
+              {['#0058be', '#009668', '#F5A623', '#BD10E0'].map((c, i) => (
                   <div
                       key={i}
-                      className="w-6 h-6 rounded-full border-2"
-                      style={{ background: `${c}33`, borderColor: c, boxShadow: `0 0 6px ${c}55` }}
+                      className="w-6 h-6 rounded-full border-2 border-white"
+                      style={{ background: `${c}33`, boxShadow: `0 0 6px ${c}33` }}
                   />
               ))}
             </div>
             <span>
-            Join <strong className="text-[#e6edf3]">12,000+</strong> researchers already using TrendScholar
+            Join <strong className="text-[#0b1c30]">12,000+</strong> researchers already using TrendSearchor
           </span>
           </motion.div>
         </div>

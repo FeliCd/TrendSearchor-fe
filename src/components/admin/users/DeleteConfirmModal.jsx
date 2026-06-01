@@ -29,23 +29,23 @@ export default function DeleteConfirmModal({ user, onClose, onConfirm }) {
         exit={{ opacity: 0, scale: 0.92, y: 16 }}
         transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
         className="relative w-full max-w-sm overflow-hidden rounded-2xl
-          bg-[#0d1117] border border-red-500/15
-          shadow-2xl shadow-red-900/10"
+          bg-white border border-red-200
+          shadow-2xl shadow-red-500/10"
       >
         {/* Top accent line */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent" />
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#c6c6cd]/40">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-              <AlertTriangle className="w-4 h-4 text-red-400" />
+            <div className="w-8 h-8 rounded-lg bg-red-50 border border-red-200 flex items-center justify-center">
+              <AlertTriangle className="w-4 h-4 text-red-600" />
             </div>
-            <h2 className="text-sm font-bold text-white">Delete User</h2>
+            <h2 className="text-sm font-bold text-[#0b1c30]">Delete User</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-[#8b949e] hover:text-white hover:bg-white/5 transition-all duration-200"
+            className="p-2 rounded-xl text-[#76777d] hover:text-[#0b1c30] hover:bg-[#f8f9ff] transition-all duration-200"
           >
             <X className="w-4 h-4" />
           </button>
@@ -54,29 +54,29 @@ export default function DeleteConfirmModal({ user, onClose, onConfirm }) {
         {/* Content */}
         <div className="px-6 py-5">
           <div className="flex items-start gap-3 mb-5">
-            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/15 flex items-center justify-center mt-0.5">
-              <Trash2 className="w-5 h-5 text-red-400" />
+            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-red-50 border border-red-200 flex items-center justify-center mt-0.5">
+              <Trash2 className="w-5 h-5 text-red-600" />
             </div>
             <div>
-              <p className="text-sm text-white font-medium">
+              <p className="text-sm text-[#0b1c30] font-medium">
                 Are you sure you want to delete{' '}
-                <span className="text-red-400 font-bold">{user?.username}</span>?
+                <span className="text-red-600 font-bold">{user?.fullName || user?.mail}</span>?
               </p>
-              <p className="text-xs text-[#8b949e] mt-1.5 leading-relaxed">
+              <p className="text-xs text-[#76777d] mt-1.5 leading-relaxed">
                 This action cannot be undone. All data associated with this account will be permanently removed from the system.
               </p>
             </div>
           </div>
 
           {/* User preview */}
-          <div className="mb-5 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+          <div className="mb-5 p-3 rounded-xl bg-[#f8f9ff] border border-[#c6c6cd]/40">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-red-600/20 border border-red-500/20 flex items-center justify-center text-xs font-bold text-red-300">
-                {(user?.username?.[0] || '?').toUpperCase()}
+              <div className="w-8 h-8 rounded-lg bg-red-100 border border-red-200 flex items-center justify-center text-xs font-bold text-red-600">
+                {(user?.fullName?.[0] || user?.mail?.[0] || '?').toUpperCase()}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-white truncate">{user?.username}</p>
-                <p className="text-xs text-[#8b949e] truncate">{user?.mail}</p>
+                <p className="text-sm font-semibold text-[#0b1c30] truncate">{user?.fullName || user?.mail}</p>
+                <p className="text-xs text-[#76777d] truncate">{user?.mail}</p>
               </div>
             </div>
           </div>
@@ -86,8 +86,8 @@ export default function DeleteConfirmModal({ user, onClose, onConfirm }) {
             <button
               onClick={onClose}
               disabled={deleting}
-              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-[#8b949e]
-                hover:text-white hover:bg-white/5 border border-white/[0.08]
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-[#76777d]
+                hover:text-[#0b1c30] hover:bg-[#f8f9ff] border border-[#c6c6cd]/60
                 transition-all duration-200 disabled:opacity-50"
             >
               Cancel
