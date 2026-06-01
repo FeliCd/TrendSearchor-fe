@@ -54,7 +54,6 @@ export default function UserTable({ users, onEdit, onView, onDelete }) {
 
   useEffect(() => { setCurrentPage(1); }, [users.length]);
 
-  // Đóng menu khi scroll
   useEffect(() => {
     const handleScroll = () => setOpenMenuId(null);
     window.addEventListener('scroll', handleScroll, true);
@@ -67,10 +66,9 @@ export default function UserTable({ users, onEdit, onView, onDelete }) {
     const btn = btnRefs.current[userId];
     if (btn) {
       const rect = btn.getBoundingClientRect();
-      const menuWidth = 176; // w-44 = 11rem = 176px
+      const menuWidth = 176;
       setMenuPosition({
         top: rect.bottom + 4,
-        // căn phải theo button, không tràn màn hình
         left: Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 8),
       });
     }
@@ -135,8 +133,6 @@ export default function UserTable({ users, onEdit, onView, onDelete }) {
                         <td className="px-4 py-3.5 text-[#8b949e] whitespace-nowrap text-xs hidden md:table-cell">
                           {formatDate(user.createdAt)}
                         </td>
-
-                        {/* ── Action cell ── */}
                         <td className="px-4 py-3.5 last:pr-6">
                           <div className="flex justify-end">
                             <button
@@ -158,7 +154,6 @@ export default function UserTable({ users, onEdit, onView, onDelete }) {
           )}
         </div>
 
-        {/* Portal ra ngoài mọi overflow, dùng fixed */}
         <AnimatePresence>
           {openMenuId !== null && (() => {
             const user = users.find((u) => u.id === openMenuId);
@@ -168,7 +163,7 @@ export default function UserTable({ users, onEdit, onView, onDelete }) {
                     user={user}
                     onEdit={onEdit}
                     onView={onView}
-                    onDelete={onDelete}
+                    onDelete={user.role !== 'ADMIN' ? onDelete : null}
                     onClose={() => setOpenMenuId(null)}
                     position={menuPosition}
                 />
