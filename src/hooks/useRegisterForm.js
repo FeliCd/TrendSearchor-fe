@@ -1,12 +1,9 @@
 import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '@/services/authService';
-import { getDashboardPath } from '@/utils/roleUtils';
 import { isValidEmail, isValidPhone, isValidPassword, isValidDob, extractError } from '@/utils/validationUtils';
 
 export function useRegisterForm() {
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -79,6 +76,32 @@ export function useRegisterForm() {
     return Object.keys(errs).length === 0;
   };
 
+  const validateStep1 = () => {
+    const errs = {};
+    if (!formData.username.trim()) {
+      errs.username = 'Username is required';
+    } else if (formData.username.trim().length < 3) {
+      errs.username = 'Username must be at least 3 characters';
+    }
+    if (!formData.mail.trim()) {
+      errs.mail = 'Email is required';
+    } else if (!isValidEmail(formData.mail)) {
+      errs.mail = 'Please enter a valid email address';
+    }
+    if (!formData.password) {
+      errs.password = 'Password is required';
+    } else if (!isValidPassword(formData.password)) {
+      errs.password = 'Must be ≥9 chars with 1 uppercase, 1 number, 1 special char';
+    }
+    if (!formData.confirmPassword) {
+      errs.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      errs.confirmPassword = 'Passwords do not match';
+    }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
@@ -90,14 +113,8 @@ export function useRegisterForm() {
     setIsLoading(true);
     try {
       await authService.register(formData);
-      setSuccessMsg('Registration successful! Redirecting...');
-
-      try {
-        const data = await login({ username: formData.username, password: formData.password });
-        navigate(getDashboardPath(data?.user?.role || data?.role));
-      } catch {
-        setTimeout(() => navigate('/login'), 2000);
-      }
+      setSuccessMsg('Account created! Redirecting to sign in...');
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
       if (err.response?.status === 400 && typeof err.response.data === 'object') {
         setErrors(err.response.data);
@@ -110,5 +127,5 @@ export function useRegisterForm() {
     }
   };
 
-  return { formData, errors, globalError, successMsg, isLoading, handleChange, handleSubmit };
+  return { formData, errors, globalError, successMsg, isLoading, handleChange, handleSubmit, validateStep1 };
 }

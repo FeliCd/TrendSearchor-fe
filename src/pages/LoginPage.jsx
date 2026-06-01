@@ -1,91 +1,63 @@
 import { Link } from 'react-router-dom';
-import { User, ArrowRight } from 'lucide-react';
 import { useLoginForm } from '@/hooks/useLoginForm';
 import AuthLayout from '@/components/auth/AuthLayout';
 import FormInput from '@/components/ui/FormInput';
-import PasswordInput from '@/components/ui/PasswordInput';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Alert from '@/components/ui/Alert';
 
 export default function LoginPage() {
-  const { formData, errors, globalError, isLoading, rememberMe, handleChange, handleSubmit } = useLoginForm();
+  const { formData, errors, globalError, isLoading, handleChange, handleSubmit } = useLoginForm();
 
   return (
     <AuthLayout
       title="Welcome back"
-      subtitle="Sign in to access your dashboard and continue exploring research trends"
+      subtitle="Sign in to continue exploring research trends"
       footerText="Don't have an account?"
       footerLinkText="Create an account"
       footerLinkTo="/register"
     >
       {globalError && <Alert variant="error" message={globalError} />}
 
-      <form className="space-y-5" onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="space-y-5">
         <FormInput
-          id="username"
-          name="username"
-          label="Username or Email"
-          placeholder="admin"
-          value={formData.username}
-          onChange={handleChange}
-          icon={User}
-          autoFocus
-          autoComplete="username"
-          error={errors.username}
+          id="username" name="username" label="Username or Email"
+          placeholder="admin" value={formData.username} onChange={handleChange}
+          autoFocus autoComplete="username" error={errors.username}
         />
 
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label htmlFor="password" className="text-sm font-medium text-[#c9d1d9]">
-              Password
-            </label>
-            <Link
-              to="/forgot-password"
-              className="text-xs text-[#4A90E2] hover:text-[#6ba3e0] transition-colors"
-            >
+            <label htmlFor="password" className="text-sm font-medium text-[#c9d1d9]">Password</label>
+            <Link to="/forgot-password" className="text-xs text-[#73b797] hover:text-[#8fcfb3] transition-colors">
               Forgot password?
             </Link>
           </div>
-          <PasswordInput
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            autoComplete="current-password"
-            error={errors.password}
-          />
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <svg className="w-4 h-4 text-[#8b949e]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </div>
+            <input
+              id="password" name="password" type="password"
+              placeholder="Enter your password" value={formData.password}
+              onChange={handleChange} autoComplete="current-password" required
+              className={`w-full pl-10 pr-4 py-2.5 bg-[#161b22] border rounded-lg text-sm text-[#e6edf3]
+                placeholder:text-[#484f58] focus:outline-none focus:ring-2 transition-all ${
+                  errors.password
+                    ? 'border-red-500/50 focus:ring-red-500/30 focus:border-red-500/50'
+                    : 'border-white/10 focus:ring-[#73b797]/50 focus:border-[#73b797]/50'
+                }`}
+            />
+          </div>
+          {errors.password && <p className="text-xs text-red-400 mt-1">{errors.password}</p>}
         </div>
 
-        <div className="flex items-center">
-          <input
-            id="rememberMe"
-            name="rememberMe"
-            type="checkbox"
-            checked={rememberMe}
-            onChange={handleChange}
-            className="w-4 h-4 rounded border-white/20 bg-[#161b22] text-[#4A90E2]
-              focus:ring-2 focus:ring-[#4A90E2]/50 focus:ring-offset-0 cursor-pointer"
-          />
-          <label htmlFor="rememberMe" className="ml-2 text-sm text-[#8b949e] cursor-pointer select-none">
-            Keep me signed in
-          </label>
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold text-[#0d1117] bg-white
-            hover:bg-[#f0f6fc] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200
-            flex items-center justify-center gap-2 mt-1"
-        >
-          {isLoading ? (
-            <LoadingSpinner label="Signing in..." />
-          ) : (
-            <>
-              Sign in
-              <ArrowRight className="w-4 h-4" />
-            </>
-          )}
+        <button type="submit" disabled={isLoading}
+          className="w-full py-3 rounded-xl text-sm font-semibold text-[#0d1117] bg-[#73b797]
+            hover:bg-[#8fcfb3] disabled:opacity-50 disabled:cursor-not-allowed
+            transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-[#73b797]/15">
+          {isLoading ? <LoadingSpinner label="Signing in..." /> : 'Sign in'}
         </button>
       </form>
     </AuthLayout>
