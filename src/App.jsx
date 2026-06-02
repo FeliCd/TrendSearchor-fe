@@ -4,7 +4,9 @@ import { Suspense, lazy } from 'react';
 import RootLayout from '@/components/layout/RootLayout';
 import ProtectedRoute from '@/components/protected/ProtectedRoute';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ChangePasswordModal from '@/components/auth/ChangePasswordModal';
 import { ROLES } from '@/constants/roles';
+import { useAuth } from '@/contexts/AuthContext';
 
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
@@ -36,9 +38,17 @@ function PageLoader() {
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const { user, refreshUser } = useAuth();
+
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+    <>
+      <ChangePasswordModal
+        isOpen={user?.mustChangePassword === true}
+        user={user}
+        onSuccess={refreshUser}
+      />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
         <Route element={<RootLayout />}>
           <Route
             path="/"
@@ -75,7 +85,7 @@ function AnimatedRoutes() {
         {/* ─── RESEARCHER routes ─── */}
         <Route element={<ProtectedRoute allowedRoles={[ROLES.RESEARCHER]} />}>
           <Route element={<Suspense fallback={<PageLoader />}><ResearcherLayout /></Suspense>}>
-            <Route path="/researcher" element={<ResearcherDashboardPage />} end />
+            <Route path="/researcher" element={<Navigate to="/researcher/search" replace />} end />
             <Route path="/researcher/search" element={<PaperSearchPage />} />
             <Route path="/researcher/trends" element={<TrendsPage />} />
             <Route path="/researcher/analytics" element={<ResearcherDashboardPage />} />
@@ -87,7 +97,7 @@ function AnimatedRoutes() {
         {/* ─── ACADEMIC (LECTURER / STUDENT) routes ─── */}
         <Route element={<ProtectedRoute allowedRoles={[ROLES.LECTURER, ROLES.STUDENT]} />}>
           <Route element={<Suspense fallback={<PageLoader />}><AcademicLayout /></Suspense>}>
-            <Route path="/academic" element={<AcademicDashboardPage />} end />
+            <Route path="/academic" element={<Navigate to="/academic/search" replace />} end />
             <Route path="/academic/search" element={<PaperSearchPage />} />
             <Route path="/academic/trends" element={<TrendsPage />} />
             <Route path="/academic/bookmarks" element={<BookmarksPage />} />
@@ -97,7 +107,8 @@ function AnimatedRoutes() {
         </Route>
 
       </Routes>
-    </AnimatePresence>
+      </AnimatePresence>
+    </>
   );
 }
 

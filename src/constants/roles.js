@@ -16,26 +16,26 @@ export const ROLE_COLORS = {
   [ROLES.ADMIN]: {
     bg: 'bg-red-500/10',
     text: 'text-red-400',
-    border: 'border-red-500/20',
-    badge: 'bg-red-500/10 text-red-400 border border-red-500/20',
+    border: 'border-red-500/30',
+    badge: 'bg-red-500/10 text-red-400 border-2 border-red-500/30',
   },
   [ROLES.LECTURER]: {
     bg: 'bg-emerald-500/10',
     text: 'text-emerald-400',
-    border: 'border-emerald-500/20',
-    badge: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
+    border: 'border-emerald-500/30',
+    badge: 'bg-emerald-500/10 text-emerald-400 border-2 border-emerald-500/30',
   },
   [ROLES.STUDENT]: {
-    bg: 'bg-blue-500/10',
-    text: 'text-blue-400',
-    border: 'border-blue-500/20',
-    badge: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
+    bg: 'bg-emerald-500/10',
+    text: 'text-emerald-400',
+    border: 'border-emerald-500/30',
+    badge: 'bg-emerald-500/10 text-emerald-400 border-2 border-emerald-500/30',
   },
   [ROLES.RESEARCHER]: {
-    bg: 'bg-purple-500/10',
-    text: 'text-purple-400',
-    border: 'border-purple-500/20',
-    badge: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
+    bg: 'bg-[#0058be]/10',
+    text: 'text-[#0058be]',
+    border: 'border-[#0058be]/30',
+    badge: 'bg-[#0058be]/10 text-[#0058be] border-2 border-[#0058be]/30',
   },
 };
 
@@ -45,6 +45,6 @@ export const USER_STATUS = {
 };
 
 export const STATUS_COLORS = {
-  [USER_STATUS.ACTIVE]: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
-  [USER_STATUS.INACTIVE]: 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20',
+  [USER_STATUS.ACTIVE]: 'bg-emerald-500/10 text-emerald-400 border-2 border-emerald-500/30',
+  [USER_STATUS.INACTIVE]: 'bg-yellow-500/10 text-yellow-400 border-2 border-yellow-500/30',
 };

@@ -4,8 +4,12 @@ import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis
 import { ROLES, ROLE_LABELS } from '@/constants/roles';
 import { Users, TrendingUp } from 'lucide-react';
 
-const COLORS = ['#0058be', '#009668', '#f59e0b', '#8b5cf6', '#64748b', '#ef4444'];
-
+const CHART_COLORS = {
+  [ROLES.ADMIN]: '#ef4444',
+  [ROLES.LECTURER]: '#10b981',
+  [ROLES.STUDENT]: '#10b981',
+  [ROLES.RESEARCHER]: '#0058be',
+};
 export default function UserCharts({ users = [] }) {
   const roleData = useMemo(() => {
     const counts = {};
@@ -14,6 +18,7 @@ export default function UserCharts({ users = [] }) {
     });
     return Object.entries(counts).map(([role, count]) => ({
       name: ROLE_LABELS[role] || role,
+      role,
       value: count,
     })).sort((a, b) => b.value - a.value);
   }, [users]);
@@ -48,10 +53,10 @@ export default function UserCharts({ users = [] }) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="bg-[var(--dark-bg-elevated)] border border-gray-800 rounded-2xl p-5 shadow-sm lg:col-span-3"
+        className="bg-[#1e1e1e] border-2 border-gray-800 p-5 shadow-none lg:col-span-3"
       >
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-[#0058be]/10 border border-[#0058be]/20 flex items-center justify-center">
+          <div className="w-10 h-10 border-2 border-[#0058be] bg-[#0058be]/10 flex items-center justify-center">
             <Users className="w-5 h-5 text-[#0058be]" />
           </div>
           <div>
@@ -74,11 +79,11 @@ export default function UserCharts({ users = [] }) {
                   stroke="none"
                 >
                   {roleData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell key={`cell-${index}`} fill={CHART_COLORS[entry.role] || '#ffffff'} />
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ borderRadius: '12px', border: '1px solid #30363d', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.3)', padding: '12px', backgroundColor: '#161b22' }}
+                  contentStyle={{ borderRadius: '0px', border: '2px solid #30363d', boxShadow: 'none', padding: '12px', backgroundColor: '#151515' }}
                   itemStyle={{ color: '#ffffff', fontWeight: 'bold' }}
                 />
               </PieChart>
@@ -88,9 +93,9 @@ export default function UserCharts({ users = [] }) {
           )}
         </div>
         <div className="flex flex-wrap justify-center gap-4 mt-2">
-          {roleData.map((entry, index) => (
+          {roleData.map((entry) => (
             <div key={entry.name} className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+              <span className="w-3 h-3 rounded-none" style={{ backgroundColor: CHART_COLORS[entry.role] || '#ffffff' }} />
               <span className="text-xs text-gray-400 font-medium">{entry.name} ({entry.value})</span>
             </div>
           ))}
@@ -102,10 +107,10 @@ export default function UserCharts({ users = [] }) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
-        className="bg-[var(--dark-bg-elevated)] border border-gray-800 rounded-2xl p-5 shadow-sm lg:col-span-7 flex flex-col"
+        className="bg-[#1e1e1e] border-2 border-gray-800 p-5 shadow-none lg:col-span-7 flex flex-col"
       >
         <div className="flex items-center gap-3 mb-4 flex-shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-[#0058be]/10 border border-[#0058be]/20 flex items-center justify-center">
+          <div className="w-10 h-10 border-2 border-[#0058be] bg-[#0058be]/10 flex items-center justify-center">
             <TrendingUp className="w-5 h-5 text-[#0058be]" />
           </div>
           <div>
@@ -121,13 +126,13 @@ export default function UserCharts({ users = [] }) {
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} dy={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
                 <Tooltip
-                  contentStyle={{ borderRadius: '12px', border: '1px solid #30363d', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.3)', backgroundColor: '#161b22' }}
+                  contentStyle={{ borderRadius: '0px', border: '2px solid #30363d', boxShadow: 'none', backgroundColor: '#151515' }}
                   labelStyle={{ color: '#ffffff', fontWeight: 'bold', marginBottom: '8px' }}
                 />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '10px', color: '#9ca3af' }} />
-                <Line type="monotone" dataKey={ROLES.LECTURER} name="Student / Lecturer" stroke="#009668" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
-                <Line type="monotone" dataKey={ROLES.RESEARCHER} name="Researcher" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
-                <Line type="monotone" dataKey={ROLES.ADMIN} name="Admin" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey={ROLES.LECTURER} name="Student / Lecturer" stroke={CHART_COLORS[ROLES.LECTURER]} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey={ROLES.RESEARCHER} name="Researcher" stroke={CHART_COLORS[ROLES.RESEARCHER]} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey={ROLES.ADMIN} name="Admin" stroke={CHART_COLORS[ROLES.ADMIN]} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
               </LineChart>
             </ResponsiveContainer>
           ) : (

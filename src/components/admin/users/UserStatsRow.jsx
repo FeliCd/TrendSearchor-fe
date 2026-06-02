@@ -7,41 +7,41 @@ const STAT_CONFIG = [
     key: 'total',
     label: 'Total Users',
     icon: Users,
-    bgColor: 'bg-[#0058be]/10',
-    borderColor: 'border-[#0058be]/20',
-    iconColor: 'text-[#0058be]',
+    bgColor: 'bg-blue-500/10',
+    borderColor: 'border-blue-500/30',
+    iconColor: 'text-blue-400',
     textColor: 'text-white',
-    glow: 'shadow-[#0058be]/10',
+    glow: 'shadow-none',
   },
   {
     key: ROLES.ADMIN,
     label: 'Admins',
     icon: ShieldCheck,
     bgColor: 'bg-red-500/10',
-    borderColor: 'border-red-500/20',
+    borderColor: 'border-red-500/30',
     iconColor: 'text-red-400',
     textColor: 'text-white',
-    glow: 'shadow-red-500/10',
+    glow: 'shadow-none',
   },
   {
     key: USER_STATUS.ACTIVE,
     label: 'Active',
     icon: UserCheck,
     bgColor: 'bg-emerald-500/10',
-    borderColor: 'border-emerald-500/20',
+    borderColor: 'border-emerald-500/30',
     iconColor: 'text-emerald-400',
     textColor: 'text-emerald-400',
-    glow: 'shadow-emerald-500/10',
+    glow: 'shadow-none',
   },
   {
     key: USER_STATUS.INACTIVE,
     label: 'Inactive',
     icon: UserX,
     bgColor: 'bg-yellow-500/10',
-    borderColor: 'border-yellow-500/20',
+    borderColor: 'border-yellow-500/30',
     iconColor: 'text-yellow-400',
     textColor: 'text-yellow-400',
-    glow: 'shadow-yellow-500/10',
+    glow: 'shadow-none',
   },
 ];
 
@@ -71,9 +71,8 @@ export default function UserStatsRow({ users, allUsers }) {
             key={stat.label}
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-            className={`group relative overflow-hidden rounded-2xl px-4 py-3.5 bg-[var(--dark-bg-elevated)] border border-gray-800
-              hover:border-gray-700 transition-all duration-300 cursor-default shadow-sm`}
+            className={`group relative overflow-hidden px-4 py-3.5 bg-[#1e1e1e] border-2 border-gray-800
+              hover:border-gray-700 transition-all duration-300 cursor-default`}
           >
             {/* Subtle top accent line */}
             <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-current/${stat.iconColor.includes('blue') ? '#0058be' : stat.iconColor.includes('red') ? 'red' : stat.iconColor.includes('emerald') ? 'emerald' : stat.iconColor.includes('purple') ? 'purple' : 'yellow'}-400/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
@@ -85,7 +84,7 @@ export default function UserStatsRow({ users, allUsers }) {
                   {stat.value}
                 </p>
               </div>
-              <div className={`mt-0.5 w-8 h-8 rounded-xl ${stat.bgColor} border ${stat.borderColor}
+              <div className={`mt-0.5 w-8 h-8 border-2 ${stat.bgColor} ${stat.borderColor}
                 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity duration-200`}>
                 <Icon className={`w-3.5 h-3.5 ${stat.iconColor}`} />
               </div>

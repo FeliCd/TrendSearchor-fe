@@ -4,14 +4,14 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
   if (!paper) return null;
 
   return (
-    <div className="bg-[#161b22] flex flex-col h-full">
-      <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between flex-shrink-0">
-        <h2 className="text-white font-semibold text-base">Research Preview</h2>
+    <div className="bg-[#151515] flex flex-col h-full border-l-2 border-gray-800">
+      <div className="px-6 py-5 border-b-2 border-gray-800 flex items-center justify-between flex-shrink-0 bg-[#1e1e1e]">
+        <h2 className="text-white font-black text-sm uppercase tracking-widest">Research Preview</h2>
         <button
           onClick={onClose}
-          className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+          className="p-1.5 border-2 border-transparent hover:border-gray-700 hover:bg-white/5 text-gray-400 hover:text-white transition-all rounded-none"
         >
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
       </div>
 
@@ -21,22 +21,22 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
             {paper.title}
           </h3>
 
-          <div className="flex flex-wrap items-center gap-2 text-xs">
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-wider">
             {paper.year && (
-              <span className="flex items-center gap-1 px-2 py-1 bg-[var(--dark-bg-base)] text-gray-300 rounded">
-                <FileText className="w-3 h-3" />
+              <span className="flex items-center gap-1.5 px-2.5 py-1.5 border-2 border-gray-800 bg-[#1e1e1e] text-gray-300 rounded-none">
+                <FileText className="w-3.5 h-3.5" />
                 {paper.year}
               </span>
             )}
             {paper.citationCount > 0 && (
-              <span className="flex items-center gap-1 px-2 py-1 bg-[var(--dark-bg-base)] text-[#4A90E2] rounded">
-                <Award className="w-3 h-3" />
+              <span className="flex items-center gap-1.5 px-2.5 py-1.5 border-2 border-[#0058be]/50 bg-[#0058be]/10 text-[#4A90E2] rounded-none">
+                <Award className="w-3.5 h-3.5" />
                 {paper.citationCount} citations
               </span>
             )}
             {paper.openAccess && (
-              <span className="flex items-center gap-1 px-2 py-1 bg-emerald-900/30 text-emerald-400 rounded">
-                <Globe className="w-3 h-3" />
+              <span className="flex items-center gap-1.5 px-2.5 py-1.5 border-2 border-emerald-500/50 bg-emerald-500/10 text-emerald-400 rounded-none">
+                <Globe className="w-3.5 h-3.5" />
                 Open Access
               </span>
             )}
@@ -68,11 +68,11 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
               <Tag className="w-3.5 h-3.5" />
               Keywords
             </h4>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {paper.keywords.map((kw, i) => (
                 <span
                   key={i}
-                  className="px-2.5 py-1 bg-[#4A90E2]/10 text-[#4A90E2] text-xs rounded-full border border-[#4A90E2]/20"
+                  className="px-2.5 py-1 border-2 border-[#0058be]/30 bg-[#0058be]/5 text-[#4A90E2] text-[11px] font-bold uppercase tracking-wide rounded-none"
                 >
                   {kw}
                 </span>
@@ -100,7 +100,7 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
             </h4>
             <div className="flex flex-wrap gap-2">
               {paper.journals.map((journal, i) => (
-                <span key={i} className="text-gray-300 text-sm bg-[var(--dark-bg-base)] px-2.5 py-1 rounded-lg border border-white/5">
+                <span key={i} className="text-gray-300 text-sm bg-gray-800/30 px-2.5 py-1 rounded-lg border border-gray-700/50">
                   {journal}
                 </span>
               ))}
@@ -109,13 +109,13 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
         )}
       </div>
 
-      <div className="p-4 border-t border-white/10 flex gap-3 flex-shrink-0">
+      <div className="p-5 border-t-2 border-gray-800 flex gap-3 flex-shrink-0 bg-[#1e1e1e]">
         {paper.paperUri && (
           <a
             href={paper.paperUri}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#4A90E2] text-white rounded-lg hover:bg-[#357ABD] transition-colors text-sm font-medium"
+            className="flex-1 flex items-center justify-center gap-2 h-11 border-2 border-transparent bg-[#0058be] text-white rounded-none hover:bg-[#004a9f] transition-all text-[11px] font-black uppercase tracking-widest shadow-none"
           >
             <ExternalLink className="w-4 h-4" />
             View Paper
@@ -124,14 +124,14 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
         <button
           onClick={onBookmark}
           disabled={isToggling || !paper.externalId}
-          className={`flex items-center justify-center gap-2 px-4 py-2.5 border rounded-lg transition-all disabled:opacity-50 text-sm font-medium ${
+          className={`flex-1 flex items-center justify-center gap-2 h-11 border-2 rounded-none transition-all disabled:opacity-50 text-[11px] font-black uppercase tracking-widest shadow-none ${
             isBookmarked
-              ? 'bg-[#4A90E2]/20 border-[#4A90E2] text-[#4A90E2]'
-              : 'bg-[var(--dark-bg-base)] border-white/10 text-gray-400 hover:text-white hover:border-white/20'
+              ? 'bg-[#0058be] border-[#0058be] text-white hover:bg-[#004a9f]'
+              : 'bg-transparent border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 hover:bg-[#2a2a2a]'
           }`}
         >
           {isToggling ? (
-            <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-none animate-spin" />
           ) : (
             <>
               <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />

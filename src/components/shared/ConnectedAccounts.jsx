@@ -19,9 +19,9 @@ export default function ConnectedAccounts() {
       
       <div className="space-y-4 flex-1">
         {accounts.map(acc => (
-          <div key={acc.id} className="flex items-center justify-between p-4 rounded-xl border border-gray-800 bg-[var(--dark-bg-base)] hover:border-gray-700 transition-all group">
+          <div key={acc.id} className="flex items-center justify-between p-4 border-2 border-gray-800 bg-[#1e1e1e] hover:border-gray-700 transition-all group">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${acc.bg}`}>
+              <div className={`p-2 border-2 border-transparent ${acc.bg}`}>
                 <acc.icon className={`w-5 h-5 ${acc.color}`} />
               </div>
               <div>
@@ -32,10 +32,10 @@ export default function ConnectedAccounts() {
               </div>
             </div>
             
-            <button className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            <button className={`w-[110px] flex items-center justify-center px-4 py-2 text-[10px] font-black uppercase tracking-widest border-2 transition-all ${
               acc.connected 
-                ? 'bg-[var(--dark-bg-base)] border border-gray-800 text-gray-400 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20' 
-                : 'bg-[#0058be]/10 text-[#0058be] hover:bg-[#0058be] hover:text-white'
+                ? 'bg-[#151515] border-gray-800 text-gray-400 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20' 
+                : 'bg-[#0058be]/10 border-[#0058be]/30 text-[#0058be] hover:bg-[#0058be] hover:text-white hover:border-[#0058be]'
             }`}>
               {acc.connected ? 'Disconnect' : 'Connect'}
             </button>

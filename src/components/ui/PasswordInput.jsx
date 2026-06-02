@@ -35,8 +35,8 @@ export default function PasswordInput({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full pl-10 pr-10 py-3 border-2 text-white font-medium text-sm rounded-xl
-            placeholder:text-gray-600 focus:outline-none transition-all bg-[var(--dark-bg-base)] ${
+          className={`w-full pl-10 pr-10 py-3 border-2 text-white font-medium text-sm
+            placeholder:text-gray-600 focus:outline-none transition-all bg-[#1e1e1e] ${
               error
                 ? 'border-red-500/50 focus:border-red-500'
                 : 'border-gray-800 focus:border-[#0058be]'

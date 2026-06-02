@@ -14,14 +14,14 @@ export default function RecentDevices() {
           <ShieldCheck className="w-5 h-5 text-[#0058be]" />
           Recent Devices & Sessions
         </h2>
-        <button className="text-[13px] font-bold text-[#0058be] hover:text-white hover:underline transition-colors">
+        <button className="text-[10px] font-black uppercase tracking-widest text-[#0058be] hover:text-white hover:underline transition-colors">
           Sign out all other sessions
         </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
         {sessions.map(session => (
-            <div key={session.id} className="p-4 rounded-xl border border-gray-800 bg-[var(--dark-bg-base)] flex flex-col relative group hover:border-gray-700 transition-all">
+            <div key={session.id} className="p-4 border-2 border-gray-800 bg-[#1e1e1e] flex flex-col relative group hover:border-gray-700 transition-all">
             {session.current && (
               <span className="absolute top-3 right-3 flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -29,7 +29,7 @@ export default function RecentDevices() {
               </span>
             )}
             
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${session.current ? 'bg-[#0058be]/10 text-[#0058be]' : 'bg-[var(--dark-bg-base)] border border-gray-800 text-gray-500'}`}>
+            <div className={`w-10 h-10 border-2 flex items-center justify-center mb-3 ${session.current ? 'border-[#0058be]/30 bg-[#0058be]/10 text-[#0058be]' : 'bg-[#151515] border-gray-800 text-gray-500'}`}>
               <session.icon className="w-5 h-5" />
             </div>
             
@@ -46,7 +46,7 @@ export default function RecentDevices() {
                   <span>{session.time}</span>
                 </div>
                 {!session.current && (
-                  <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg border border-transparent hover:border-red-500/20" title="Sign out">
+                  <button className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 border-2 border-transparent hover:border-red-500/20" title="Sign out">
                     <LogOut className="w-3.5 h-3.5" />
                   </button>
                 )}

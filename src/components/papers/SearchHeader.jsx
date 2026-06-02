@@ -3,28 +3,62 @@ import Alert from '@/components/ui/Alert';
 
 export default function SearchHeader({ query, setQuery, filters, setFilters, loading, onSearch, error }) {
   return (
-    <div className="flex-shrink-0 px-6 pt-6 pb-4 bg-[#010409] border-b border-white/5">
-      <h1 className="text-2xl font-bold text-white mb-1">Search Research Papers</h1>
-      <p className="text-gray-400 text-sm mb-4">Discover academic papers, track trends, and explore research topics</p>
-      <form onSubmit={onSearch} className="flex items-center gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input type="text" value={query} onChange={(e) => setQuery(e.target.value)}
+    <div className="w-full">
+      <form onSubmit={onSearch} className="flex flex-col xl:flex-row items-start xl:items-center gap-3 w-full">
+        {/* Search Input */}
+        <div className="relative flex-1 w-full min-w-[200px]">
+          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
+            <Search className="w-4 h-4 text-gray-400" />
+          </div>
+          <input 
+            type="text" 
+            value={query} 
+            onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by keyword, title, author, or topic..."
-            className="w-full pl-11 pr-4 py-3 bg-[#161b22] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#4A90E2] transition-colors text-sm" />
+            className="w-full pl-10 pr-4 h-11 rounded-none text-sm text-white bg-[#1e1e1e] border-2 border-gray-800
+              placeholder:text-gray-400 focus:outline-none focus:border-[#0058be] focus:ring-0
+              transition-all shadow-none" 
+          />
         </div>
-        <input type="number" value={filters.year} onChange={(e) => setFilters((f) => ({ ...f, year: e.target.value }))}
-          placeholder="Year" className="w-24 px-3 py-3 bg-[#161b22] border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-[#4A90E2] transition-colors text-sm text-center" />
-        <select value={filters.sortBy} onChange={(e) => setFilters((f) => ({ ...f, sortBy: e.target.value }))}
-          className="px-3 py-3 bg-[#161b22] border border-white/10 rounded-xl text-gray-300 focus:outline-none focus:border-[#4A90E2] transition-colors text-sm cursor-pointer">
-          <option value="relevance">Relevance</option><option value="citationCount">Citations</option><option value="year">Year</option>
-        </select>
-        <button type="submit" disabled={loading}
-          className="px-5 py-3 bg-[#4A90E2] text-white rounded-xl hover:bg-[#357ABD] transition-colors disabled:opacity-50 text-sm font-medium flex items-center gap-2">
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}Search
-        </button>
+        
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Year Filter */}
+          <input 
+            type="number" 
+            value={filters.year} 
+            onChange={(e) => setFilters((f) => ({ ...f, year: e.target.value }))}
+            placeholder="Year" 
+            className="w-24 px-3 h-11 rounded-none text-sm text-white bg-[#1e1e1e] border-2 border-gray-800
+              placeholder:text-gray-400 focus:outline-none focus:border-[#0058be] focus:ring-0
+              transition-all shadow-none text-center" 
+          />
+          
+          {/* Sort By Filter */}
+          <select 
+            value={filters.sortBy} 
+            onChange={(e) => setFilters((f) => ({ ...f, sortBy: e.target.value }))}
+            className="px-3 h-11 rounded-none text-sm text-gray-300 bg-[#1e1e1e] border-2 border-gray-800
+              focus:outline-none focus:border-[#0058be] focus:ring-0
+              transition-all shadow-none cursor-pointer min-w-[140px]"
+          >
+            <option value="relevance">Relevance</option>
+            <option value="citationCount">Citations</option>
+            <option value="year">Year</option>
+          </select>
+
+          {/* Search Button */}
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="flex items-center justify-center gap-2 px-5 h-11 bg-white text-black font-black uppercase tracking-widest rounded-none border-2 border-transparent
+              hover:bg-gray-200 transition-all disabled:opacity-50 text-[11px] shadow-none"
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+            Search
+          </button>
+        </div>
       </form>
-      {error && <div className="mt-3"><Alert type="error" message={error} /></div>}
+      {error && <div className="mt-4"><Alert type="error" message={error} /></div>}
     </div>
   );
 }

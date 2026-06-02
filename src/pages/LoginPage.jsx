@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useLoginForm } from '@/hooks/useLoginForm';
 import AuthLayout from '@/components/auth/AuthLayout';
 import { ToastContainer } from '@/components/ui/Toast';
@@ -18,6 +18,15 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { toasts, addToast, removeToast } = useToast();
   const prevErrorsRef = useRef({});
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('reason') === 'session_invalidated') {
+      addToast('Your session was terminated. Please log in again.', 'warning');
+    } else if (searchParams.get('reason') === 'role_changed') {
+      addToast('Account type switched successfully. Please log in again to apply changes.', 'success');
+    }
+  }, [searchParams, addToast]);
 
   useEffect(() => {
     const prevErrors = prevErrorsRef.current;

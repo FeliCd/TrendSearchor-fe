@@ -17,7 +17,7 @@ export default function PageHeader({ title, description, action, actionLabel, on
   const config = user?.role ? ROLE_SIDEBAR_CONFIG[user.role] : ROLE_SIDEBAR_CONFIG.USER;
   const roleLabel = config?.roleLabel || 'User';
   return (
-    <div className="h-[72px] border-b border-gray-800 bg-[var(--dark-bg-base)]/80 backdrop-blur-xl sticky top-0 z-20 flex items-center">
+    <div className="h-[72px] border-b-2 border-gray-800 bg-[#151515] sticky top-0 z-20 flex items-center">
       <div className="w-full px-6">
         <div className="flex items-center justify-between">
           <div>
@@ -38,9 +38,9 @@ export default function PageHeader({ title, description, action, actionLabel, on
                 whileHover={{ scale: 1.03, y: -1 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={onAction}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold
+                className="flex items-center gap-2 px-4 py-3 border-2 border-transparent text-[10px] font-black uppercase tracking-widest
                   bg-[#0058be] hover:bg-[#004395] text-white transition-all duration-200
-                  shadow-sm shadow-[#0058be]/20"
+                  shadow-none"
               >
                 {action}
                 <span>{actionLabel}</span>
@@ -59,7 +59,7 @@ export default function PageHeader({ title, description, action, actionLabel, on
               </div>
               <button
                 onClick={handleLogout}
-                className="ml-2 p-2 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all flex-shrink-0 border border-transparent hover:border-red-500/20"
+                className="ml-2 p-2 border-2 border-transparent text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all flex-shrink-0 hover:border-red-500"
                 title="Sign out"
               >
                 <LogOut className="w-4 h-4" />

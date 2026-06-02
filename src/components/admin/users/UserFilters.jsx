@@ -43,9 +43,8 @@ export default function UserFilters({
               placeholder="Search by name or email..."
               value={search}
               onChange={(e) => onSearch(e.target.value)}
-              className="w-full pl-10 pr-10 py-2.5 rounded-xl text-sm text-white bg-[var(--dark-bg-base)] border border-gray-800
-                placeholder:text-gray-400 focus:outline-none focus:border-[#0058be]/50 focus:ring-2 focus:ring-[#0058be]/10
-                transition-all duration-200 shadow-sm"
+              className="w-full h-11 pl-10 pr-10 border-2 text-sm text-white bg-[#1e1e1e] border-gray-800
+                placeholder:text-gray-500 focus:outline-none focus:border-[#0058be] transition-all duration-200"
             />
             {search && (
               <button
@@ -88,8 +87,8 @@ export default function UserFilters({
             {hasActiveFilters && (
               <button
                 onClick={clearAll}
-                className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium text-gray-400
-                  hover:text-white hover:bg-white/5 border border-gray-800 transition-all duration-200"
+                className="flex items-center gap-1.5 h-11 px-4 border-2 text-[10px] font-black uppercase tracking-widest text-gray-400
+                  hover:text-white hover:bg-white/5 border-gray-800 transition-all duration-200"
               >
                 <X className="w-3 h-3" />
                 Clear
@@ -100,8 +99,8 @@ export default function UserFilters({
             <button
               onClick={onRefresh}
               disabled={refreshing}
-              className="flex items-center justify-center w-10 h-10 rounded-xl text-gray-400 bg-[var(--dark-bg-base)]
-                hover:text-white hover:border-gray-700 border border-gray-800 transition-all duration-200 shadow-sm"
+              className="flex items-center justify-center w-11 h-11 border-2 text-gray-400 bg-[#1e1e1e]
+                hover:text-white hover:border-gray-700 border-gray-800 transition-all duration-200"
               title="Refresh"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />

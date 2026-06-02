@@ -52,10 +52,10 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Left Column (40%) - Profile Information & Connected Accounts */}
         <div className="lg:col-span-2 flex flex-col gap-6">
-          <div className="bg-[var(--dark-bg-base)] border border-gray-800 shadow-sm rounded-2xl p-6">
+          <div className="bg-[#151515] border-2 border-gray-800 shadow-sm p-6">
             <ProfileForm initialProfile={profile} onSuccess={refreshUser} onToast={showToast} />
           </div>
-          <div className="rounded-2xl flex-1">
+          <div className="flex-1">
             <ConnectedAccounts />
           </div>
         </div>
@@ -69,7 +69,7 @@ export default function ProfilePage() {
 
           {/* Bottom 70% - Account Type & Security side-by-side */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-[var(--dark-bg-base)] border border-gray-800 shadow-sm rounded-2xl p-6 flex flex-col">
+            <div className="bg-[#151515] border-2 border-gray-800 shadow-sm p-6 flex flex-col">
               <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
                 <RefreshCw className="w-5 h-5 text-[#0058be]" />
                 Account Type
@@ -79,7 +79,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="bg-[var(--dark-bg-base)] border border-gray-800 shadow-sm rounded-2xl p-6 flex flex-col">
+            <div className="bg-[#151515] border-2 border-gray-800 shadow-sm p-6 flex flex-col">
               <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
                 <Key className="w-5 h-5 text-[#0058be]" />
                 Security &amp; Password
@@ -91,7 +91,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Bottom Area - Recent Devices */}
-          <div className="rounded-2xl flex-1">
+          <div className="flex-1">
             <RecentDevices />
           </div>
         </div>

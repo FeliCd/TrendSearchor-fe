@@ -34,4 +34,12 @@ export const authService = {
     const response = await api.get('/api/auth/me');
     return response.data;
   },
+
+  changePassword: async ({ oldPassword, newPassword }) => {
+    const response = await api.post('/api/auth/change-password', { oldPassword, newPassword });
+    if (response.data?.accessToken) {
+      localStorage.setItem('accessToken', response.data.accessToken);
+    }
+    return response.data;
+  },
 };

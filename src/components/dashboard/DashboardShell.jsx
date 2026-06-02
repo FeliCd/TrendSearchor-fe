@@ -6,7 +6,7 @@ import { Menu } from 'lucide-react';
 export default function DashboardShell({ sidebarConfig }) {
 
   return (
-    <div className="flex bg-[var(--dark-bg-base)]">
+    <div className="flex bg-[#151515]">
       <div className="fixed inset-y-0 left-0 z-40 flex-shrink-0">
         <div className="flex h-full">
           <DashboardSidebar config={sidebarConfig} />

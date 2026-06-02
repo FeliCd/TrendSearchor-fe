@@ -33,10 +33,10 @@ export default function UserTable({ users, onEdit, onView, onDelete, selectedIds
 
   return (
     <>
-      <div className="rounded-2xl border border-gray-800 bg-[var(--dark-bg-base)]/50 backdrop-blur-xl shadow-sm overflow-hidden">
+      <div className="border-2 border-gray-800 bg-[#1e1e1e] shadow-none overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="sticky top-0 z-10 bg-[var(--dark-bg-base)]">
+            <thead className="sticky top-0 z-10 bg-[#151515]">
               <tr className="border-b border-gray-800">
                 {COLUMNS.map((h, i) => (
                   <th key={i} className={`px-4 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 whitespace-nowrap ${i === 0 ? 'pl-6 w-10' : ''} ${i === COLUMNS.length - 1 ? 'pr-6 text-right' : ''} ${h === 'Created' ? 'hidden md:table-cell' : ''} ${h === 'Phone' ? 'hidden sm:table-cell' : ''} ${h === 'Date of Birth' ? 'hidden lg:table-cell' : ''}`}>
@@ -47,7 +47,7 @@ export default function UserTable({ users, onEdit, onView, onDelete, selectedIds
                           checked={allSelected}
                           ref={(input) => { if (input) input.indeterminate = someSelected && !allSelected; }}
                           onChange={handleSelectAll}
-                          className="w-4 h-4 rounded border-gray-700 text-[#0058be] focus:ring-[#0058be] bg-[var(--dark-bg-base)] cursor-pointer transition-all"
+                          className="w-4 h-4 rounded-none border-2 border-gray-700 text-[#0058be] focus:ring-0 bg-[#151515] cursor-pointer transition-all"
                         />
                       </div>
                     ) : (
@@ -61,7 +61,7 @@ export default function UserTable({ users, onEdit, onView, onDelete, selectedIds
               {paginatedUsers.length === 0 ? (
                 <tr><td colSpan={9} className="px-4 py-24 first:pl-6 last:pr-6">
                   <div className="flex flex-col items-center gap-3">
-                    <div className="w-14 h-14 rounded-2xl bg-[var(--dark-bg-base)] border border-gray-800 flex items-center justify-center"><Users className="w-6 h-6 text-gray-700" /></div>
+                    <div className="w-14 h-14 border-2 bg-[#151515] border-gray-800 flex items-center justify-center"><Users className="w-6 h-6 text-gray-700" /></div>
                     <div className="text-center"><p className="text-sm font-semibold text-white">No users found</p><p className="text-xs text-gray-600 mt-0.5">Try adjusting your search or filters.</p></div>
                   </div>
                 </td></tr>
@@ -76,7 +76,7 @@ export default function UserTable({ users, onEdit, onView, onDelete, selectedIds
                             type="checkbox"
                             checked={selectedIds.includes(user.id)}
                             onChange={(e) => onSelect && onSelect(user.id, e.target.checked)}
-                            className="w-4 h-4 rounded border-gray-700 text-[#0058be] focus:ring-[#0058be] bg-[var(--dark-bg-base)] cursor-pointer transition-all"
+                            className="w-4 h-4 rounded-none border-2 border-gray-700 text-[#0058be] focus:ring-0 bg-[#151515] cursor-pointer transition-all"
                           />
                         )}
                       </div>
@@ -97,13 +97,13 @@ export default function UserTable({ users, onEdit, onView, onDelete, selectedIds
                       {user.dateOfBirth || user.dob ? formatDate(user.dateOfBirth || user.dob) : '-'}
                     </td>
                     <td className="px-4 py-3.5 first:pl-6 last:pr-6">
-                      <span className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold w-[160px] whitespace-nowrap ${ROLE_COLORS[user.role]?.badge || ''}`}>
+                      <span className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-none text-xs font-semibold w-[160px] whitespace-nowrap ${ROLE_COLORS[user.role]?.badge || ''}`}>
                         <span className="opacity-70">{RoleIcon[user.role]}</span>{ROLE_LABELS[user.role] || user.role}
                       </span>
                     </td>
                     <td className="px-4 py-3.5 first:pl-6 last:pr-6">
                       <div className="flex items-center gap-2">
-                        <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[user.status] || 'bg-gray-400'}`} />
+                        <span className={`w-1.5 h-1.5 rounded-none ${STATUS_DOT[user.status] || 'bg-gray-400'}`} />
                         <span className="text-xs text-gray-400 font-medium">{STATUS_LABEL[user.status] || user.status}</span>
                       </div>
                     </td>
@@ -115,7 +115,7 @@ export default function UserTable({ users, onEdit, onView, onDelete, selectedIds
                           <button
                             onClick={(e) => { e.stopPropagation(); onEdit(user); }}
                             title="Edit User"
-                            className="p-2 rounded-xl text-gray-400 hover:text-[#0058be] hover:bg-white/5 transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-[#0058be]/30">
+                            className="p-2 border-2 border-transparent bg-transparent hover:border-gray-700 text-gray-400 hover:text-white hover:bg-[#252525] transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none">
                             <Pencil className="w-4 h-4" />
                           </button>
                         )}

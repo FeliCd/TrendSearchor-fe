@@ -54,13 +54,13 @@ function InlineField({ label, icon: Icon, name, value, type = 'text', options = 
   if (!displayValue) displayValue = <span className="text-gray-600 italic">Not provided</span>;
 
   return (
-    <div className="group relative px-4 py-2.5 rounded-xl border border-gray-800 hover:border-gray-700 transition-all h-[72px] flex flex-col justify-center bg-[var(--dark-bg-base)]">
+    <div className="group relative px-4 py-3 border-2 border-gray-800 hover:border-gray-700 transition-all min-h-[76px] flex flex-col justify-center bg-[#1e1e1e]">
       <div className="flex items-center gap-2 mb-1">
         {Icon && <Icon className="w-4 h-4 text-[#0058be]" />}
         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{label}</label>
       </div>
 
-      <div className="h-[32px] flex items-center w-full relative">
+      <div className="min-h-[32px] flex items-center w-full relative">
         {isEditing ? (
           <div className="flex items-center gap-2 w-full">
             <div className="relative flex-1">
@@ -75,13 +75,13 @@ function InlineField({ label, icon: Icon, name, value, type = 'text', options = 
                   />
                 </div>
               ) : (
-                <input type={type} value={editValue} onChange={(e) => setEditValue(e.target.value)} placeholder={placeholder} className="w-full px-2 py-1.5 border border-[#0058be] rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#0058be] bg-[var(--dark-bg-base)]" />
+                <input type={type} value={editValue} onChange={(e) => setEditValue(e.target.value)} placeholder={placeholder} className="w-full px-3 py-2 border-2 border-[#0058be] text-white text-sm focus:outline-none bg-[#1e1e1e]" />
               )}
             </div>
-            <button onClick={handleSave} disabled={saving} className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors disabled:opacity-50 flex-shrink-0">
+            <button onClick={handleSave} disabled={saving} className="p-2.5 border-2 border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors disabled:opacity-50 flex-shrink-0">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             </button>
-            <button onClick={handleCancel} disabled={saving} className="p-1.5 rounded-md bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50 flex-shrink-0">
+            <button onClick={handleCancel} disabled={saving} className="p-2.5 border-2 border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50 flex-shrink-0">
               <X className="w-4 h-4" />
             </button>
             {error && <p className="absolute -bottom-4 left-0 text-[10px] text-red-500 whitespace-nowrap">{error}</p>}
@@ -89,7 +89,7 @@ function InlineField({ label, icon: Icon, name, value, type = 'text', options = 
         ) : (
           <div className="flex items-center justify-between w-full">
             <p className="text-sm font-semibold text-white truncate pr-8">{displayValue}</p>
-            <button type="button" onClick={() => setIsEditing(true)} className="absolute top-1/2 -translate-y-1/2 right-0 p-1.5 rounded-md text-gray-500 opacity-0 group-hover:opacity-100 hover:bg-white/10 hover:text-white transition-all border border-gray-800 bg-[var(--dark-bg-base)]">
+            <button type="button" onClick={() => setIsEditing(true)} className="absolute top-1/2 -translate-y-1/2 right-0 p-2 border-2 text-gray-500 opacity-0 group-hover:opacity-100 hover:bg-[#252525] hover:text-white transition-all border-gray-800 bg-[#151515]">
               <Edit2 className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -161,14 +161,14 @@ export default function ProfileForm({ initialProfile = {}, onSuccess, onToast })
   return (
     <div className="h-full flex flex-col">
       {/* Banner Area */}
-      <div className="-mx-6 -mt-6 h-32 rounded-t-2xl bg-[var(--dark-banner-info)]"></div>
+      <div className="-mx-6 -mt-6 h-32 border-b-2 border-gray-800 bg-[#1e1e1e]"></div>
 
       {/* Avatar & Name Area */}
       <div className="flex items-start gap-6 -mt-16 mb-8 relative z-10 pl-2 sm:p4">
         <div className="relative">
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="group relative w-32 h-32 rounded-2xl border-4 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer bg-[var(--dark-bg-base)] border-[var(--dark-bg-base)]"
+            className="group relative w-32 h-32 rounded-none border-2 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer bg-[#1e1e1e] border-gray-800 hover:border-[#0058be] transition-colors"
           >
             <UserAvatar user={user} profile={profile} size="full" shape="square" />
 
@@ -184,7 +184,7 @@ export default function ProfileForm({ initialProfile = {}, onSuccess, onToast })
             </div>
           </div>
 
-          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-0.5 bg-[#0058be] border-[3px] rounded-full text-white text-xs font-bold shadow-sm whitespace-nowrap z-20 border-[var(--dark-bg-base)]">
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#0058be] border-2 border-gray-800 text-white text-[10px] font-black uppercase tracking-widest shadow-sm whitespace-nowrap z-20">
             {ROLE_LABELS[user?.role] || user?.role || 'Admin'}
           </div>
         </div>

@@ -11,7 +11,7 @@ export function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, 
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 border-t border-gray-800">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 border-t-2 border-gray-800">
       <p className="text-xs text-gray-400">
         Showing <span className="text-white font-semibold">{startItem}–{endItem}</span> of <span className="text-white font-semibold">{totalItems}</span>
       </p>
@@ -19,7 +19,7 @@ export function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, 
         <button
           onClick={() => onPageChange((p) => Math.max(1, p - 1))}
           disabled={currentPage === 1}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-all"
+          className="flex items-center gap-1 px-3 py-1.5 border-2 border-transparent hover:border-gray-800 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-[#1e1e1e] disabled:opacity-30 transition-all"
         >
           <ChevronLeft className="w-3.5 h-3.5" />Prev
         </button>
@@ -30,10 +30,10 @@ export function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, 
             )}
             <button
               onClick={() => onPageChange(page)}
-              className={`w-8 h-8 rounded-lg text-xs font-semibold border transition-all ${
+              className={`w-8 h-8 text-[10px] font-black border-2 transition-all ${
                 page === currentPage
-                  ? 'bg-[#0058be] text-white border-[#0058be] shadow-sm'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5 border-transparent'
+                  ? 'bg-[#0058be] text-white border-[#0058be] shadow-none'
+                  : 'text-gray-400 hover:text-white hover:bg-[#1e1e1e] border-gray-800 hover:border-gray-700 bg-transparent'
               }`}
             >
               {page}
@@ -43,7 +43,7 @@ export function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, 
         <button
           onClick={() => onPageChange((p) => Math.min(totalPages, p + 1))}
           disabled={currentPage === totalPages}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-all"
+          className="flex items-center gap-1 px-3 py-1.5 border-2 border-transparent hover:border-gray-800 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-[#1e1e1e] disabled:opacity-30 transition-all"
         >
           Next<ChevronRight className="w-3.5 h-3.5" />
         </button>

@@ -4,6 +4,8 @@ import { ROLES } from '@/constants/roles';
 import { profileService } from '@/services/profileService';
 import { useAuth } from '@/contexts/AuthContext';
 
+import { authService } from '@/services/authService';
+
 export default function RoleSwitcher({ onSwitch, onToast }) {
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
@@ -19,14 +21,20 @@ export default function RoleSwitcher({ onSwitch, onToast }) {
   const handleSwitch = async (role) => {
     if (role === user?.role || isAdmin) return;
     setSaving(true);
-    try { await profileService.changeRole(role); onSwitch(role); }
-    catch (err) { onToast(err?.response?.data?.role || err?.response?.data?.message || 'Failed to change role', 'error'); }
-    finally { setSaving(false); }
+    try { 
+      await profileService.changeRole(role); 
+      await authService.logout();
+      window.location.href = '/login?reason=role_changed';
+    }
+    catch (err) { 
+      onToast(err?.response?.data?.role || err?.response?.data?.message || 'Failed to change role', 'error'); 
+      setSaving(false); 
+    }
   };
 
   return (
     <div className="space-y-6">
-      <div className="p-4 rounded-xl bg-[var(--dark-bg-base)] border border-gray-800">
+      <div className="p-4 bg-[#1e1e1e] border-2 border-gray-800">
         <div className="flex items-center gap-2 mb-1">
           <Shield className="w-4 h-4 text-[#0058be]" />
           <p className="text-sm font-bold text-white">Switch Account Type</p>
@@ -36,8 +44,8 @@ export default function RoleSwitcher({ onSwitch, onToast }) {
       
       <div className="relative">
         {isAdmin && (
-          <div className="absolute -inset-2 z-10 flex items-center justify-center bg-[var(--dark-bg-base)]/60 backdrop-blur-[2px] rounded-xl">
-            <div className="px-4 py-2.5 bg-[#0058be] text-white text-xs font-bold rounded-lg shadow-xl flex items-center gap-2">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#151515]/80 backdrop-blur-[2px] border-2 border-gray-800">
+            <div className="px-4 py-2.5 bg-[#0058be] border-2 border-[#0058be] text-white text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2">
               <Shield className="w-4 h-4 text-amber-400" />
               Not available for Admin accounts
             </div>
@@ -49,18 +57,18 @@ export default function RoleSwitcher({ onSwitch, onToast }) {
             const isCurrent = user?.role === opt.value;
             return (
               <button key={opt.value} onClick={() => handleSwitch(opt.value)} disabled={saving || isCurrent || isAdmin}
-                className={`w-full p-4 rounded-xl border text-left transition-all ${
-                  isCurrent ? 'border-[#0058be]/40 bg-[#0058be]/10 cursor-default' : 'border-gray-800 bg-[var(--dark-bg-base)] hover:border-gray-700 hover:bg-[var(--dark-bg-base)]'
+                className={`w-full p-4 border-2 text-left transition-all ${
+                  isCurrent ? 'border-[#0058be] bg-[#0058be]/10 cursor-default' : 'border-gray-800 bg-[#1e1e1e] hover:border-gray-700'
                 }`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isCurrent ? 'bg-[#0058be]/10 text-[#0058be]' : 'bg-[var(--dark-bg-base)] text-gray-500 border border-gray-800'}`}>
+                    <div className={`w-10 h-10 border-2 flex items-center justify-center ${isCurrent ? 'bg-[#0058be]/10 border-[#0058be]/30 text-[#0058be]' : 'bg-[#151515] text-gray-500 border-gray-800'}`}>
                       {opt.icon}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <p className={`text-sm font-bold ${isCurrent ? 'text-[#0058be]' : 'text-white'}`}>{opt.label}</p>
-                        {isCurrent && <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#0058be]/10 text-[#0058be] font-bold uppercase tracking-wider">Current</span>}
+                        {isCurrent && <span className="text-[10px] px-2 py-0.5 border-2 border-[#0058be]/30 bg-[#0058be]/10 text-[#0058be] font-bold uppercase tracking-wider">Current</span>}
                       </div>
                       <p className="text-xs text-gray-500 mt-0.5">{opt.description}</p>
                     </div>
@@ -72,7 +80,7 @@ export default function RoleSwitcher({ onSwitch, onToast }) {
           })}
         </div>
       </div>
-      <p className="text-xs text-gray-500 text-center">Switching account type will redirect you to the corresponding dashboard.</p>
+      <p className="text-xs text-gray-500 text-center">Switching account type will require you to log in again to apply changes.</p>
     </div>
   );
 }

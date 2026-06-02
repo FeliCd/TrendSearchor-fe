@@ -24,8 +24,13 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('accessToken');
       const url = error.config?.url || '';
-        if (!url.includes('/api/auth/')) {
-        window.location.href = '/login';
+      if (!url.includes('/api/auth/')) {
+        const code = error.response?.data?.code;
+        if (code === 'TOKEN_INVALIDATED') {
+          window.location.href = '/login?reason=session_invalidated';
+        } else {
+          window.location.href = '/login';
+        }
       }
     }
     return Promise.reject(error);

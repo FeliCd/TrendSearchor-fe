@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, EyeOff } from 'lucide-react';
+import { X, EyeOff, User, UserCheck, UserPlus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ROLES, ROLE_LABELS, ROLE_COLORS, USER_STATUS } from '@/constants/roles';
 import { formatDate, timeAgo } from '@/utils/dateUtils';
@@ -73,7 +73,7 @@ export default function UserModal({ user, mode, onClose, onSave }) {
     finally { setSaving(false); }
   };
 
-  const hdBg = isView ? 'bg-blue-500/10 border-blue-500/20' : isEdit ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-purple-500/10 border-purple-500/20';
+  const hdBg = isView ? 'bg-blue-500/10 border-blue-500 text-blue-400' : isEdit ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : 'bg-[#0058be]/10 border-[#0058be] text-[#0058be]';
   const stDot = { ACTIVE: 'bg-emerald-400', INACTIVE: 'bg-yellow-400' };
   const identifier = user?.fullName || user?.mail;
   const initials = getInitials(identifier);
@@ -82,20 +82,25 @@ export default function UserModal({ user, mode, onClose, onSave }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <motion.div initial={{ opacity: 0, scale: 0.94, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.94, y: 20 }} transition={{ duration: 0.25 }}
-        className="relative w-full max-w-lg rounded-2xl border border-gray-800 shadow-2xl shadow-black/20"
-        style={{ backgroundColor: 'var(--dark-bg-base)' }}>
+        className="relative w-full max-w-lg border-2 border-gray-800 bg-[#151515] shadow-none"
+      >
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
           <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${hdBg}`}>{ICONS.chart}</div>
-            <div><h2 className="text-sm font-bold text-white">{isView ? 'User Details' : isEdit ? 'Edit User' : 'Create New User'}</h2><p className="text-[10px] text-gray-400">{isView ? 'View user profile' : isEdit ? 'Update information' : 'Add new user'}</p></div>
+            <div className={`w-10 h-10 border-2 flex items-center justify-center ${hdBg}`}>
+              {isView ? <User className="w-5 h-5 text-blue-400" /> : isEdit ? <UserCheck className="w-5 h-5 text-emerald-400" /> : <UserPlus className="w-5 h-5 text-[#0058be]" />}
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-white">{isView ? 'User Details' : isEdit ? 'Edit User' : 'Create New User'}</h2>
+              <p className="text-[10px] uppercase tracking-widest text-gray-400 mt-0.5">{isView ? 'View user profile' : isEdit ? 'Update information' : 'Add new user'}</p>
+            </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl text-white hover:bg-white/5"><X className="w-4 h-4" /></button>
+          <button onClick={onClose} className="p-2 border-2 border-transparent hover:border-gray-800 hover:bg-[#1e1e1e] text-white transition-all"><X className="w-4 h-4" /></button>
         </div>
         {isView && user && (
           <div className="relative h-24 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-emerald-600/10 to-purple-600/15" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark-bg-base)] to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#151515] to-transparent" />
             <div className="absolute bottom-3 left-6 flex items-center gap-3">
               <UserAvatar identifier={identifier} size="xl" className="border-2 border-gray-800 shadow-sm" />
               <div><h3 className="text-base font-bold text-white">{user.fullName || user.mail}</h3><p className="text-xs text-gray-400">{user.mail}</p></div>
@@ -115,8 +120,8 @@ export default function UserModal({ user, mode, onClose, onSave }) {
               <div className="relative">
                 <input type={showPwd ? 'text' : 'password'} value={form.password} onChange={(e) => handleChange('password', e.target.value)}
                   placeholder={isEdit ? 'Keep current' : 'Min. 9 chars'}
-                  className={`w-full pl-3 pr-10 py-2.5 rounded-xl text-sm text-white bg-[var(--dark-bg-base)] border placeholder:text-gray-400 focus:outline-none transition-all shadow-sm ${
-                    errors.password ? 'border-red-500/50' : 'border-gray-800 focus:border-[#0058be]/50'}`} />
+                  className={`w-full pl-3 pr-10 py-2.5 border-2 text-sm text-white bg-[#1e1e1e] placeholder:text-gray-400 focus:outline-none transition-all shadow-none ${
+                    errors.password ? 'border-red-500/50' : 'border-gray-800 focus:border-[#0058be]'}`} />
                 <button type="button" onClick={() => setShowPwd((p) => !p)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">{showPwd ? <EyeOff className="w-4 h-4" /> : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>}</button>
               </div>
               {errors.password ? <p className="mt-1.5 text-xs text-red-400">{errors.password}</p> : isEdit && <p className="mt-1.5 text-xs text-gray-400">Leave blank to keep current.</p>}
@@ -161,11 +166,11 @@ export default function UserModal({ user, mode, onClose, onSave }) {
             </FormField>
           )}
           <div className="flex items-center justify-end gap-3 pt-2 border-t border-gray-800">
-            <button type="button" onClick={onClose} className="px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 border border-gray-800">{isView ? 'Close' : 'Cancel'}</button>
+            <button type="button" onClick={onClose} className="px-4 py-3 border-2 border-gray-800 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5">{isView ? 'Close' : 'Cancel'}</button>
             {!isView && (
               <button type="submit" disabled={saving}
-                className={`px-5 py-2.5 rounded-xl text-sm font-bold text-white disabled:opacity-60 border ${isEdit ? 'bg-emerald-500 hover:bg-emerald-400 border-emerald-500/50 shadow-lg shadow-emerald-500/20' : 'bg-blue-500 hover:bg-blue-400 border-blue-500/50 shadow-lg shadow-blue-500/20'}`}>
-                {saving ? <span className="flex items-center gap-2"><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Saving...</span> : isEdit ? 'Save Changes' : 'Create User'}
+                className={`px-5 py-3 border-2 text-[10px] font-black uppercase tracking-widest text-white disabled:opacity-60 transition-all ${isEdit ? 'bg-emerald-500 hover:bg-emerald-600 border-emerald-500 shadow-none' : 'bg-blue-500 hover:bg-blue-600 border-blue-500 shadow-none'}`}>
+                {saving ? <span className="flex items-center gap-2"><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-none animate-spin" />Saving...</span> : isEdit ? 'Save Changes' : 'Create User'}
               </button>
             )}
           </div>

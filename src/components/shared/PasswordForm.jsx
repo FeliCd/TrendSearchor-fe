@@ -52,7 +52,7 @@ export default function PasswordForm({ onToast }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="px-4 py-3 rounded-xl bg-[var(--dark-bg-base)] border border-gray-800">
+      <div className="px-4 py-3 bg-[#1e1e1e] border-2 border-gray-800">
         <div className="flex items-center gap-2 mb-2">
           <Shield className="w-4 h-4 text-[#0058be]" />
           <p className="text-sm font-bold text-white">Password Requirements</p>
@@ -70,7 +70,7 @@ export default function PasswordForm({ onToast }) {
       <PasswordInput id="newPassword" name="newPassword" label="New Password" value={form.newPassword} onChange={handleChange} error={errors.newPassword} autoComplete="new-password" />
       <div className="pt-1 flex justify-end">
         <button type="submit" disabled={saving}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-[#0058be] hover:bg-[#004395] disabled:opacity-50 transition-all shadow-sm shadow-[#0058be]/20">
+          className="flex items-center gap-2 px-6 py-3.5 bg-white text-black font-black uppercase tracking-widest text-sm hover:bg-gray-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Key className="w-4 h-4" />}
           {saving ? 'Updating...' : 'Update Password'}
         </button>

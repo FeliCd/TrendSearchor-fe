@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Trash2, ChevronDown, Shield, KeyRound, Download } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, Shield, KeyRound, Download, X } from 'lucide-react';
 import { ROLES, ROLE_LABELS } from '@/constants/roles';
 import { motion, AnimatePresence } from 'framer-motion';
 import { userManagementService } from '@/services/userManagementService';
@@ -15,16 +15,9 @@ import Toast from '@/components/ui/Toast';
 
 function PageBackground() {
   return (
-    <>
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-[#0058be]/[0.05] blur-[120px]" />
-        <div className="absolute top-20 right-1/4 w-[500px] h-[500px] rounded-full bg-[#0058be]/[0.03] blur-[100px]" />
-        <div className="absolute bottom-0 left-1/2 w-[700px] h-[400px] rounded-full bg-[#0058be]/[0.02] blur-[120px]" />
-      </div>
-      <div className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '48px 48px' }}
-      />
-    </>
+    <div className="pointer-events-none absolute inset-0 opacity-[0.03] z-0"
+      style={{ backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)', backgroundSize: '64px 64px' }}
+    />
   );
 }
 
@@ -74,14 +67,12 @@ export default function UserManagementPage() {
   const handleBulkResetPassword = async () => {
     try {
       setLoading(true);
-      // Simulate API call for bulk reset
-      await Promise.all(selectedUserIds.map((id) => new Promise(resolve => setTimeout(resolve, 300))));
-      // Clear selection
+      await userManagementService.bulkResetPassword(selectedUserIds);
       setSelectedUserIds([]);
       setShowBulkResetModal(false);
       showToast(`${selectedUserIds.length} passwords reset successfully`);
     } catch (err) {
-      setError('Failed to reset passwords.');
+      setError(err.response?.data?.message || 'Failed to reset passwords.');
       showToast('Failed to reset passwords', 'error');
     } finally {
       setLoading(false);
@@ -196,7 +187,7 @@ export default function UserManagementPage() {
   });
 
   return (
-    <div className="min-h-screen bg-transparent relative">
+    <div className="min-h-screen bg-[#151515] relative">
       <PageBackground />
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <div className="relative z-10">
@@ -235,7 +226,7 @@ export default function UserManagementPage() {
                         <div className="relative group flex-1">
                           <button
                             disabled={selectedUserIds.length === 0}
-                            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-[var(--dark-bg-base)] text-white border border-gray-800 hover:border-gray-700 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-1.5 h-11 px-4 border-2 text-[11px] font-black uppercase tracking-widest bg-[#1e1e1e] text-white border-gray-800 hover:border-gray-700 transition-all shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <Shield className="w-4 h-4 text-[#0058be] opacity-70 group-disabled:opacity-50" />
                             <span className="whitespace-nowrap">Role</span>
@@ -244,7 +235,7 @@ export default function UserManagementPage() {
 
                           {/* Dropdown Menu */}
                           {selectedUserIds.length > 0 && (
-                            <div className="absolute left-0 top-full mt-2 w-56 border border-gray-800 rounded-xl shadow-xl shadow-black/30 overflow-hidden z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200" style={{ backgroundColor: 'var(--dark-bg-base)' }}>
+                            <div className="absolute left-0 top-full mt-2 w-56 border-2 border-gray-800 shadow-none overflow-hidden z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-[#1e1e1e]">
                               <div className="max-h-48 overflow-y-auto py-1">
                                 {Object.values(ROLES)
                                   .filter(r => r !== ROLES.ADMIN && r !== ROLES.STUDENT)
@@ -263,7 +254,7 @@ export default function UserManagementPage() {
                         <button
                           onClick={() => setShowBulkDeleteModal(true)}
                           disabled={selectedUserIds.length === 0}
-                          className="w-full flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium border transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/30"
+                          className="w-full flex-1 flex items-center justify-center gap-1.5 h-11 px-4 border-2 text-[11px] font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-[#1e1e1e] border-red-500 text-red-400 hover:bg-red-500/10"
                         >
                           <Trash2 className="w-4 h-4" />
                           <span className="whitespace-nowrap">Delete</span>
@@ -275,7 +266,7 @@ export default function UserManagementPage() {
                         <button
                           onClick={() => setShowBulkResetModal(true)}
                           disabled={selectedUserIds.length === 0}
-                          className="w-full flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium border transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-orange-500/10 border-orange-500/20 text-orange-400 hover:bg-orange-500/20 hover:border-orange-500/30"
+                          className="w-full flex-1 flex items-center justify-center gap-1.5 h-11 px-4 border-2 text-[11px] font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-[#1e1e1e] border-orange-500 text-orange-400 hover:bg-orange-500/10"
                         >
                           <KeyRound className="w-4 h-4" />
                           <span className="whitespace-nowrap">Reset</span>
@@ -284,7 +275,7 @@ export default function UserManagementPage() {
                         <div className="h-5 w-px bg-gray-800 hidden sm:block mx-0.5" />
 
                         {/* Add User Button */}
-                        <button onClick={handleCreate} className="w-full flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold bg-[#0058be] hover:bg-[#004395] text-white transition-all shadow-sm border border-[#0058be]">
+                        <button onClick={handleCreate} className="w-full flex-1 flex items-center justify-center gap-1.5 h-11 px-4 border-2 border-transparent text-[11px] font-black uppercase tracking-widest bg-white text-black hover:bg-gray-200 transition-all shadow-none">
                           <Plus className="w-4 h-4" />
                           <span className="whitespace-nowrap">Add User</span>
                         </button>
@@ -295,7 +286,7 @@ export default function UserManagementPage() {
                         <button
                           onClick={handleExportCSV}
                           disabled={filteredUsers.length === 0}
-                          className="w-full flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium border transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/30"
+                          className="w-full flex-1 flex items-center justify-center gap-1.5 h-11 px-4 border-2 text-[11px] font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-[#1e1e1e] border-emerald-500 text-emerald-400 hover:bg-emerald-500/10"
                         >
                           <Download className="w-4 h-4" />
                           <span className="whitespace-nowrap">Export</span>
@@ -326,19 +317,22 @@ export default function UserManagementPage() {
         {showBulkRoleModal && bulkRoleTarget && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowBulkRoleModal(false)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-800" style={{ backgroundColor: 'var(--dark-bg-base)' }}>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-[#0058be]/10 border border-[#0058be]/20 flex items-center justify-center">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-sm p-6 border-2 border-gray-800 bg-[#151515]">
+              <div className="flex items-center gap-3 mb-4 pr-8">
+                <div className="w-10 h-10 border-2 border-[#0058be] flex items-center justify-center bg-[#0058be]/10">
                   <Shield className="w-5 h-5 text-[#0058be]" />
                 </div>
                 <h3 className="text-lg font-bold text-white">Change Role</h3>
               </div>
+              <button onClick={() => setShowBulkRoleModal(false)} className="absolute top-4 right-4 p-2 text-gray-500 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
               <p className="text-sm text-gray-400 mb-6 leading-relaxed">
                 Are you sure you want to change the role of <span className="font-bold text-white">{selectedUserIds.length} selected users</span> to <span className="font-bold text-[#0058be]">{bulkRoleTarget === ROLES.LECTURER ? 'Student / Lecturer' : ROLE_LABELS[bulkRoleTarget]}</span>?
               </p>
               <div className="flex gap-3 justify-end">
-                <button onClick={() => setShowBulkRoleModal(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 border border-gray-800 transition-all">Cancel</button>
-                <button onClick={handleBulkRoleChange} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#0058be] hover:bg-[#004395] shadow-sm transition-all">Confirm Change</button>
+                <button onClick={() => setShowBulkRoleModal(false)} className="flex-1 px-4 py-3 border-2 border-gray-800 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 transition-all">Cancel</button>
+                <button onClick={handleBulkRoleChange} className="flex-1 px-4 py-3 border-2 border-[#0058be] bg-[#0058be] text-[10px] font-black uppercase tracking-widest text-white hover:bg-[#004395] transition-all">Confirm</button>
               </div>
             </motion.div>
           </div>
@@ -348,19 +342,22 @@ export default function UserManagementPage() {
         {showBulkResetModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowBulkResetModal(false)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-800" style={{ backgroundColor: 'var(--dark-bg-base)' }}>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-sm p-6 border-2 border-gray-800 bg-[#151515]">
+              <div className="flex items-center gap-3 mb-4 pr-8">
+                <div className="w-10 h-10 border-2 border-orange-500 flex items-center justify-center bg-orange-500/10">
                   <KeyRound className="w-5 h-5 text-orange-400" />
                 </div>
                 <h3 className="text-lg font-bold text-white">Reset Passwords</h3>
               </div>
+              <button onClick={() => setShowBulkResetModal(false)} className="absolute top-4 right-4 p-2 text-gray-500 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
               <p className="text-sm text-gray-400 mb-6 leading-relaxed">
                 Are you sure you want to reset passwords for <span className="font-bold text-white">{selectedUserIds.length} selected users</span>? A default password or reset link will be sent to their emails.
               </p>
               <div className="flex gap-3 justify-end">
-                <button onClick={() => setShowBulkResetModal(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 border border-gray-800 transition-all">Cancel</button>
-                <button onClick={handleBulkResetPassword} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 shadow-sm transition-all">Confirm Reset</button>
+                <button onClick={() => setShowBulkResetModal(false)} className="flex-1 px-4 py-3 border-2 border-gray-800 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 transition-all">Cancel</button>
+                <button onClick={handleBulkResetPassword} className="flex-1 px-4 py-3 border-2 border-orange-500 bg-orange-500 text-[10px] font-black uppercase tracking-widest text-white hover:bg-orange-600 transition-all">Confirm</button>
               </div>
             </motion.div>
           </div>

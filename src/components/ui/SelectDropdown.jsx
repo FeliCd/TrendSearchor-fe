@@ -18,17 +18,15 @@ export default function SelectDropdown({ value, onChange, options, className = '
 
   const selectedOption = options.find((o) => o.value === value);
 
-  const paddingClass = size === 'sm' ? 'px-2 py-1 rounded-md' : 'px-3 py-2.5 rounded-xl';
-  const borderClass = size === 'sm'
-    ? (isOpen ? 'border-[#0058be] ring-1 ring-[#0058be]' : 'border-gray-700')
-    : (isOpen ? 'border-[#0058be]/50 ring-2 ring-[#0058be]/10' : `border-gray-800 hover:border-gray-700`);
+  const heightClass = size === 'sm' ? 'h-9 px-3' : 'h-11 px-4';
+  const borderClass = isOpen ? 'border-2 border-[#0058be]' : 'border-2 border-gray-800 hover:border-gray-700';
 
   return (
     <div className={`relative ${className}`} ref={ref}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between text-sm border transition-all ${paddingClass} ${borderClass} bg-[var(--dark-bg-base)]`}
+        className={`w-full flex items-center justify-between text-sm transition-all ${heightClass} ${borderClass} bg-[#1e1e1e]`}
       >
         <span className={`truncate ${selectedOption ? 'text-white' : 'text-gray-500'}`}>
           {selectedOption ? selectedOption.label : placeholder}
@@ -43,7 +41,7 @@ export default function SelectDropdown({ value, onChange, options, className = '
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -5, scale: 0.98 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 min-w-full w-max mt-1.5 rounded-xl shadow-xl shadow-black/30 overflow-hidden border border-[var(--dark-bg-border)] bg-[var(--dark-bg-base)]"
+            className="absolute z-50 min-w-full w-max mt-1.5 shadow-xl shadow-black/30 overflow-hidden border-2 border-gray-800 bg-[#1e1e1e]"
           >
             <div className="max-h-60 overflow-y-auto py-1 scrollbar-thin">
               {options.map((option) => (

@@ -31,7 +31,7 @@ export default function UserAvatar({ user, profile, identifier, size = 'md', sha
 
   const avatarUrl = profile?.avatarUrl || user?.avatarUrl;
 
-  const roundedClass = shape === 'circle' ? 'rounded-full' : 'rounded-[1rem]';
+  const roundedClass = shape === 'circle' ? 'rounded-full' : 'rounded-none';
 
   if (avatarUrl) {
     return (
