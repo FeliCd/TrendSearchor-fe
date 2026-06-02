@@ -62,7 +62,7 @@ export default function BookmarksPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#151515]">
+    <div className="flex-1 bg-[#151515]">
       {toast && <Toast message={toast.message} type={toast.type} />}
       <div className="max-w-5xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">

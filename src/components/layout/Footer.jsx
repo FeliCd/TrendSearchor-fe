@@ -45,12 +45,12 @@ function FooterLinkGroup({ title, links }) {
 
 export default function Footer() {
   return (
-    <footer className="w-full h-full flex flex-col justify-center max-w-4xl mx-auto px-8 py-16">
+    <footer className="w-full flex flex-col justify-center max-w-4xl mx-auto px-8 py-16">
       <div className="flex flex-col gap-8 w-full max-w-2xl">
         <Link to="/" className="inline-block hover:opacity-80 transition-opacity">
           <Logo variant="footer" className="scale-110 origin-left" />
         </Link>
-        
+
         <p className="text-gray-400 text-sm md:text-base font-medium leading-relaxed">
           AI-powered scientific journal trend tracking platform. Stay ahead of the curve with real-time insights from millions of research publications.
         </p>

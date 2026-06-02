@@ -41,7 +41,6 @@ export default function CTASection({ scrollContainer, data }) {
                     initial="hidden"
                     whileInView="show"
                     viewport={{ root: scrollContainer, once: false, amount: 0.4 }}
-                    style={{ opacity: opacityFade }}
                     className="relative bg-[#1e1e1e] p-10 lg:p-16 border-2 border-[#333333] flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20 overflow-hidden"
                 >
                     {/* Abstract diagonal line inside container for tech vibe */}

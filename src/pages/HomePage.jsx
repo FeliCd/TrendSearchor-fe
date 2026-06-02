@@ -51,7 +51,7 @@ export default function HomePage() {
     return (
         <div 
             ref={scrollContainerRef}
-            className="bg-[#151515] text-white relative h-screen w-full flex overflow-x-auto overflow-y-hidden hide-scrollbar"
+            className="bg-[#151515] text-white relative h-screen w-full flex overflow-x-auto overflow-y-hidden hide-scrollbar overscroll-x-none"
         >
             {/* Background Grid Pattern */}
             <div 
@@ -66,11 +66,10 @@ export default function HomePage() {
             />
 
             {/* The single content wrapper that Lenis will translate horizontally */}
-            <div className="flex flex-nowrap h-full w-max relative z-10">
+            <div className="flex flex-nowrap h-full w-max relative z-10 pr-1">
                 <HeroSection scrollContainer={scrollContainerRef} data={heroData} />
                 <FeaturesSection scrollContainer={scrollContainerRef} data={featuresData} />
                 <StatsMarqueeSection scrollContainer={scrollContainerRef} data={statsData} />
-                <CTASection scrollContainer={scrollContainerRef} data={ctaData} />
                 <div className="w-screen h-screen shrink-0 relative flex flex-col justify-center items-center bg-transparent">
                     <Footer />
                 </div>
