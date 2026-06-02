@@ -41,7 +41,7 @@ export default function TopicComparisonChart({ comparison }) {
   return (
     <div className="space-y-3">
       {comparison.insight && (
-        <div className="bg-[#0d1117] border border-white/10 rounded-xl p-3">
+        <div className="bg-[var(--dark-bg-base)] border border-white/10 rounded-xl p-3">
           <p className="text-xs text-gray-400 leading-relaxed">
             <span className="text-[#4A90E2] font-medium">AI Insight: </span>{comparison.insight}
           </p>
@@ -68,7 +68,7 @@ export default function TopicComparisonChart({ comparison }) {
           const prev = data.length > 1 ? data[data.length - 2]?.paperCount || 0 : 0;
           const growth = prev > 0 ? ((latest - prev) / prev) * 100 : 0;
           return (
-            <div key={kw} className="bg-[#0d1117] rounded-xl p-3 border border-white/5">
+            <div key={kw} className="bg-[var(--dark-bg-base)] rounded-xl p-3 border border-white/5">
               <div className="flex items-center gap-1.5 mb-1">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: KEYWORD_COLORS[i % KEYWORD_COLORS.length] }} />
                 <span className="text-xs font-medium text-white truncate">{kw}</span>

@@ -36,7 +36,7 @@ export default function YearRangeFilter({ startYear, endYear, onChange }) {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-2 bg-[#0d1117] border border-white/10 rounded-xl text-xs text-gray-300 hover:border-white/20 transition-all"
+        className="flex items-center gap-2 px-3 py-2 bg-[var(--dark-bg-base)] border border-white/10 rounded-xl text-xs text-gray-300 hover:border-white/20 transition-all"
       >
         <Calendar className="w-3.5 h-3.5 text-gray-500" />
         <span>{displayLabel()}</span>
@@ -68,7 +68,7 @@ export default function YearRangeFilter({ startYear, endYear, onChange }) {
                   value={startYear || ''}
                   onChange={(e) => onChange(parseInt(e.target.value) || null, endYear)}
                   placeholder={MIN_YEAR}
-                  className="w-16 bg-[#0d1117] border border-white/10 rounded-lg px-2 py-1 text-xs text-white text-center focus:outline-none focus:border-[#4A90E2]/50"
+                  className="w-16 bg-[var(--dark-bg-base)] border border-white/10 rounded-lg px-2 py-1 text-xs text-white text-center focus:outline-none focus:border-[#4A90E2]/50"
                 />
                 <span className="text-gray-600 text-xs">–</span>
                 <input
@@ -78,7 +78,7 @@ export default function YearRangeFilter({ startYear, endYear, onChange }) {
                   value={endYear || ''}
                   onChange={(e) => onChange(startYear, parseInt(e.target.value) || null)}
                   placeholder={MAX_YEAR}
-                  className="w-16 bg-[#0d1117] border border-white/10 rounded-lg px-2 py-1 text-xs text-white text-center focus:outline-none focus:border-[#4A90E2]/50"
+                  className="w-16 bg-[var(--dark-bg-base)] border border-white/10 rounded-lg px-2 py-1 text-xs text-white text-center focus:outline-none focus:border-[#4A90E2]/50"
                 />
               </div>
               {(startYear || endYear) && (

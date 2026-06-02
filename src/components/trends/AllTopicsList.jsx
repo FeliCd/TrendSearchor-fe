@@ -13,7 +13,7 @@ export default function AllTopicsList({ topics, selectedKeyword, bookmarkedKeywo
             <div key={topic.keyword}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all cursor-pointer ${
                 isSelected ? 'bg-[#4A90E2]/10 border border-[#4A90E2]/20'
-                  : 'bg-[#0d1117] border border-transparent hover:bg-[#0d1117]/60'
+                  : 'bg-[var(--dark-bg-base)] border border-transparent hover:bg-[var(--dark-bg-base)]/60'
               }`}
               onClick={() => onTopicSelect(topic)}>
               <span className="text-xs font-bold text-gray-600 w-6 shrink-0">#{topic.rank}</span>

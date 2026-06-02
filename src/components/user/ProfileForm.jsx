@@ -4,6 +4,7 @@ import { Shield, Loader2, Edit2, Check, X, Calendar, User, Mail, Phone, Briefcas
 import { profileService } from '@/services/profileService';
 import { ROLE_LABELS, ROLE_COLORS } from '@/constants/roles';
 import UserAvatar from '@/components/ui/UserAvatar';
+import SelectDropdown from '@/components/ui/SelectDropdown';
 
 function InlineField({ label, icon: Icon, name, value, type = 'text', options = [], onSave, placeholder }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -49,45 +50,50 @@ function InlineField({ label, icon: Icon, name, value, type = 'text', options = 
     const opt = options.find((o) => o.value === value);
     if (opt) displayValue = opt.label;
   }
-  if (!displayValue) displayValue = <span className="text-[#c6c6cd] italic">Not provided</span>;
+  if (!displayValue) displayValue = <span className="text-gray-600 italic">Not provided</span>;
 
   return (
-    <div className="group relative p-4 rounded-xl bg-[#f8f9ff] border border-[#c6c6cd]/40 hover:border-[#0058be]/30 transition-all shadow-sm">
-      <div className="flex items-center gap-2 mb-2">
+    <div className="group relative px-4 py-2.5 rounded-xl border border-gray-800 hover:border-gray-700 transition-all h-[72px] flex flex-col justify-center bg-[var(--dark-bg-base)]">
+      <div className="flex items-center gap-2 mb-1">
         {Icon && <Icon className="w-4 h-4 text-[#0058be]" />}
-        <label className="text-[10px] font-bold text-[#76777d] uppercase tracking-wider">{label}</label>
+        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{label}</label>
       </div>
       
-      {isEditing ? (
-        <div className="space-y-2 mt-1">
-          <div className="flex items-center gap-2">
+      <div className="h-[32px] flex items-center w-full relative">
+        {isEditing ? (
+          <div className="flex items-center gap-2 w-full">
             <div className="relative flex-1">
               {type === 'select' ? (
-                <select value={editValue} onChange={(e) => setEditValue(e.target.value)} className="w-full px-3 py-1.5 bg-white border border-[#0058be] rounded-lg text-[#0b1c30] text-sm focus:outline-none focus:ring-2 focus:ring-[#0058be]/40 appearance-none">
-                  <option value="">Select...</option>
-                  {options.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
-                </select>
+                <div className="w-full">
+                  <SelectDropdown
+                    value={editValue}
+                    onChange={(val) => setEditValue(val)}
+                    options={options}
+                    placeholder="Select..."
+                    size="sm"
+                  />
+                </div>
               ) : (
-                <input type={type} value={editValue} onChange={(e) => setEditValue(e.target.value)} placeholder={placeholder} className="w-full px-3 py-1.5 bg-white border border-[#0058be] rounded-lg text-[#0b1c30] text-sm focus:outline-none focus:ring-2 focus:ring-[#0058be]/40" />
+                <input type={type} value={editValue} onChange={(e) => setEditValue(e.target.value)} placeholder={placeholder} className="w-full px-2 py-1.5 border border-[#0058be] rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-[#0058be] bg-[var(--dark-bg-base)]" />
               )}
             </div>
-            <button onClick={handleSave} disabled={saving} className="p-1.5 rounded-md bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors disabled:opacity-50">
+            <button onClick={handleSave} disabled={saving} className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors disabled:opacity-50 flex-shrink-0">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             </button>
-            <button onClick={handleCancel} disabled={saving} className="p-1.5 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50">
+            <button onClick={handleCancel} disabled={saving} className="p-1.5 rounded-md bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50 flex-shrink-0">
               <X className="w-4 h-4" />
             </button>
+            {error && <p className="absolute -bottom-4 left-0 text-[10px] text-red-500 whitespace-nowrap">{error}</p>}
           </div>
-          {error && <p className="text-xs text-red-500">{error}</p>}
-        </div>
-      ) : (
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold text-[#0b1c30] truncate pr-4">{displayValue}</p>
-          <button type="button" onClick={() => setIsEditing(true)} className="absolute top-3 right-3 p-1.5 rounded-lg text-[#76777d] opacity-0 group-hover:opacity-100 hover:bg-[#e1e4f3] hover:text-[#0058be] transition-all bg-white shadow-sm border border-[#c6c6cd]/40">
-            <Edit2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
+        ) : (
+          <div className="flex items-center justify-between w-full">
+            <p className="text-sm font-semibold text-white truncate pr-8">{displayValue}</p>
+            <button type="button" onClick={() => setIsEditing(true)} className="absolute top-1/2 -translate-y-1/2 right-0 p-1.5 rounded-md text-gray-500 opacity-0 group-hover:opacity-100 hover:bg-white/10 hover:text-white transition-all border border-gray-800 bg-[var(--dark-bg-base)]">
+              <Edit2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -154,25 +160,31 @@ export default function ProfileForm({ initialProfile, onSuccess, onToast }) {
   return (
     <div className="h-full flex flex-col">
       {/* Banner Area */}
-      <div className="-mx-6 -mt-6 h-32 bg-gradient-to-r from-[#0b1c30] via-[#102a43] to-[#0058be] rounded-t-2xl"></div>
-      
+      <div className="-mx-6 -mt-6 h-32 rounded-t-2xl bg-[var(--dark-banner-info)]"></div>
+
       {/* Avatar & Name Area */}
-      <div className="flex items-start gap-5 -mt-16 mb-8 relative z-10">
-        <div 
-          onClick={() => fileInputRef.current?.click()}
-          className="group relative w-32 h-32 rounded-full bg-white border-4 border-white shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer"
-        >
-          <UserAvatar user={user} profile={profile} size="full" />
-          
-          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            {isUploading ? (
-              <Loader2 className="w-8 h-8 text-white animate-spin" />
-            ) : (
-              <>
-                <Camera className="w-8 h-8 text-white mb-1" />
-                <span className="text-[10px] text-white font-bold uppercase tracking-wider">Update</span>
-              </>
-            )}
+      <div className="flex items-start gap-6 -mt-16 mb-8 relative z-10 pl-2 sm:p4">
+        <div className="relative">
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            className="group relative w-32 h-32 rounded-2xl border-4 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer bg-[var(--dark-bg-base)] border-[var(--dark-bg-base)]"
+          >
+            <UserAvatar user={user} profile={profile} size="full" shape="square" />
+            
+            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              {isUploading ? (
+                <Loader2 className="w-8 h-8 text-white animate-spin" />
+              ) : (
+                <>
+                  <Camera className="w-8 h-8 text-white mb-1" />
+                  <span className="text-[10px] text-white font-bold uppercase tracking-wider">Update</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-0.5 bg-[#0058be] border-[3px] rounded-full text-white text-xs font-bold shadow-sm whitespace-nowrap z-20 border-[var(--dark-bg-base)]">
+            {ROLE_LABELS[user?.role] || user?.role || 'Admin'}
           </div>
         </div>
         
@@ -184,11 +196,8 @@ export default function ProfileForm({ initialProfile, onSuccess, onToast }) {
           hidden 
         />
         
-        <div className="pt-[76px] flex items-baseline gap-3">
-          <p className="text-[#0b1c30] font-semibold text-3xl tracking-tight leading-none">{displayName}</p>
-          <span className={`text-lg font-medium opacity-70 ${ROLE_COLORS[user?.role]?.text || 'text-[#76777d]'}`}>
-            {ROLE_LABELS[user?.role] || user?.role}
-          </span>
+        <div className="pt-[76px] flex items-baseline">
+          <p className="text-white font-bold text-[28px] sm:text-3xl tracking-tight leading-none">{displayName}</p>
         </div>
       </div>
       

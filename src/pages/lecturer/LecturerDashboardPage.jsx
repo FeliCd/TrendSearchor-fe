@@ -32,25 +32,25 @@ export default function LecturerDashboardPage() {
     <DashboardLayout title="Lecturer Dashboard" description="Manage your courses and research trends.">
       {loading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="w-8 h-8 text-[#4A90E2] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#0058be] animate-spin" />
         </div>
       ) : (
         <>
           <div className="grid lg:grid-cols-3 gap-4 mb-6">
-            <StatCard label="Papers Indexed" value={stats?.totalPapers?.toLocaleString() || '—'} icon={BookOpen} color="text-blue-400" bg="bg-blue-500/10" />
-            <StatCard label="Trending Keywords" value={stats?.totalKeywords?.toLocaleString() || '—'} icon={TrendingUp} color="text-emerald-400" bg="bg-emerald-500/10" />
-            <StatCard label="Journals" value={stats?.totalJournals?.toLocaleString() || '—'} icon={Search} color="text-purple-400" bg="bg-purple-500/10" />
+            <StatCard label="Papers Indexed" value={stats?.totalPapers?.toLocaleString() || '—'} icon={BookOpen} color="text-[#0058be]" bg="bg-[#0058be]/10" />
+            <StatCard label="Trending Keywords" value={stats?.totalKeywords?.toLocaleString() || '—'} icon={TrendingUp} color="text-[#0058be]" bg="bg-[#0058be]/10" />
+            <StatCard label="Journals" value={stats?.totalJournals?.toLocaleString() || '—'} icon={Search} color="text-[#0058be]" bg="bg-[#0058be]/10" />
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
             <TrendList trends={stats?.topKeywords || []} />
-            <div className="bg-[#161b22] border border-white/10 rounded-xl p-6">
+            <div className="bg-[#1e1e1e] border border-gray-800 rounded-2xl p-6">
               <h3 className="text-white font-semibold mb-4">Yearly Publication Stats</h3>
               <div className="space-y-3">
                 {(stats?.yearlyStats || []).slice(-5).map((year, i) => (
-                  <div key={i} className="flex justify-between items-center p-3 bg-[#0d1117] rounded-lg">
+                  <div key={i} className="flex justify-between items-center p-3 bg-[var(--dark-bg-base)] rounded-xl border border-gray-800">
                     <span className="text-gray-300">{year.year}</span>
-                    <span className="text-blue-400 font-semibold">{year.paperCount?.toLocaleString() || 0} papers</span>
+                    <span className="text-[#0058be] font-semibold">{year.paperCount?.toLocaleString() || 0} papers</span>
                   </div>
                 ))}
                 {(!stats?.yearlyStats || stats.yearlyStats.length === 0) && (

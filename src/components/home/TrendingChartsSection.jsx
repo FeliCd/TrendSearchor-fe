@@ -99,7 +99,7 @@ export default function TrendingChartsSection() {
                 {TOPICS.filter((t) => activeTopics[t.key]).map((t) => (
                   <Area key={t.key} type="monotone" dataKey={t.key} stroke={t.color} strokeWidth={3}
                     fillOpacity={1} fill={`url(#${t.grad})`}
-                    activeDot={{ r: 6, fill: t.color, stroke: '#0d1117', strokeWidth: 2 }} />
+                    activeDot={{ r: 6, fill: t.color, stroke: 'var(--dark-bg-base)', strokeWidth: 2 }} />
                 ))}
               </AreaChart>
             </ResponsiveContainer>

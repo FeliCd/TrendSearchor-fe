@@ -1,5 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=M+PLUS+U:wght@100..900&display=swap');
 
+/* Dark theme CSS variables */
+:root {
+  --dark-bg-base: #0d1117;
+  --dark-bg-elevated: #161b22;
+  --dark-bg-border: #30363d;
+  --dark-bg-border-hover: #484f58;
+  --dark-text-primary: #ffffff;
+  --dark-text-secondary: #c9d1d9;
+  --dark-text-muted: #8b949e;
+  --dark-text-faint: #484f58;
+  --dark-banner-info: #304865;
+  --dark-avatar-fallback: #4a2d2a;
+  --dark-accent: #0058be;
+  --dark-accent-hover: #004395;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -51,4 +67,31 @@
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background-color: rgba(0, 0, 0, 0.2);
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes slide-infinite {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-slide-infinite {
+  animation: slide-infinite 20s linear infinite;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }

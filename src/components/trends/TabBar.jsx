@@ -9,7 +9,7 @@ const TABS = [
 
 export default function TabBar({ activeTab, onTabChange }) {
   return (
-    <div className="flex items-center gap-1 p-1 bg-[#0d1117] rounded-xl border border-white/5 w-fit">
+    <div className="flex items-center gap-1 p-1 bg-[var(--dark-bg-base)] rounded-xl border border-white/5 w-fit">
       {TABS.map((tab) => {
         const Icon = tab.icon;
         return (

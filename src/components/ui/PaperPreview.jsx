@@ -23,13 +23,13 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
 
           <div className="flex flex-wrap items-center gap-2 text-xs">
             {paper.year && (
-              <span className="flex items-center gap-1 px-2 py-1 bg-[#0d1117] text-gray-300 rounded">
+              <span className="flex items-center gap-1 px-2 py-1 bg-[var(--dark-bg-base)] text-gray-300 rounded">
                 <FileText className="w-3 h-3" />
                 {paper.year}
               </span>
             )}
             {paper.citationCount > 0 && (
-              <span className="flex items-center gap-1 px-2 py-1 bg-[#0d1117] text-[#4A90E2] rounded">
+              <span className="flex items-center gap-1 px-2 py-1 bg-[var(--dark-bg-base)] text-[#4A90E2] rounded">
                 <Award className="w-3 h-3" />
                 {paper.citationCount} citations
               </span>
@@ -100,7 +100,7 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
             </h4>
             <div className="flex flex-wrap gap-2">
               {paper.journals.map((journal, i) => (
-                <span key={i} className="text-gray-300 text-sm bg-[#0d1117] px-2.5 py-1 rounded-lg border border-white/5">
+                <span key={i} className="text-gray-300 text-sm bg-[var(--dark-bg-base)] px-2.5 py-1 rounded-lg border border-white/5">
                   {journal}
                 </span>
               ))}
@@ -127,7 +127,7 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
           className={`flex items-center justify-center gap-2 px-4 py-2.5 border rounded-lg transition-all disabled:opacity-50 text-sm font-medium ${
             isBookmarked
               ? 'bg-[#4A90E2]/20 border-[#4A90E2] text-[#4A90E2]'
-              : 'bg-[#0d1117] border-white/10 text-gray-400 hover:text-white hover:border-white/20'
+              : 'bg-[var(--dark-bg-base)] border-white/10 text-gray-400 hover:text-white hover:border-white/20'
           }`}
         >
           {isToggling ? (

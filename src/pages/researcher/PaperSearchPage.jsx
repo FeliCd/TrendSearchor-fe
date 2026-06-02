@@ -87,7 +87,7 @@ export default function PaperSearchPage() {
   };
 
   return (
-    <div className="bg-[#010409] flex flex-col h-screen overflow-hidden">
+    <div className="bg-[#151515] flex flex-col h-screen overflow-hidden">
       {toast && <Toast message={toast.message} type={toast.type} />}
       <div className="flex flex-1 min-h-0">
         <div className="flex-[7] flex flex-col min-w-0 border-r border-white/5">
@@ -108,8 +108,8 @@ export default function PaperSearchPage() {
                 isToggling={togglingId === selectedPaper.externalId} onBookmark={() => handleBookmark(selectedPaper)} onClose={() => setSelectedPaper(null)} />
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center px-6">
-                <div className="w-14 h-14 rounded-full bg-[#4A90E2]/10 flex items-center justify-center mb-4">
-                  <MousePointerClick className="w-7 h-7 text-[#4A90E2]/50" />
+                <div className="w-14 h-14 rounded-2xl bg-[#0058be]/10 flex items-center justify-center mb-4">
+                  <MousePointerClick className="w-7 h-7 text-[#0058be]/50" />
                 </div>
                 <h3 className="text-white font-medium mb-2">No paper selected</h3>
                 <p className="text-gray-500 text-sm leading-relaxed text-center">Click on a research paper from the results to preview its details here</p>

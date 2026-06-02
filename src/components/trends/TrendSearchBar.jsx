@@ -68,7 +68,7 @@ export default function TrendSearchBar({
           onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder={placeholder}
-          className="w-full bg-[#0d1117] border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#4A90E2]/50 focus:ring-1 focus:ring-[#4A90E2]/30 transition-all"
+          className="w-full bg-[var(--dark-bg-base)] border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#4A90E2]/50 focus:ring-1 focus:ring-[#4A90E2]/30 transition-all"
         />
         {value && (
           <button

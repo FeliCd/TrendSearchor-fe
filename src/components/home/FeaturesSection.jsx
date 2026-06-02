@@ -1,163 +1,115 @@
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
-import { BarChart3, Bell, Bookmark, GitCompare, Search, Shield } from 'lucide-react';
+import { BarChart3, Bell, Bookmark, GitCompare, Search, Shield, Hash, Triangle } from 'lucide-react';
 
 const features = [
   {
     icon: BarChart3,
     title: 'Trend Visualization',
-    description:
-        'Interactive charts showing publication volume for any keyword across years. Compare multiple topics side-by-side.',
-    color: '#4A90E2',
-    bg: 'rgba(74,144,226,0.07)',
-    glow: 'rgba(74,144,226,0.22)',
+    description: 'Interactive charts showing publication volume for any keyword across years. Compare multiple topics side-by-side.',
+    color: '#7bf5ea', // Cyan
   },
   {
     icon: Search,
     title: 'Smart Paper Search',
-    description:
-        'Search by keyword, author, or journal with multi-condition filtering. Sort by relevance, year, or citation count.',
-    color: '#246E52',
-    bg: 'rgba(36,110,82,0.07)',
-    glow: 'rgba(36,110,82,0.22)',
+    description: 'Search by keyword, author, or journal with multi-condition filtering. Sort by relevance, year, or citation count.',
+    color: '#8233ff', // Purple
   },
   {
     icon: GitCompare,
     title: 'Keyword Comparison',
-    description:
-        'Compare growth trajectories of multiple research topics on the same chart to identify dominant and emerging themes.',
-    color: '#F5A623',
-    bg: 'rgba(245,166,35,0.07)',
-    glow: 'rgba(245,166,35,0.22)',
+    description: 'Compare growth trajectories of multiple research topics on the same chart to identify dominant and emerging themes.',
+    color: '#0e77ff', // Blue
   },
   {
     icon: Bell,
     title: 'Follow & Notify',
-    description:
-        'Follow journals and topics. Get notified when new papers matching your interests are published.',
-    color: '#F97316',
-    bg: 'rgba(249,115,22,0.07)',
-    glow: 'rgba(249,115,22,0.22)',
+    description: 'Follow journals and topics. Get notified when new papers matching your interests are published.',
+    color: '#ff86c8', // Pink
   },
   {
     icon: Bookmark,
     title: 'Personal Bookmarks',
-    description:
-        'Save papers and keywords with personal notes. Organize your reference list and revisit them anytime.',
-    color: '#BD10E0',
-    bg: 'rgba(189,16,224,0.07)',
-    glow: 'rgba(189,16,224,0.22)',
+    description: 'Save papers and keywords with personal notes. Organize your reference list and revisit them anytime.',
+    color: '#5b58ff', // Indigo
   },
   {
     icon: Shield,
     title: 'Role-Based Access',
-    description:
-        'Researcher, Lecturer/Student, and Admin roles. Advanced analytics unlocked for Researchers.',
-    color: '#06B6D4',
-    bg: 'rgba(6,182,212,0.07)',
-    glow: 'rgba(6,182,212,0.22)',
+    description: 'Researcher, Lecturer/Student, and Admin roles. Advanced analytics unlocked for Researchers.',
+    color: '#7bf5ea', // Cyan
   },
 ];
 
 function FeatureCard({ feature, delay }) {
   const [hovered, setHovered] = useState(false);
-  const { icon: Icon, title, description, color, bg, glow } = feature;
+  const { icon: Icon, title, description, color } = feature;
 
   return (
       <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 28, scale: 0.95 },
-            show: {
-              opacity: 1, y: 0, scale: 1,
-              transition: { duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] },
-            },
-          }}
+          initial={{ opacity: 0, x: 100 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ type: 'spring', bounce: 0.2, duration: 0.8, delay: delay }}
           onHoverStart={() => setHovered(true)}
           onHoverEnd={() => setHovered(false)}
-          className="relative rounded-2xl p-6 border cursor-default overflow-hidden
-        transition-colors duration-300"
+          className="relative rounded-none p-8 border-2 cursor-default overflow-hidden transition-all duration-300 bg-[#1e1e1e]"
           style={{
-            background: hovered ? bg : '#ffffff',
-            borderColor: hovered ? `${color}35` : 'rgba(198,198,205,0.4)',
-            boxShadow: hovered
-                ? `0 0 36px ${glow}, 0 4px 24px rgba(0,0,0,0.1)`
-                : '0 2px 8px rgba(0,0,0,0.05)',
-            transition: 'background 0.3s, border-color 0.3s, box-shadow 0.3s',
+            borderColor: hovered ? color : '#333333',
+            boxShadow: hovered ? `8px 8px 0px 0px ${color}` : '0px 0px 0px 0px transparent',
+            transform: hovered ? 'translate(-4px, -4px)' : 'translate(0px, 0px)',
           }}
       >
-        {/* Corner glow */}
+        {/* Abstract shape */}
         <motion.div
-            className="absolute top-0 right-0 w-24 h-24 rounded-bl-full pointer-events-none"
-            style={{ background: `radial-gradient(circle at top right, ${color}12, transparent 70%)` }}
-            animate={{ opacity: hovered ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
+            className="absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-10 pointer-events-none"
+            style={{ background: color }}
+            animate={{ scale: hovered ? 1.5 : 1 }}
+            transition={{ duration: 0.4 }}
         />
 
         {/* Icon */}
-        <motion.div
-            className="relative inline-flex items-center justify-center w-11 h-11 rounded-xl mb-5"
-            style={{ background: bg, border: `1px solid ${color}25` }}
-            animate={hovered ? { scale: 1.1, y: -2 } : { scale: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+        <div 
+            className="relative inline-flex items-center justify-center w-12 h-12 mb-6"
+            style={{ border: `2px solid ${color}`, background: hovered ? color : 'transparent' }}
         >
-          <Icon className="w-5 h-5" style={{ color }} />
-          <motion.div
-              className="absolute inset-0 rounded-xl"
-              animate={hovered ? { boxShadow: `0 0 18px ${glow}` } : { boxShadow: 'none' }}
-              transition={{ duration: 0.3 }}
-          />
-        </motion.div>
+          <Icon className="w-5 h-5 transition-colors" style={{ color: hovered ? '#000' : color }} />
+        </div>
 
-        <motion.h3
-            className="font-semibold text-base mb-2 transition-colors duration-300"
-            style={{ color: hovered ? color : '#0b1c30' }}
-        >
+        <h3 className="font-bold text-lg mb-3 text-white tracking-wide" style={{ fontFamily: "'M PLUS U', sans-serif" }}>
           {title}
-        </motion.h3>
-        <p className="text-[#45464d] text-sm leading-relaxed">{description}</p>
-
-        {/* Bottom accent line */}
-        <motion.div
-            className="absolute bottom-0 left-0 right-0 h-[2px]"
-            style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
-            animate={{ opacity: hovered ? 1 : 0, scaleX: hovered ? 1 : 0.3 }}
-            transition={{ duration: 0.35 }}
-        />
+        </h3>
+        <p className="text-gray-400 text-sm leading-relaxed font-medium">{description}</p>
       </motion.div>
   );
 }
 
-export default function FeaturesSection() {
+export default function FeaturesSection({ scrollContainer }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-60px' });
-
+  const isInView = useInView(ref, { root: scrollContainer, once: false, margin: '0px 0px 0px -100px' });
+  const { scrollXProgress } = useScroll({ container: scrollContainer });
+  
   return (
-      <section className="py-24 px-4">
-        <div className="max-w-7xl mx-auto">
+      <section className="h-screen w-screen shrink-0 py-24 px-8 overflow-y-auto hide-scrollbar bg-transparent flex flex-col justify-center relative overflow-hidden">
+        
+        <div className="max-w-7xl mx-auto relative z-10">
           {/* Header */}
           <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center mb-16"
+              initial={{ opacity: 0, x: -200, scale: 0.8, rotate: 5 }}
+              whileInView={{ opacity: 1, x: 0, scale: 1, rotate: 0 }}
+              viewport={{ root: scrollContainer, once: false, amount: 0.3 }}
+              transition={{ type: 'spring', bounce: 0.4, duration: 1.5 }}
+              className="text-center mb-20"
           >
-            <motion.span
-                className="inline-block text-xs font-semibold uppercase tracking-[0.15em] px-3 py-1 rounded-full mb-4"
-                style={{
-                  color: '#4A90E2',
-                  background: 'rgba(74,144,226,0.1)',
-                  border: '1px solid rgba(74,144,226,0.2)',
-                }}
-            >
-              Features
-            </motion.span>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-[#0b1c30] mb-4">
+            <span className="inline-block text-xs font-black uppercase tracking-[0.2em] px-4 py-1.5 mb-6 bg-[#5b58ff] text-white">
+              Platform Features
+            </span>
+            <h2 className="font-bold text-4xl md:text-5xl text-white mb-6" style={{ fontFamily: "'M PLUS U', sans-serif" }}>
               Everything researchers need
             </h2>
-            <p className="text-[#45464d] max-w-xl mx-auto text-sm leading-relaxed">
+            <p className="text-gray-400 max-w-xl mx-auto text-base leading-relaxed font-medium">
               From broad trend discovery to deep paper analysis — TrendSearchor covers the full
-              research intelligence workflow.
+              research intelligence workflow with style.
             </p>
           </motion.div>
 
@@ -167,7 +119,7 @@ export default function FeaturesSection() {
               variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
               initial="hidden"
               animate={isInView ? 'show' : 'hidden'}
-              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
+              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {features.map((f, i) => (
                 <FeatureCard key={f.title} feature={f} delay={i * 0.07} />

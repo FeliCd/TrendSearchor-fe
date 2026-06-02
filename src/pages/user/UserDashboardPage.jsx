@@ -33,14 +33,14 @@ export default function UserDashboardPage() {
     <DashboardLayout title="My Dashboard" description="Your personal trend search center.">
       {loading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="w-8 h-8 text-[#4A90E2] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#0058be] animate-spin" />
         </div>
       ) : (
         <>
           <div className="grid lg:grid-cols-3 gap-4 mb-6">
-            <StatCard label="Papers Indexed" value={stats?.totalPapers?.toLocaleString() || '—'} icon={Search} color="text-[#4A90E2]" bg="bg-[#4A90E2]/10" />
-            <StatCard label="Trending Keywords" value={stats?.totalKeywords?.toLocaleString() || '—'} icon={TrendingUp} color="text-emerald-400" bg="bg-emerald-500/10" />
-            <StatCard label="Journals" value={stats?.totalJournals?.toLocaleString() || '—'} icon={Clock} color="text-purple-400" bg="bg-purple-500/10" />
+            <StatCard label="Papers Indexed" value={stats?.totalPapers?.toLocaleString() || '—'} icon={Search} color="text-[#0058be]" bg="bg-[#0058be]/10" />
+            <StatCard label="Trending Keywords" value={stats?.totalKeywords?.toLocaleString() || '—'} icon={TrendingUp} color="text-[#0058be]" bg="bg-[#0058be]/10" />
+            <StatCard label="Journals" value={stats?.totalJournals?.toLocaleString() || '—'} icon={Clock} color="text-[#0058be]" bg="bg-[#0058be]/10" />
           </div>
           <TrendList trends={stats?.topKeywords || []} />
           <div className="mt-6">

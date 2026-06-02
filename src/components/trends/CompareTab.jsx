@@ -19,7 +19,7 @@ export default function CompareTab({ compareKeywords, comparison, comparisonLoad
         {compareKeywords.length < 4 && (
           <select
             onChange={(e) => { if (e.target.value) { onCompareToggle(e.target.value); e.target.value = ''; } }}
-            value="" className="bg-[#0d1117] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-gray-400 focus:outline-none focus:border-[#4A90E2]/50">
+            value="" className="bg-[var(--dark-bg-base)] border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-gray-400 focus:outline-none focus:border-[#4A90E2]/50">
             <option value="">+ Add keyword</option>
             {trendingKeywords.filter((kw) => !compareKeywords.includes(kw.displayName || kw.keyword))
               .map((kw) => <option key={kw.keyword} value={kw.displayName || kw.keyword}>{kw.displayName || kw.keyword}</option>)}

@@ -84,7 +84,7 @@ export function RelatedKeywords({ tags, selectedKeyword, bookmarkedKeywordIds, o
               <button onClick={() => onSelect(kw)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                   isSelected ? 'bg-[#4A90E2]/20 text-[#4A90E2] border border-[#4A90E2]/40'
-                    : 'bg-[#0d1117] text-gray-400 border border-white/5 hover:bg-[#0d1117]/60 hover:text-white'
+                    : 'bg-[var(--dark-bg-base)] text-gray-400 border border-white/5 hover:bg-[var(--dark-bg-base)]/60 hover:text-white'
                 }`}>
                 {name}
               </button>

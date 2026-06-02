@@ -1,6 +1,33 @@
 // Shared design tokens extracted from the codebase
 // Used across all components to ensure consistency
 
+// Dark theme palette (applied to dashboard layouts)
+export const DARK_THEME = {
+  bg: {
+    base:     '#0d1117',   // Main content / sidebar background
+    card:     '#0d1117',   // Card / section background
+    elevated: '#161b22',   // Elevated surfaces (dropdowns, popovers)
+    border:   '#30363d',   // Border color
+    borderHover: '#484f58', // Border on hover
+  },
+  text: {
+    primary:   '#ffffff',
+    secondary: '#c9d1d9',
+    muted:     '#8b949e',
+    faint:     '#484f58',
+  },
+  banner: {
+    info: '#304865',        // Profile banner color
+  },
+  avatar: {
+    fallback: '#4a2d2a',   // Default avatar background
+  },
+  accent: {
+    primary:   '#0058be',
+    primaryHover: '#004395',
+  },
+};
+
 export const COLORS = {
   bg: {
     primary:   '#f8f9ff',  // Main page canvas
@@ -39,6 +66,19 @@ export const CLASSES = {
     text-[#0b1c30] font-semibold text-sm rounded-lg border border-[#c6c6cd] transition-all duration-200`,
 
   card: `bg-white border border-[#c6c6cd]/40 rounded-xl p-6`,
+};
+
+// Dark theme utility classes
+export const DARK_CLASSES = {
+  card: `bg-[#0d1117] border border-gray-800 rounded-2xl p-6`,
+  cardHover: `bg-[#0d1117] border border-gray-800 hover:border-gray-700 rounded-2xl p-6`,
+  cardBanner: `rounded-t-2xl`,
+  inputBase: `w-full pl-10 pr-10 py-3 bg-[#0d1117] border-2 border-gray-800 text-white font-medium text-sm rounded-xl
+    placeholder:text-gray-600 focus:outline-none focus:border-[#0058be] transition-all`,
+  inputError: `border-red-500/50 focus:border-red-500`,
+  selectTrigger: `w-full flex items-center justify-between text-sm bg-[#0d1117] border border-gray-800 transition-all`,
+  selectDropdown: `absolute z-50 min-w-full w-max mt-1.5 bg-[#0d1117] border border-gray-800 rounded-xl shadow-xl shadow-black/30 overflow-hidden`,
+  avatarFallback: `flex items-center justify-center font-bold bg-[#4a2d2a] text-white rounded-full`,
 };
 
 export const BREAKPOINTS = {

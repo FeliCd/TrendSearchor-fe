@@ -17,7 +17,7 @@ export function getInitials(identifier) {
  * Shared avatar component that supports image URLs and falls back to initials.
  * Supports both new API (user, profile) and legacy API (identifier).
  */
-export default function UserAvatar({ user, profile, identifier, size = 'md', className = '' }) {
+export default function UserAvatar({ user, profile, identifier, size = 'md', shape = 'circle', className = '' }) {
   const sizeClasses = {
     xs: 'w-6 h-6 text-[10px]',
     sm: 'w-8 h-8 text-xs',
@@ -31,9 +31,11 @@ export default function UserAvatar({ user, profile, identifier, size = 'md', cla
 
   const avatarUrl = profile?.avatarUrl || user?.avatarUrl;
 
+  const roundedClass = shape === 'circle' ? 'rounded-full' : 'rounded-[1rem]';
+
   if (avatarUrl) {
     return (
-      <div className={`rounded-full overflow-hidden flex-shrink-0 ${sz} ${className}`}>
+      <div className={`${roundedClass} overflow-hidden flex-shrink-0 ${sz} ${className}`}>
         <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
       </div>
     );
@@ -44,7 +46,7 @@ export default function UserAvatar({ user, profile, identifier, size = 'md', cla
 
   return (
     <div
-      className={`rounded-full flex items-center justify-center font-bold flex-shrink-0 bg-[#f8f9ff] text-[#0058be] ${sz} ${className}`}
+      className={`${roundedClass} flex items-center justify-center font-bold flex-shrink-0 text-white ${sz} ${className} bg-[var(--dark-avatar-fallback)]`}
     >
       {firstLetter}
     </div>

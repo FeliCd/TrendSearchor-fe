@@ -33,7 +33,6 @@ export default function UserCharts({ users = [] }) {
           timestamp: new Date(date.getFullYear(), date.getMonth(), 1).getTime(),
           [ROLES.LECTURER]: 0,
           [ROLES.RESEARCHER]: 0,
-          [ROLES.USER]: 0,
           [ROLES.ADMIN]: 0
         };
       }
@@ -45,19 +44,19 @@ export default function UserCharts({ users = [] }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-10 gap-5 mb-5">
       {/* Role Distribution Chart */}
-      <motion.div 
-        initial={{ opacity: 0, y: 16 }} 
-        animate={{ opacity: 1, y: 0 }} 
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="bg-white/60 backdrop-blur-xl border border-[#c6c6cd]/40 rounded-2xl p-5 shadow-sm lg:col-span-3"
+        className="bg-[var(--dark-bg-elevated)] border border-gray-800 rounded-2xl p-5 shadow-sm lg:col-span-3"
       >
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
-            <Users className="w-5 h-5 text-blue-600" />
+          <div className="w-10 h-10 rounded-xl bg-[#0058be]/10 border border-[#0058be]/20 flex items-center justify-center">
+            <Users className="w-5 h-5 text-[#0058be]" />
           </div>
           <div>
-            <h3 className="text-[#0b1c30] font-bold text-base">Role Distribution</h3>
-            <p className="text-xs text-[#76777d] mt-0.5">User breakdown by role</p>
+            <h3 className="text-white font-bold text-base">Role Distribution</h3>
+            <p className="text-xs text-gray-400 mt-0.5">User breakdown by role</p>
           </div>
         </div>
         <div className="h-[180px] w-full">
@@ -78,62 +77,61 @@ export default function UserCharts({ users = [] }) {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: '1px solid rgba(198, 198, 205, 0.4)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', padding: '12px' }}
-                  itemStyle={{ color: '#0b1c30', fontWeight: 'bold' }}
+                <Tooltip
+                  contentStyle={{ borderRadius: '12px', border: '1px solid #30363d', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.3)', padding: '12px', backgroundColor: '#161b22' }}
+                  itemStyle={{ color: '#ffffff', fontWeight: 'bold' }}
                 />
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-[#76777d]">No data available</div>
+            <div className="flex h-full items-center justify-center text-sm text-gray-400">No data available</div>
           )}
         </div>
         <div className="flex flex-wrap justify-center gap-4 mt-2">
           {roleData.map((entry, index) => (
             <div key={entry.name} className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-              <span className="text-xs text-[#76777d] font-medium">{entry.name} ({entry.value})</span>
+              <span className="text-xs text-gray-400 font-medium">{entry.name} ({entry.value})</span>
             </div>
           ))}
         </div>
       </motion.div>
 
       {/* Registration Trends Chart */}
-      <motion.div 
-        initial={{ opacity: 0, y: 16 }} 
-        animate={{ opacity: 1, y: 0 }} 
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
-        className="bg-white/60 backdrop-blur-xl border border-[#c6c6cd]/40 rounded-2xl p-5 shadow-sm lg:col-span-7"
+        className="bg-[var(--dark-bg-elevated)] border border-gray-800 rounded-2xl p-5 shadow-sm lg:col-span-7 flex flex-col"
       >
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center">
-            <TrendingUp className="w-5 h-5 text-purple-600" />
+        <div className="flex items-center gap-3 mb-4 flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#0058be]/10 border border-[#0058be]/20 flex items-center justify-center">
+            <TrendingUp className="w-5 h-5 text-[#0058be]" />
           </div>
           <div>
-            <h3 className="text-[#0b1c30] font-bold text-base">New Registrations</h3>
-            <p className="text-xs text-[#76777d] mt-0.5">Account growth by role over time</p>
+            <h3 className="text-white font-bold text-base">New Registrations</h3>
+            <p className="text-xs text-gray-400 mt-0.5">Account growth by role over time</p>
           </div>
         </div>
-        <div className="h-[180px] w-full">
+        <div className="flex-1 w-full min-h-[180px]">
           {registrationData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={registrationData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#c6c6cd" strokeOpacity={0.4} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#76777d' }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#76777d' }} />
-                <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: '1px solid rgba(198, 198, 205, 0.4)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                  labelStyle={{ color: '#0b1c30', fontWeight: 'bold', marginBottom: '8px' }}
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#30363d" strokeOpacity={0.5} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                <Tooltip
+                  contentStyle={{ borderRadius: '12px', border: '1px solid #30363d', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.3)', backgroundColor: '#161b22' }}
+                  labelStyle={{ color: '#ffffff', fontWeight: 'bold', marginBottom: '8px' }}
                 />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '10px', color: '#9ca3af' }} />
                 <Line type="monotone" dataKey={ROLES.LECTURER} name="Student / Lecturer" stroke="#009668" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
                 <Line type="monotone" dataKey={ROLES.RESEARCHER} name="Researcher" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
-                <Line type="monotone" dataKey={ROLES.USER} name="User" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
                 <Line type="monotone" dataKey={ROLES.ADMIN} name="Admin" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-[#76777d]">No registration data available</div>
+            <div className="flex h-full items-center justify-center text-sm text-gray-400">No registration data available</div>
           )}
         </div>
       </motion.div>

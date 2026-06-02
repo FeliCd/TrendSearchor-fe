@@ -6,7 +6,7 @@ import Alert from '@/components/ui/Alert';
 import NotificationCard from '@/components/notifications/NotificationCard';
 
 const TYPE_COLORS = {
-  NEW_PAPER: 'bg-[#4A90E2]/10 text-[#4A90E2]',
+  NEW_PAPER: 'bg-[#0058be]/10 text-[#0058be]',
   TRENDING: 'bg-purple-500/10 text-purple-400',
   JOURNAL_UPDATE: 'bg-green-500/10 text-green-400',
 };
@@ -55,11 +55,11 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#010409] p-6">
+    <div className="min-h-screen bg-[#151515] p-6">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <Bell className="w-8 h-8 text-[#4A90E2]" />
+            <Bell className="w-8 h-8 text-[#0058be]" />
             <div>
               <h1 className="text-2xl font-bold text-white">Notifications</h1>
               {unreadCount > 0 && <p className="text-sm text-gray-400">{unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}</p>}
@@ -67,7 +67,7 @@ export default function NotificationsPage() {
           </div>
           {unreadCount > 0 && (
             <button onClick={handleMarkAllRead}
-              className="flex items-center gap-2 px-4 py-2 bg-[#4A90E2]/10 text-[#4A90E2] rounded-lg hover:bg-[#4A90E2]/20 transition-colors">
+              className="flex items-center gap-2 px-4 py-2 bg-[#0058be]/10 text-[#0058be] rounded-lg hover:bg-[#0058be]/20 transition-colors">
               <CheckCheck className="w-4 h-4" />Mark all read
             </button>
           )}
@@ -75,7 +75,7 @@ export default function NotificationsPage() {
         <div className="flex gap-2 mb-6">
           {[{ v: 'all', l: 'All' }, { v: 'unread', l: 'Unread' }].map(({ v, l }) => (
             <button key={v} onClick={() => { setFilter(v); setPage(0); }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === v ? 'bg-[#4A90E2] text-white' : 'bg-[#161b22] text-gray-400 hover:text-white'}`}>
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === v ? 'bg-[#0058be] text-white' : 'bg-[#1e1e1e] text-gray-400 hover:text-white border border-gray-800'}`}>
               {l}
             </button>
           ))}
@@ -93,10 +93,10 @@ export default function NotificationsPage() {
             {notifications.map(n => <NotificationCard key={n.id} notification={n} onMarkRead={handleMarkRead} getTypeColor={getTypeColor} />)}
             <div className="flex justify-center gap-2 mt-6">
               <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
-                className="px-4 py-2 bg-[#161b22] border border-white/10 text-white rounded-lg disabled:opacity-30">Previous</button>
+                className="px-4 py-2 bg-[#1e1e1e] border border-gray-800 text-white rounded-xl disabled:opacity-30 hover:border-gray-700 transition-colors">Previous</button>
               <span className="px-4 py-2 text-gray-400">Page {page + 1}</span>
               <button onClick={() => setPage(p => p + 1)} disabled={notifications.length < 10}
-                className="px-4 py-2 bg-[#161b22] border border-white/10 text-white rounded-lg disabled:opacity-30">Next</button>
+                className="px-4 py-2 bg-[#1e1e1e] border border-gray-800 text-white rounded-xl disabled:opacity-30 hover:border-gray-700 transition-colors">Next</button>
             </div>
           </div>
         )}

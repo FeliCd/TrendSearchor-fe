@@ -3,7 +3,6 @@ export const ROLES = {
   LECTURER: 'LECTURER',
   STUDENT: 'STUDENT',
   RESEARCHER: 'RESEARCHER',
-  USER: 'USER',
 };
 
 export const ROLE_LABELS = {
@@ -11,7 +10,6 @@ export const ROLE_LABELS = {
   [ROLES.LECTURER]: 'Lecturer',
   [ROLES.STUDENT]: 'Student',
   [ROLES.RESEARCHER]: 'Researcher',
-  [ROLES.USER]: 'User',
 };
 
 export const ROLE_COLORS = {
@@ -39,22 +37,14 @@ export const ROLE_COLORS = {
     border: 'border-purple-500/20',
     badge: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
   },
-  [ROLES.USER]: {
-    bg: 'bg-gray-500/10',
-    text: 'text-gray-400',
-    border: 'border-gray-500/20',
-    badge: 'bg-gray-500/10 text-gray-400 border border-gray-500/20',
-  },
 };
 
 export const USER_STATUS = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE',
-  SUSPENDED: 'SUSPENDED',
 };
 
 export const STATUS_COLORS = {
   [USER_STATUS.ACTIVE]: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
   [USER_STATUS.INACTIVE]: 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20',
-  [USER_STATUS.SUSPENDED]: 'bg-red-500/10 text-red-400 border border-red-500/20',
 };

@@ -1,7 +1,9 @@
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useLoginForm } from '@/hooks/useLoginForm';
 import AuthLayout from '@/components/auth/AuthLayout';
-import Alert from '@/components/ui/Alert';
+import { ToastContainer } from '@/components/ui/Toast';
+import { useToast } from '@/hooks/useToast';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export default function LoginPage() {
@@ -13,6 +15,24 @@ export default function LoginPage() {
     handleChange,
     handleSubmit,
   } = useLoginForm();
+  const [showPassword, setShowPassword] = useState(false);
+  const { toasts, addToast, removeToast } = useToast();
+  const prevErrorsRef = useRef({});
+
+  useEffect(() => {
+    const prevErrors = prevErrorsRef.current;
+    const newErrors = errors || {};
+    Object.entries(newErrors).forEach(([key, msg]) => {
+      if (msg && msg !== prevErrors[key]) {
+        addToast(msg, 'error');
+      }
+    });
+    prevErrorsRef.current = newErrors;
+  }, [errors, addToast]);
+
+  useEffect(() => {
+    if (globalError) addToast(globalError, 'error');
+  }, [globalError, addToast]);
 
   return (
     <AuthLayout
@@ -22,17 +42,17 @@ export default function LoginPage() {
       footerLinkText="Create Account"
       footerLinkTo="/register"
     >
-      {globalError && <Alert variant="error" message={globalError} />}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* Academic Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-semibold text-[#0b1c30] mb-1.5">
+          <label htmlFor="email" className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
             Academic Email
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <svg className="w-[18px] h-[18px] text-[#76777d]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
               </svg>
             </div>
@@ -46,75 +66,75 @@ export default function LoginPage() {
               autoComplete="email"
               autoFocus
               required
-              className={`w-full pl-10 pr-4 py-2.5 bg-white border rounded-xl text-sm text-[#0b1c30]
-                placeholder:text-[#76777d] focus:outline-none focus:ring-2 transition-all ${
-                  errors.email
-                    ? 'border-red-500/50 focus:ring-red-500/30 focus:border-red-500/50'
-                    : 'border-[#c6c6cd] focus:ring-[#0058be]/40 focus:border-[#0058be]'
-                }`}
+              className={`w-full pl-11 pr-4 py-3 bg-[#1e1e1e] border-2 text-white font-medium
+                placeholder:text-gray-600 focus:outline-none transition-all
+                border-gray-800 focus:border-[#0058be]`}
             />
           </div>
-          {errors.email && (
-            <p className="text-xs text-red-500 mt-1">{errors.email}</p>
-          )}
+
         </div>
 
         {/* Password */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label htmlFor="password" className="block text-sm font-semibold text-[#0b1c30]">
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="password" className="block text-xs font-bold uppercase tracking-widest text-gray-400">
               Password
             </label>
             <Link
               to="/forgot-password"
-              className="text-xs text-[#0058be] hover:underline font-medium"
+              className="text-xs font-bold text-[#0058be] hover:text-white transition-colors uppercase tracking-widest"
             >
               Forgot password?
             </Link>
           </div>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <svg className="w-[18px] h-[18px] text-[#76777d]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>
             </div>
             <input
               id="password"
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
               value={formData.password}
               onChange={handleChange}
               autoComplete="current-password"
               required
-              className={`w-full pl-10 pr-4 py-2.5 bg-white border rounded-xl text-sm text-[#0b1c30]
-                placeholder:text-[#76777d] focus:outline-none focus:ring-2 transition-all ${
-                  errors.password
-                    ? 'border-red-500/50 focus:ring-red-500/30 focus:border-red-500/50'
-                    : 'border-[#c6c6cd] focus:ring-[#0058be]/40 focus:border-[#0058be]'
-                }`}
+              className={`w-full pl-11 pr-11 py-3 bg-[#1e1e1e] border-2 text-white font-medium
+                placeholder:text-gray-600 focus:outline-none transition-all
+                border-gray-800 focus:border-[#0058be]`}
             />
+            <button 
+              type="button" 
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+            >
+              {showPassword ? (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              )}
+            </button>
           </div>
-          {errors.password && (
-            <p className="text-xs text-red-500 mt-1">{errors.password}</p>
-          )}
         </div>
 
         {/* Submit Button */}
-        <div className="pt-1">
+        <div className="pt-4">
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold text-white
-              bg-[#0058be] hover:bg-[#004395] disabled:opacity-50 disabled:cursor-not-allowed
-              transition-all duration-200 shadow-sm shadow-[#0058be]/20"
+            className="w-full flex items-center justify-center gap-2 py-3.5 bg-white text-black font-black uppercase tracking-widest text-sm
+              hover:bg-gray-200 active:scale-[0.98]
+              disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {isLoading ? (
               <LoadingSpinner label="Signing in..." />
             ) : (
               <>
                 Sign In
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </>
@@ -124,25 +144,25 @@ export default function LoginPage() {
       </form>
 
       {/* Social Login */}
-      <div className="mt-6">
+      <div className="mt-8">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#c6c6cd]/50" />
+            <div className="w-full border-t border-gray-800" />
           </div>
           <div className="relative flex justify-center">
-            <span className="px-3 bg-white text-xs font-medium text-[#76777d]">
+            <span className="px-4 bg-[#151515] text-xs font-bold uppercase tracking-widest text-gray-500">
               Or sign in with
             </span>
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="mt-6 grid grid-cols-2 gap-4">
           <a
             href="#"
-            className="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 border border-[#c6c6cd] rounded-xl
-              bg-white text-sm font-medium text-[#0b1c30] hover:bg-[#eff4ff] transition-colors"
+            className="w-full inline-flex justify-center items-center gap-2 py-3 px-4 border-2 border-gray-800 bg-[#1e1e1e] text-white font-bold uppercase tracking-widest text-xs
+              hover:border-gray-600 hover:bg-[#252525] transition-all"
           >
-            <svg className="h-5 w-5" viewBox="0 0 24 24">
+            <svg className="h-4 w-4" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
@@ -152,10 +172,10 @@ export default function LoginPage() {
           </a>
           <a
             href="#"
-            className="w-full inline-flex justify-center items-center gap-2 py-2.5 px-4 border border-[#c6c6cd] rounded-xl
-              bg-white text-sm font-medium text-[#0b1c30] hover:bg-[#eff4ff] transition-colors"
+            className="w-full inline-flex justify-center items-center gap-2 py-3 px-4 border-2 border-gray-800 bg-[#1e1e1e] text-white font-bold uppercase tracking-widest text-xs
+              hover:border-gray-600 hover:bg-[#252525] transition-all"
           >
-            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="#A6CE39">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="#A6CE39">
               <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm-4.75 16.7h-2.1V7.3h2.1v9.4zm-1.05-10.74c-.7 0-1.25-.55-1.25-1.25s.55-1.25 1.25-1.25 1.25.55 1.25 1.25-.55 1.25-1.25 1.25zm9.8 10.74h-2.1v-4.8c0-1.15-.4-1.9-1.42-1.9-.78 0-1.25.52-1.45 1.02-.07.18-.1.43-.1.68v5h-2.1s.03-8.52 0-9.4h2.1v1.33c.28-.43.78-1.05 1.92-1.05 1.4 0 2.45.92 2.45 2.9v6.22z"/>
             </svg>
             ORCID

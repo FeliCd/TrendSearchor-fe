@@ -52,15 +52,15 @@ export default function PasswordForm({ onToast }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="px-4 py-3 rounded-xl bg-[#f8f9ff] border border-[#c6c6cd]/40">
+      <div className="px-4 py-3 rounded-xl bg-[var(--dark-bg-base)] border border-gray-800">
         <div className="flex items-center gap-2 mb-2">
           <Shield className="w-4 h-4 text-[#0058be]" />
-          <p className="text-sm font-bold text-[#0b1c30]">Password Requirements</p>
+          <p className="text-sm font-bold text-white">Password Requirements</p>
         </div>
-        <ul className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs text-[#76777d]">
+        <ul className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs text-gray-500">
           {PWD_CHECKS.map(([test, label]) => (
             <li key={label} className="flex items-center gap-1.5">
-              <span className={`w-1.5 h-1.5 rounded-full ${test(form.newPassword) ? 'bg-emerald-500' : 'bg-[#c6c6cd]'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full ${test(form.newPassword) ? 'bg-emerald-500' : 'bg-gray-700'}`} />
               <span className="truncate">{label}</span>
             </li>
           ))}

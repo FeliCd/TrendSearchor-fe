@@ -24,8 +24,8 @@ function PaperCard({ paper, isBookmarked, isToggling, isSelected, onSelect, onBo
           </div>
           {paper.abstract && <p className="text-gray-400 text-sm mb-2.5 line-clamp-2 ml-5">{paper.abstract}</p>}
           <div className="flex flex-wrap items-center gap-2 text-xs ml-5">
-            {paper.year && <span className="px-2 py-0.5 bg-[#0d1117] text-gray-300 rounded">{paper.year}</span>}
-            {paper.citationCount > 0 && <span className="px-2 py-0.5 bg-[#0d1117] text-[#4A90E2] rounded">{paper.citationCount} citations</span>}
+            {paper.year && <span className="px-2 py-0.5 bg-[var(--dark-bg-base)] text-gray-300 rounded">{paper.year}</span>}
+            {paper.citationCount > 0 && <span className="px-2 py-0.5 bg-[var(--dark-bg-base)] text-[#4A90E2] rounded">{paper.citationCount} citations</span>}
             {paper.openAccess && <span className="px-2 py-0.5 bg-green-900/30 text-green-400 rounded">Open Access</span>}
             {paper.authors?.length > 0 && <span className="text-gray-400">{paper.authors.slice(0, 3).map((a) => a.name).join(', ')}{paper.authors.length > 3 ? ' et al.' : ''}</span>}
           </div>
@@ -38,13 +38,13 @@ function PaperCard({ paper, isBookmarked, isToggling, isSelected, onSelect, onBo
         <div className="flex flex-col gap-1.5 flex-shrink-0">
           {paper.paperUri && (
             <a href={paper.paperUri} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-              className="p-1.5 bg-[#0d1117] border border-white/10 rounded-lg text-gray-400 hover:text-white transition-colors">
+              className="p-1.5 bg-[var(--dark-bg-base)] border border-white/10 rounded-lg text-gray-400 hover:text-white transition-colors">
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           )}
           <button onClick={(e) => { e.stopPropagation(); onBookmark(paper); }} disabled={isToggling || !paper.externalId}
             className={`p-1.5 border rounded-lg transition-all disabled:opacity-50 ${
-              isBookmarked ? 'bg-[#4A90E2]/20 border-[#4A90E2] text-[#4A90E2]' : 'bg-[#0d1117] border-white/10 text-gray-400 hover:text-white hover:border-white/20'
+              isBookmarked ? 'bg-[#4A90E2]/20 border-[#4A90E2] text-[#4A90E2]' : 'bg-[var(--dark-bg-base)] border-white/10 text-gray-400 hover:text-white hover:border-white/20'
             }`} title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}>
             {isToggling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-current' : ''}`} />}
           </button>

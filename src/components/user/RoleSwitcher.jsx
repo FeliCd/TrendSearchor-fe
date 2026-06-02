@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function RoleSwitcher({ onSwitch, onToast }) {
   const { user } = useAuth();
   const [saving, setSaving] = useState(false);
+  const isAdmin = user?.role === ROLES.ADMIN;
 
   const roleOptions = [
     { value: ROLES.STUDENT, label: 'Student / Lecturer', description: 'Access academic features for learning and teaching',
@@ -16,7 +17,7 @@ export default function RoleSwitcher({ onSwitch, onToast }) {
   ];
 
   const handleSwitch = async (role) => {
-    if (role === user?.role) return;
+    if (role === user?.role || isAdmin) return;
     setSaving(true);
     try { await profileService.changeRole(role); onSwitch(role); }
     catch (err) { onToast(err?.response?.data?.role || err?.response?.data?.message || 'Failed to change role', 'error'); }
@@ -25,41 +26,53 @@ export default function RoleSwitcher({ onSwitch, onToast }) {
 
   return (
     <div className="space-y-6">
-      <div className="p-4 rounded-xl bg-[#f8f9ff] border border-[#c6c6cd]/40">
+      <div className="p-4 rounded-xl bg-[var(--dark-bg-base)] border border-gray-800">
         <div className="flex items-center gap-2 mb-1">
           <Shield className="w-4 h-4 text-[#0058be]" />
-          <p className="text-sm font-bold text-[#0b1c30]">Switch Account Type</p>
+          <p className="text-sm font-bold text-white">Switch Account Type</p>
         </div>
-        <p className="text-xs text-[#76777d]">Choose between Student/Lecturer or Researcher to access different features.</p>
+        <p className="text-xs text-gray-500">Choose between Student/Lecturer or Researcher to access different features.</p>
       </div>
-      <div className="space-y-3">
-        {roleOptions.map((opt) => {
-          const isCurrent = user?.role === opt.value;
-          return (
-            <button key={opt.value} onClick={() => handleSwitch(opt.value)} disabled={saving || isCurrent}
-              className={`w-full p-4 rounded-xl border text-left transition-all ${
-                isCurrent ? 'border-[#0058be]/40 bg-[#0058be]/5 cursor-default' : 'border-[#c6c6cd]/40 bg-white hover:border-[#0058be]/40 hover:bg-[#f8f9ff]'
-              }`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isCurrent ? 'bg-[#0058be]/10 text-[#0058be]' : 'bg-[#f8f9ff] text-[#76777d] border border-[#c6c6cd]/40'}`}>
-                    {opt.icon}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className={`text-sm font-bold ${isCurrent ? 'text-[#0058be]' : 'text-[#0b1c30]'}`}>{opt.label}</p>
-                      {isCurrent && <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#0058be]/10 text-[#0058be] font-bold uppercase tracking-wider">Current</span>}
+      
+      <div className="relative">
+        {isAdmin && (
+          <div className="absolute -inset-2 z-10 flex items-center justify-center bg-[var(--dark-bg-base)]/60 backdrop-blur-[2px] rounded-xl">
+            <div className="px-4 py-2.5 bg-[#0058be] text-white text-xs font-bold rounded-lg shadow-xl flex items-center gap-2">
+              <Shield className="w-4 h-4 text-amber-400" />
+              Not available for Admin accounts
+            </div>
+          </div>
+        )}
+        
+        <div className={`space-y-3 ${isAdmin ? 'opacity-50 pointer-events-none select-none grayscale-[30%]' : ''}`}>
+          {roleOptions.map((opt) => {
+            const isCurrent = user?.role === opt.value;
+            return (
+              <button key={opt.value} onClick={() => handleSwitch(opt.value)} disabled={saving || isCurrent || isAdmin}
+                className={`w-full p-4 rounded-xl border text-left transition-all ${
+                  isCurrent ? 'border-[#0058be]/40 bg-[#0058be]/10 cursor-default' : 'border-gray-800 bg-[var(--dark-bg-base)] hover:border-gray-700 hover:bg-[var(--dark-bg-base)]'
+                }`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isCurrent ? 'bg-[#0058be]/10 text-[#0058be]' : 'bg-[var(--dark-bg-base)] text-gray-500 border border-gray-800'}`}>
+                      {opt.icon}
                     </div>
-                    <p className="text-xs text-[#76777d] mt-0.5">{opt.description}</p>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className={`text-sm font-bold ${isCurrent ? 'text-[#0058be]' : 'text-white'}`}>{opt.label}</p>
+                        {isCurrent && <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#0058be]/10 text-[#0058be] font-bold uppercase tracking-wider">Current</span>}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-0.5">{opt.description}</p>
+                    </div>
                   </div>
+                  {!isCurrent && (saving ? <Loader2 className="w-4 h-4 text-[#0058be] animate-spin" /> : <RefreshCw className="w-4 h-4 text-[#0058be]" />)}
                 </div>
-                {!isCurrent && (saving ? <Loader2 className="w-4 h-4 text-[#0058be] animate-spin" /> : <RefreshCw className="w-4 h-4 text-[#0058be]" />)}
-              </div>
-            </button>
-          );
-        })}
+              </button>
+            );
+          })}
+        </div>
       </div>
-      <p className="text-xs text-[#76777d] text-center">Switching account type will redirect you to the corresponding dashboard.</p>
+      <p className="text-xs text-gray-500 text-center">Switching account type will redirect you to the corresponding dashboard.</p>
     </div>
   );
 }

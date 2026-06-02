@@ -11,6 +11,8 @@ import { ROLE_LABELS } from '@/constants/roles';
 import { getDashboardPath } from '@/utils/roleUtils';
 import { useAuth } from '@/contexts/AuthContext';
 import UserStatsCard from '@/components/user/UserStatsCard';
+import ConnectedAccounts from '@/components/user/ConnectedAccounts';
+import RecentDevices from '@/components/user/RecentDevices';
 
 
 
@@ -48,10 +50,13 @@ export default function ProfilePage() {
     <DashboardLayout title="My Profile" description="Manage your personal information and security settings.">
       {toast && <Toast message={toast.message} type={toast.type} />}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Left Column (40%) - Profile Information */}
-        <div className="lg:col-span-2">
-          <div className="bg-white border border-[#c6c6cd]/60 shadow-sm rounded-2xl p-6 h-full">
+        {/* Left Column (40%) - Profile Information & Connected Accounts */}
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          <div className="bg-[var(--dark-bg-base)] border border-gray-800 shadow-sm rounded-2xl p-6">
             <ProfileForm initialProfile={profile} onSuccess={refreshUser} onToast={showToast} />
+          </div>
+          <div className="rounded-2xl flex-1">
+            <ConnectedAccounts />
           </div>
         </div>
 
@@ -63,26 +68,31 @@ export default function ProfilePage() {
           </div>
 
           {/* Bottom 70% - Account Type & Security side-by-side */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
-            <div className="bg-white border border-[#c6c6cd]/60 shadow-sm rounded-2xl p-6 h-full flex flex-col">
-              <h2 className="text-lg font-bold text-[#0b1c30] mb-6 flex items-center gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-[var(--dark-bg-base)] border border-gray-800 shadow-sm rounded-2xl p-6 flex flex-col">
+              <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
                 <RefreshCw className="w-5 h-5 text-[#0058be]" />
                 Account Type
               </h2>
-              <div className="flex-1">
+              <div>
                 <RoleSwitcher onSwitch={handleRoleSwitch} onToast={showToast} />
               </div>
             </div>
 
-            <div className="bg-white border border-[#c6c6cd]/60 shadow-sm rounded-2xl p-6 h-full flex flex-col">
-              <h2 className="text-lg font-bold text-[#0b1c30] mb-6 flex items-center gap-2">
+            <div className="bg-[var(--dark-bg-base)] border border-gray-800 shadow-sm rounded-2xl p-6 flex flex-col">
+              <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
                 <Key className="w-5 h-5 text-[#0058be]" />
-                Security & Password
+                Security &amp; Password
               </h2>
-              <div className="flex-1">
+              <div>
                 <PasswordForm onToast={showToast} />
               </div>
             </div>
+          </div>
+
+          {/* Bottom Area - Recent Devices */}
+          <div className="rounded-2xl flex-1">
+            <RecentDevices />
           </div>
         </div>
       </div>

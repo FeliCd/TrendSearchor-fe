@@ -15,22 +15,21 @@ export default function PageHeader({ title, description, action, actionLabel, on
   };
 
   const config = user?.role ? ROLE_SIDEBAR_CONFIG[user.role] : ROLE_SIDEBAR_CONFIG.USER;
-  const avatarBgColor = config?.avatarBgColor || 'bg-gray-500';
   const roleLabel = config?.roleLabel || 'User';
   return (
-    <div className="h-[72px] border-b border-[#c6c6cd]/40 bg-white/70 backdrop-blur-xl sticky top-0 z-20 flex items-center">
+    <div className="h-[72px] border-b border-gray-800 bg-[var(--dark-bg-base)]/80 backdrop-blur-xl sticky top-0 z-20 flex items-center">
       <div className="w-full px-6">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold text-[#0b1c30]">{title}</h1>
-              <div className="h-5 w-px bg-[#c6c6cd]/60 hidden sm:block" />
+              <h1 className="text-xl font-bold text-white">{title}</h1>
+              <div className="h-5 w-px bg-gray-700 hidden sm:block" />
               {description && (
-                <p className="text-sm text-[#76777d] hidden sm:block">{description}</p>
+                <p className="text-sm text-gray-400 hidden sm:block">{description}</p>
               )}
             </div>
             {description && (
-              <p className="text-sm text-[#76777d] mt-0.5 sm:hidden">{description}</p>
+              <p className="text-sm text-gray-400 mt-0.5 sm:hidden">{description}</p>
             )}
           </div>
           <div className="flex items-center gap-4">
@@ -48,19 +47,19 @@ export default function PageHeader({ title, description, action, actionLabel, on
               </motion.button>
             )}
             
-            {(action || true) && <div className="h-6 w-px bg-[#c6c6cd]/60 hidden sm:block" />}
+            {(action || true) && <div className="h-6 w-px bg-gray-700 hidden sm:block" />}
 
             <div className="flex items-center gap-3">
-              <UserAvatar user={user} size="md" className="border border-[#c6c6cd]/40 shadow-sm" />
+              <UserAvatar user={user} size="md" className="border border-gray-700 shadow-sm" />
               <div className="hidden md:block min-w-0">
-                <p className="text-sm font-bold text-[#0b1c30] truncate">
+                <p className="text-sm font-bold text-white truncate">
                   {user?.fullName || user?.mail || roleLabel}
                 </p>
-                <p className="text-[11px] font-medium text-[#76777d] truncate uppercase tracking-wider">{roleLabel}</p>
+                <p className="text-[11px] font-medium text-gray-500 truncate uppercase tracking-wider">{roleLabel}</p>
               </div>
               <button
                 onClick={handleLogout}
-                className="ml-2 p-2 rounded-xl text-[#76777d] hover:text-red-600 hover:bg-red-50 transition-all flex-shrink-0 shadow-sm border border-transparent hover:border-red-100"
+                className="ml-2 p-2 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all flex-shrink-0 border border-transparent hover:border-red-500/20"
                 title="Sign out"
               >
                 <LogOut className="w-4 h-4" />

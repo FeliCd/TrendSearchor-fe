@@ -16,12 +16,12 @@ function PageBackground() {
   return (
     <>
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-[#0058be]/[0.03] blur-[120px]" />
-        <div className="absolute top-20 right-1/4 w-[500px] h-[500px] rounded-full bg-[#009668]/[0.03] blur-[100px]" />
-        <div className="absolute bottom-0 left-1/2 w-[700px] h-[400px] rounded-full bg-[#0b1c30]/[0.02] blur-[120px]" />
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-[#0058be]/[0.05] blur-[120px]" />
+        <div className="absolute top-20 right-1/4 w-[500px] h-[500px] rounded-full bg-[#0058be]/[0.03] blur-[100px]" />
+        <div className="absolute bottom-0 left-1/2 w-[700px] h-[400px] rounded-full bg-[#0058be]/[0.02] blur-[120px]" />
       </div>
       <div className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.5) 1px, transparent 1px)', backgroundSize: '48px 48px' }}
+        style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '48px 48px' }}
       />
     </>
   );
@@ -166,7 +166,11 @@ export default function UserManagementPage() {
 
   const filteredUsers = users.filter((u) => {
     const matchSearch = !search || u.fullName?.toLowerCase().includes(search.toLowerCase()) || u.mail?.toLowerCase().includes(search.toLowerCase());
-    const matchRole = roleFilter === 'ALL' || u.role === roleFilter;
+    const matchRole = roleFilter === 'ALL' 
+      ? true 
+      : (roleFilter === ROLES.LECTURER 
+          ? (u.role === ROLES.LECTURER || u.role === ROLES.STUDENT) 
+          : u.role === roleFilter);
     const matchStatus = statusFilter === 'ALL' || u.status === statusFilter;
     return matchSearch && matchRole && matchStatus;
   });
@@ -180,9 +184,9 @@ export default function UserManagementPage() {
           <AnimatePresence>
             {error && (
               <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                className="mb-5 flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 border border-red-200 backdrop-blur-sm">
+                className="mb-5 flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 backdrop-blur-sm">
                 <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
-                <p className="text-sm text-red-600">{error}</p>
+                <p className="text-sm text-red-400">{error}</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -210,21 +214,21 @@ export default function UserManagementPage() {
                         <div className="relative group flex-1">
                           <button
                             disabled={selectedUserIds.length === 0}
-                            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-white text-[#0b1c30] border border-[#c6c6cd]/60 hover:bg-[#f8f9ff] transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-[var(--dark-bg-base)] text-white border border-gray-800 hover:border-gray-700 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            <Shield className="w-4 h-4 text-[#0b1c30] opacity-70 group-disabled:opacity-50" />
+                            <Shield className="w-4 h-4 text-[#0058be] opacity-70 group-disabled:opacity-50" />
                             <span className="whitespace-nowrap">Role</span>
-                            <ChevronDown className="w-3.5 h-3.5 text-[#76777d]" />
+                            <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
                           </button>
-                          
+
                           {/* Dropdown Menu */}
                           {selectedUserIds.length > 0 && (
-                            <div className="absolute left-0 top-full mt-2 w-56 bg-white border border-[#c6c6cd]/60 rounded-xl shadow-xl shadow-black/5 overflow-hidden z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            <div className="absolute left-0 top-full mt-2 w-56 border border-gray-800 rounded-xl shadow-xl shadow-black/30 overflow-hidden z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200" style={{ backgroundColor: 'var(--dark-bg-base)' }}>
                               <div className="max-h-48 overflow-y-auto py-1">
                                 {Object.values(ROLES)
                                   .filter(r => r !== ROLES.ADMIN && r !== ROLES.STUDENT)
                                   .map(r => (
-                                  <button key={r} onClick={() => { setBulkRoleTarget(r); setShowBulkRoleModal(true); }} className="w-full flex items-center gap-2.5 px-4 py-2 text-sm font-medium text-[#0b1c30] hover:bg-[#f8f9ff] transition-colors">
+                                  <button key={r} onClick={() => { setBulkRoleTarget(r); setShowBulkRoleModal(true); }} className="w-full flex items-center gap-2.5 px-4 py-2 text-sm font-medium text-white hover:bg-white/5 transition-colors">
                                     <Shield className="w-3.5 h-3.5 text-[#0058be]" />
                                     <span className="whitespace-nowrap">{r === ROLES.LECTURER ? 'Student / Lecturer' : ROLE_LABELS[r]}</span>
                                   </button>
@@ -238,25 +242,25 @@ export default function UserManagementPage() {
                         <button
                           onClick={() => setShowBulkDeleteModal(true)}
                           disabled={selectedUserIds.length === 0}
-                          className="w-full flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-white text-red-600 border border-red-200 hover:bg-red-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:text-red-400 disabled:border-red-100 disabled:hover:bg-white"
+                          className="w-full flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium border transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/30"
                         >
                           <Trash2 className="w-4 h-4" />
                           <span className="whitespace-nowrap">Delete</span>
                         </button>
 
-                        <div className="h-5 w-px bg-[#c6c6cd]/60 hidden sm:block mx-0.5" />
+                        <div className="h-5 w-px bg-gray-800 hidden sm:block mx-0.5" />
 
                         {/* Reset Password Button */}
                         <button
                           onClick={() => setShowBulkResetModal(true)}
                           disabled={selectedUserIds.length === 0}
-                          className="w-full flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-white text-orange-600 border border-orange-200 hover:bg-orange-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:text-orange-400 disabled:border-orange-100 disabled:hover:bg-white"
+                          className="w-full flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium border transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-orange-500/10 border-orange-500/20 text-orange-400 hover:bg-orange-500/20 hover:border-orange-500/30"
                         >
                           <KeyRound className="w-4 h-4" />
                           <span className="whitespace-nowrap">Reset</span>
                         </button>
 
-                        <div className="h-5 w-px bg-[#c6c6cd]/60 hidden sm:block mx-0.5" />
+                        <div className="h-5 w-px bg-gray-800 hidden sm:block mx-0.5" />
 
                         {/* Add User Button */}
                         <button onClick={handleCreate} className="w-full flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold bg-[#0058be] hover:bg-[#004395] text-white transition-all shadow-sm border border-[#0058be]">
@@ -264,13 +268,13 @@ export default function UserManagementPage() {
                           <span className="whitespace-nowrap">Add User</span>
                         </button>
 
-                        <div className="h-5 w-px bg-[#c6c6cd]/60 hidden sm:block mx-0.5" />
+                        <div className="h-5 w-px bg-gray-800 hidden sm:block mx-0.5" />
 
                         {/* Export CSV Button */}
                         <button
                           onClick={handleExportCSV}
                           disabled={filteredUsers.length === 0}
-                          className="w-full flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium bg-white text-emerald-600 border border-emerald-200 hover:bg-emerald-50 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:text-emerald-400 disabled:border-emerald-100 disabled:hover:bg-white"
+                          className="w-full flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium border transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/30"
                         >
                           <Download className="w-4 h-4" />
                           <span className="whitespace-nowrap">Export</span>
@@ -301,18 +305,18 @@ export default function UserManagementPage() {
         {showBulkRoleModal && bulkRoleTarget && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowBulkRoleModal(false)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-sm bg-white rounded-2xl p-6 shadow-xl border border-[#c6c6cd]/40">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-800" style={{ backgroundColor: 'var(--dark-bg-base)' }}>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-[#f8f9ff] border border-[#0058be]/20 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-[#0058be]/10 border border-[#0058be]/20 flex items-center justify-center">
                   <Shield className="w-5 h-5 text-[#0058be]" />
                 </div>
-                <h3 className="text-lg font-bold text-[#0b1c30]">Change Role</h3>
+                <h3 className="text-lg font-bold text-white">Change Role</h3>
               </div>
-              <p className="text-sm text-[#76777d] mb-6 leading-relaxed">
-                Are you sure you want to change the role of <span className="font-bold text-[#0b1c30]">{selectedUserIds.length} selected users</span> to <span className="font-bold text-[#0058be]">{bulkRoleTarget === ROLES.LECTURER ? 'Student / Lecturer' : ROLE_LABELS[bulkRoleTarget]}</span>?
+              <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+                Are you sure you want to change the role of <span className="font-bold text-white">{selectedUserIds.length} selected users</span> to <span className="font-bold text-[#0058be]">{bulkRoleTarget === ROLES.LECTURER ? 'Student / Lecturer' : ROLE_LABELS[bulkRoleTarget]}</span>?
               </p>
               <div className="flex gap-3 justify-end">
-                <button onClick={() => setShowBulkRoleModal(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-[#76777d] hover:bg-[#f8f9ff] hover:text-[#0b1c30] border border-[#c6c6cd]/60 transition-all">Cancel</button>
+                <button onClick={() => setShowBulkRoleModal(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 border border-gray-800 transition-all">Cancel</button>
                 <button onClick={handleBulkRoleChange} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#0058be] hover:bg-[#004395] shadow-sm transition-all">Confirm Change</button>
               </div>
             </motion.div>
@@ -323,19 +327,19 @@ export default function UserManagementPage() {
         {showBulkResetModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowBulkResetModal(false)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-sm bg-white rounded-2xl p-6 shadow-xl border border-[#c6c6cd]/40">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-sm rounded-2xl p-6 shadow-xl border border-gray-800" style={{ backgroundColor: 'var(--dark-bg-base)' }}>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center">
-                  <KeyRound className="w-5 h-5 text-orange-600" />
+                <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                  <KeyRound className="w-5 h-5 text-orange-400" />
                 </div>
-                <h3 className="text-lg font-bold text-[#0b1c30]">Reset Passwords</h3>
+                <h3 className="text-lg font-bold text-white">Reset Passwords</h3>
               </div>
-              <p className="text-sm text-[#76777d] mb-6 leading-relaxed">
-                Are you sure you want to reset passwords for <span className="font-bold text-[#0b1c30]">{selectedUserIds.length} selected users</span>? A default password or reset link will be sent to their emails.
+              <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+                Are you sure you want to reset passwords for <span className="font-bold text-white">{selectedUserIds.length} selected users</span>? A default password or reset link will be sent to their emails.
               </p>
               <div className="flex gap-3 justify-end">
-                <button onClick={() => setShowBulkResetModal(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-[#76777d] hover:bg-[#f8f9ff] hover:text-[#0b1c30] border border-[#c6c6cd]/60 transition-all">Cancel</button>
-                <button onClick={handleBulkResetPassword} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-orange-600 hover:bg-orange-700 shadow-sm transition-all">Confirm Reset</button>
+                <button onClick={() => setShowBulkResetModal(false)} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 border border-gray-800 transition-all">Cancel</button>
+                <button onClick={handleBulkResetPassword} className="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 shadow-sm transition-all">Confirm Reset</button>
               </div>
             </motion.div>
           </div>
