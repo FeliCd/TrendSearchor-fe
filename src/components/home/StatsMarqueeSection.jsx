@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-export default function StatsMarqueeSection({ scrollContainer }) {
+export default function StatsMarqueeSection({ scrollContainer, data }) {
     return (
         <section className="h-screen w-screen sm:w-[85vw] lg:w-[75vw] shrink-0 bg-transparent p-6 lg:p-12 flex flex-col justify-center">
             {/* The Grid Container - Full height of the padding area */}
@@ -15,8 +15,8 @@ export default function StatsMarqueeSection({ scrollContainer }) {
                     className="col-start-1 col-end-3 row-start-1 row-end-3 bg-[#ff86c8] border-r-4 border-b-4 border-[#333] p-8 lg:p-12 flex flex-col justify-end group overflow-hidden relative"
                 >
                     <div className="absolute top-12 right-12 w-32 h-32 border-8 border-black rounded-full opacity-20 group-hover:scale-[2] transition-transform duration-700" />
-                    <span className="font-black text-6xl lg:text-9xl text-black tracking-tighter relative z-10 transition-transform group-hover:-translate-y-2">50M+</span>
-                    <span className="font-black text-lg lg:text-2xl uppercase tracking-widest text-black relative z-10 mt-2">Papers Indexed</span>
+                    <span className="font-black text-6xl lg:text-9xl text-black tracking-tighter relative z-10 transition-transform group-hover:-translate-y-2">{data.stat1.value}</span>
+                    <span className="font-black text-lg lg:text-2xl uppercase tracking-widest text-black relative z-10 mt-2">{data.stat1.label}</span>
                 </motion.div>
 
                 {/* 2. Top-Right Image (Row 1, Col 3-5) */}
@@ -40,8 +40,8 @@ export default function StatsMarqueeSection({ scrollContainer }) {
                     className="col-start-3 col-end-4 row-start-2 row-end-4 bg-[#5b58ff] border-r-4 border-[#333] p-6 lg:p-10 flex flex-col justify-end group relative overflow-hidden"
                 >
                     <div className="absolute top-0 right-0 w-full h-full bg-black/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                    <span className="font-black text-5xl lg:text-7xl text-white tracking-tighter relative z-10">10K+</span>
-                    <span className="font-bold text-sm lg:text-base uppercase tracking-widest text-white mt-2 relative z-10">Active<br/>Researchers</span>
+                    <span className="font-black text-5xl lg:text-7xl text-white tracking-tighter relative z-10">{data.stat2.value}</span>
+                    <span className="font-bold text-sm lg:text-base uppercase tracking-widest text-white mt-2 relative z-10">{data.stat2.rawLabelPart1}<br/>{data.stat2.rawLabelPart2}</span>
                 </motion.div>
 
                 {/* 4. Small Right Stat (Row 2, Col 4) */}
@@ -52,8 +52,8 @@ export default function StatsMarqueeSection({ scrollContainer }) {
                     transition={{ duration: 0.5, delay: 0.3 }}
                     className="col-start-4 col-end-5 row-start-2 row-end-3 bg-[#0e77ff] border-b-4 border-[#333] p-4 lg:p-8 flex flex-col justify-center items-center text-center group"
                 >
-                    <span className="font-black text-4xl lg:text-5xl text-white tracking-tighter group-hover:scale-110 transition-transform">24/7</span>
-                    <span className="font-bold text-xs lg:text-sm uppercase tracking-widest text-white mt-2">Live Data</span>
+                    <span className="font-black text-4xl lg:text-5xl text-white tracking-tighter group-hover:scale-110 transition-transform">{data.stat3.value}</span>
+                    <span className="font-bold text-xs lg:text-sm uppercase tracking-widest text-white mt-2">{data.stat3.label}</span>
                 </motion.div>
 
                 {/* 5. Bottom Left Image (Row 3, Col 1-2) */}
@@ -76,8 +76,8 @@ export default function StatsMarqueeSection({ scrollContainer }) {
                     transition={{ duration: 0.7, delay: 0.2 }}
                     className="col-start-2 col-end-3 row-start-3 row-end-4 bg-[#7bf5ea] border-r-4 border-[#333] p-6 lg:p-10 flex flex-col justify-end group"
                 >
-                    <span className="font-black text-5xl lg:text-6xl text-black tracking-tighter group-hover:translate-x-2 transition-transform">200+</span>
-                    <span className="font-bold text-xs lg:text-sm uppercase tracking-widest text-black mt-2">Global<br/>Institutions</span>
+                    <span className="font-black text-5xl lg:text-6xl text-black tracking-tighter group-hover:translate-x-2 transition-transform">{data.stat4.value}</span>
+                    <span className="font-bold text-xs lg:text-sm uppercase tracking-widest text-black mt-2">{data.stat4.rawLabelPart1}<br/>{data.stat4.rawLabelPart2}</span>
                 </motion.div>
 
                 {/* 7. Bottom Right Graphic (Row 3, Col 4) */}

@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { LineChart, Network, BookOpen } from 'lucide-react';
 import HeroSearchBar from './HeroSearchBar';
 import Logo from '@/components/layout/Logo';
 
-export default function HeroSection({ scrollContainer }) {
+export default function HeroSection({ scrollContainer, data }) {
   const { scrollXProgress } = useScroll({ container: scrollContainer });
   const opacity = useTransform(scrollXProgress, [0, 0.3], [1, 0]);
   const x = useTransform(scrollXProgress, [0, 0.3], [0, -100]);
@@ -24,10 +23,9 @@ export default function HeroSection({ scrollContainer }) {
           </Link>
           
           <nav className="flex flex-wrap items-center gap-6 sm:gap-8 text-xs font-semibold text-white/80">
-            <Link to="/search" className="hover:text-white transition-colors uppercase tracking-widest">Search</Link>
-            <Link to="/trends" className="hover:text-white transition-colors uppercase tracking-widest">Trends</Link>
-            <Link to="/about" className="hover:text-white transition-colors uppercase tracking-widest">About</Link>
-            <Link to="/contact" className="hover:text-white transition-colors uppercase tracking-widest">Contact</Link>
+            {data.navigation.map((nav, i) => (
+              <Link key={i} to={nav.to} className="hover:text-white transition-colors uppercase tracking-widest">{nav.label}</Link>
+            ))}
             <Link to="/login" className="bg-white text-black px-6 py-2 text-xs font-bold uppercase tracking-widest hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#5b58ff] transition-all">
               Login
             </Link>
@@ -40,7 +38,7 @@ export default function HeroSection({ scrollContainer }) {
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="text-[#5b58ff] text-sm font-semibold mb-4 tracking-wider"
           >
-            Best Research & Analytics Platform
+            {data.subTitle}
           </motion.p>
           
           <motion.h1 
@@ -48,7 +46,7 @@ export default function HeroSection({ scrollContainer }) {
             className="text-5xl sm:text-6xl lg:text-[72px] leading-[1.05] font-bold text-white tracking-tight mb-10"
             style={{ fontFamily: "'M PLUS U', sans-serif" }}
           >
-            The First Step<br />To a New Career
+            {data.titleLine1}<br />{data.titleLine2}
           </motion.h1>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
@@ -60,7 +58,7 @@ export default function HeroSection({ scrollContainer }) {
             className="mt-16 bg-[#5b58ff] p-6 inline-block self-start shadow-xl"
           >
             <p className="text-white text-xs font-bold uppercase tracking-widest leading-relaxed">
-              LEARN FROM<br />INDUSTRY EXPERTS
+              {data.highlightBadge.line1}<br />{data.highlightBadge.line2}
             </p>
             <div className="w-10 h-0.5 bg-white mt-4" />
           </motion.div>

@@ -22,7 +22,7 @@ export default function ActivityList({ items, avatarField = 'mail', actionField 
               </span>
             </div>
           ))
-        )
+        )}
       </div>
     </SectionCard>
   );

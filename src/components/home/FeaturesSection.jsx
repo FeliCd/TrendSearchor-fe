@@ -1,45 +1,5 @@
-import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
-import { BarChart3, Bell, Bookmark, GitCompare, Search, Shield, Hash, Triangle } from 'lucide-react';
-
-const features = [
-  {
-    icon: BarChart3,
-    title: 'Trend Visualization',
-    description: 'Interactive charts showing publication volume for any keyword across years. Compare multiple topics side-by-side.',
-    color: '#7bf5ea', // Cyan
-  },
-  {
-    icon: Search,
-    title: 'Smart Paper Search',
-    description: 'Search by keyword, author, or journal with multi-condition filtering. Sort by relevance, year, or citation count.',
-    color: '#8233ff', // Purple
-  },
-  {
-    icon: GitCompare,
-    title: 'Keyword Comparison',
-    description: 'Compare growth trajectories of multiple research topics on the same chart to identify dominant and emerging themes.',
-    color: '#0e77ff', // Blue
-  },
-  {
-    icon: Bell,
-    title: 'Follow & Notify',
-    description: 'Follow journals and topics. Get notified when new papers matching your interests are published.',
-    color: '#ff86c8', // Pink
-  },
-  {
-    icon: Bookmark,
-    title: 'Personal Bookmarks',
-    description: 'Save papers and keywords with personal notes. Organize your reference list and revisit them anytime.',
-    color: '#5b58ff', // Indigo
-  },
-  {
-    icon: Shield,
-    title: 'Role-Based Access',
-    description: 'Researcher, Lecturer/Student, and Admin roles. Advanced analytics unlocked for Researchers.',
-    color: '#7bf5ea', // Cyan
-  },
-];
 
 function FeatureCard({ feature, delay }) {
   const [hovered, setHovered] = useState(false);
@@ -84,10 +44,9 @@ function FeatureCard({ feature, delay }) {
   );
 }
 
-export default function FeaturesSection({ scrollContainer }) {
+export default function FeaturesSection({ scrollContainer, data }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { root: scrollContainer, once: false, margin: '0px 0px 0px -100px' });
-  const { scrollXProgress } = useScroll({ container: scrollContainer });
   
   return (
       <section className="h-screen w-screen shrink-0 py-24 px-8 overflow-y-auto hide-scrollbar bg-transparent flex flex-col justify-center relative overflow-hidden">
@@ -102,14 +61,13 @@ export default function FeaturesSection({ scrollContainer }) {
               className="text-center mb-20"
           >
             <span className="inline-block text-xs font-black uppercase tracking-[0.2em] px-4 py-1.5 mb-6 bg-[#5b58ff] text-white">
-              Platform Features
+              {data.header.badge}
             </span>
             <h2 className="font-bold text-4xl md:text-5xl text-white mb-6" style={{ fontFamily: "'M PLUS U', sans-serif" }}>
-              Everything researchers need
+              {data.header.title}
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto text-base leading-relaxed font-medium">
-              From broad trend discovery to deep paper analysis — TrendSearchor covers the full
-              research intelligence workflow with style.
+              {data.header.description}
             </p>
           </motion.div>
 
@@ -121,7 +79,7 @@ export default function FeaturesSection({ scrollContainer }) {
               animate={isInView ? 'show' : 'hidden'}
               className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {features.map((f, i) => (
+            {data.items.map((f, i) => (
                 <FeatureCard key={f.title} feature={f} delay={i * 0.07} />
             ))}
           </motion.div>

@@ -1,22 +1,9 @@
 import { TrendingUp, TrendingDown, ChevronRight, Sparkles, Flame, Shield, Award, TrendingDown as TrendingDownAlt } from 'lucide-react';
 import { TOPIC_STATUS_CONFIG } from '@/constants/chartConfig';
+import TrendChip from '@/components/trends/TrendChip';
+
 
 const ICON_MAP = { Sparkles, Flame, Shield, Award, TrendingDown: TrendingDownAlt };
-
-const TREND_ICONS = { Rising: TrendingUp, Stable: Shield, Declining: TrendingDown };
-
-export { TOPIC_STATUS_CONFIG };
-
-function TrendChip({ growthRate }) {
-  if (growthRate == null) return null;
-  const isPositive = growthRate >= 0;
-  return (
-    <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
-      {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-      {`${isPositive ? '+' : ''}${Math.round(growthRate * 100)}%`}
-    </span>
-  );
-}
 
 export function TopicCard({ topic, onClick, compact = false }) {
   const config = TOPIC_STATUS_CONFIG[topic.status] || TOPIC_STATUS_CONFIG.STABLE;
@@ -78,5 +65,3 @@ export function TopicRankingPanel({ risingTopics = [], stableTopics = [], declin
     </div>
   );
 }
-
-export { TrendChip };

@@ -18,7 +18,7 @@ const itemVariants = {
     show: { opacity: 1, y: 0, transition: { type: 'spring', bounce: 0.2, duration: 0.8 } }
 };
 
-export default function CTASection({ scrollContainer }) {
+export default function CTASection({ scrollContainer, data }) {
     const { scrollXProgress } = useScroll({ container: scrollContainer });
     
     // Parallax values for abstract floating background shapes (not cartoonish icons)
@@ -51,12 +51,12 @@ export default function CTASection({ scrollContainer }) {
                     <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left relative z-10">
                         <motion.div variants={itemVariants} className="mb-6">
                             <span className="inline-block text-xs font-black uppercase tracking-[0.2em] px-4 py-1.5 bg-[#5b58ff] text-white">
-                                Get Started
+                                {data.badge}
                             </span>
                         </motion.div>
                         
                         <motion.p variants={itemVariants} className="text-gray-400 text-base sm:text-lg font-medium max-w-xl leading-relaxed">
-                            Join thousands of researchers and lecturers using TrendSearchor to stay ahead of the scientific landscape.
+                            {data.description}
                         </motion.p>
                     </div>
 
@@ -65,26 +65,26 @@ export default function CTASection({ scrollContainer }) {
                         <motion.div variants={itemVariants} className="flex flex-col gap-4 w-full">
                             {/* Primary CTA */}
                             <Link
-                                to="/register"
+                                to={data.primaryAction.to}
                                 className="group flex items-center justify-center gap-3 w-full px-8 py-4 bg-white text-black font-black uppercase tracking-widest text-sm hover:bg-gray-200 transition-all duration-300"
                             >
-                                Create free account
+                                {data.primaryAction.text}
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                             </Link>
 
                             {/* Secondary CTA */}
                             <Link
-                                to="/dashboard"
+                                to={data.secondaryAction.to}
                                 className="group flex items-center justify-center gap-2 w-full px-8 py-4 bg-[#151515] border-2 border-[#333333] text-white font-bold uppercase tracking-widest text-sm hover:border-gray-600 hover:bg-[#252525] transition-all duration-300"
                             >
                                 <BookOpen className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
-                                Explore dashboard
+                                {data.secondaryAction.text}
                             </Link>
                         </motion.div>
 
                         {/* Trust badges */}
                         <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mt-8 w-full">
-                            {['No credit card', 'Free forever'].map((t, i) => (
+                            {data.trustBadges.map((t, i) => (
                                 <div key={i} className="flex items-center gap-2 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
                                     <div className="w-1.5 h-1.5 rounded-full bg-[#5b58ff]" />
                                     <span>{t}</span>

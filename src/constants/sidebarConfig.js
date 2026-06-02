@@ -2,17 +2,31 @@ import {
   LayoutDashboard,
   Users,
   TrendingUp,
-  Settings,
   Search,
   BookOpen,
   BarChart2,
   GraduationCap,
   FlaskConical,
-  User,
   Shield,
   Bell,
   UserCircle,
 } from 'lucide-react';
+
+const ACADEMIC_CONFIG = {
+    roleLabel: 'Academic',
+    subtitle: 'Academic Portal',
+    accentColor: 'emerald-400',
+    avatarBgColor: 'bg-emerald-500',
+    HeaderIcon: GraduationCap,
+    navItems: [
+      { to: '/academic', label: 'Dashboard', icon: LayoutDashboard, end: true },
+      { to: '/academic/search', label: 'Search Papers', icon: Search },
+      { to: '/academic/trends', label: 'Trends', icon: TrendingUp },
+      { to: '/academic/bookmarks', label: 'Bookmarks', icon: BookOpen },
+      { to: '/academic/notifications', label: 'Notifications', icon: Bell },
+      { to: '/academic/profile', label: 'My Profile', icon: UserCircle },
+    ],
+};
 
 export const ROLE_SIDEBAR_CONFIG = {
   ADMIN: {
@@ -26,36 +40,8 @@ export const ROLE_SIDEBAR_CONFIG = {
       { to: '/admin/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
-  LECTURER: {
-    roleLabel: 'Lecturer',
-    subtitle: 'Academic Portal',
-    accentColor: 'emerald-400',
-    avatarBgColor: 'bg-emerald-500',
-    HeaderIcon: GraduationCap,
-    navItems: [
-      { to: '/lecturer', label: 'Dashboard', icon: LayoutDashboard, end: true },
-      { to: '/lecturer/search', label: 'Search Papers', icon: Search },
-      { to: '/lecturer/trends', label: 'Trends', icon: TrendingUp },
-      { to: '/lecturer/bookmarks', label: 'Bookmarks', icon: BookOpen },
-      { to: '/lecturer/notifications', label: 'Notifications', icon: Bell },
-      { to: '/lecturer/profile', label: 'My Profile', icon: UserCircle },
-    ],
-  },
-  STUDENT: {
-    roleLabel: 'Student',
-    subtitle: 'Student Portal',
-    accentColor: 'blue-400',
-    avatarBgColor: 'bg-blue-500',
-    HeaderIcon: User,
-    navItems: [
-      { to: '/student', label: 'Dashboard', icon: LayoutDashboard, end: true },
-      { to: '/student/search', label: 'Search Papers', icon: Search },
-      { to: '/student/trends', label: 'Trends', icon: TrendingUp },
-      { to: '/student/bookmarks', label: 'Bookmarks', icon: BookOpen },
-      { to: '/student/notifications', label: 'Notifications', icon: Bell },
-      { to: '/student/profile', label: 'My Profile', icon: UserCircle },
-    ],
-  },
+  LECTURER: ACADEMIC_CONFIG,
+  STUDENT: ACADEMIC_CONFIG,
   RESEARCHER: {
     roleLabel: 'Researcher',
     subtitle: 'Research Portal',
@@ -69,21 +55,6 @@ export const ROLE_SIDEBAR_CONFIG = {
       { to: '/researcher/analytics', label: 'Analytics', icon: BarChart2 },
       { to: '/researcher/bookmarks', label: 'Bookmarks', icon: BookOpen },
       { to: '/researcher/profile', label: 'My Profile', icon: UserCircle },
-    ],
-  },
-  USER: {
-    roleLabel: 'My Account',
-    subtitle: 'User Portal',
-    accentColor: 'white',
-    avatarBgColor: 'bg-white/10',
-    HeaderIcon: User,
-    navItems: [
-      { to: '/user', label: 'Dashboard', icon: LayoutDashboard, end: true },
-      { to: '/user/search', label: 'Search Papers', icon: Search },
-      { to: '/user/trends', label: 'Trends', icon: TrendingUp },
-      { to: '/user/bookmarks', label: 'Bookmarks', icon: BookOpen },
-      { to: '/user/notifications', label: 'Notifications', icon: Bell },
-      { to: '/user/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
 };

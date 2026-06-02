@@ -2,15 +2,15 @@ import { XCircle, CheckCircle, AlertTriangle, X } from 'lucide-react';
 
 const VARIANT_STYLES = {
   error: {
-    container: 'bg-red-500/10 border-red-500/30 text-red-400',
+    container: 'bg-gray-900 border-red-500/30 text-red-400 shadow-[0_8px_30px_rgb(0,0,0,0.5)]',
     icon: XCircle,
   },
   success: {
-    container: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
+    container: 'bg-gray-900 border-emerald-500/30 text-emerald-400 shadow-[0_8px_30px_rgb(0,0,0,0.5)]',
     icon: CheckCircle,
   },
   warning: {
-    container: 'bg-amber-500/10 border-amber-500/30 text-amber-400',
+    container: 'bg-gray-900 border-amber-500/30 text-amber-400 shadow-[0_8px_30px_rgb(0,0,0,0.5)]',
     icon: AlertTriangle,
   },
 };
@@ -66,6 +66,10 @@ export function ToastContainer({ toasts, onRemove }) {
 /**
  * Single toast (legacy compat).
  */
-export default function Toast({ message, type = 'success' }) {
-  return <ToastItem message={message} type={type} />;
+export default function Toast({ message, type = 'success', onClose }) {
+  return (
+    <div className="fixed top-6 right-6 z-[9999] flex flex-col gap-3">
+      <ToastItem message={message} type={type} onClose={onClose} />
+    </div>
+  );
 }

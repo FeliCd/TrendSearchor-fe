@@ -1,37 +1,22 @@
-import { Bookmark, Loader2 } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 import Toast from '@/components/ui/Toast';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import BookmarkCard from '@/components/bookmarks/BookmarkCard';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { Pagination } from '@/components/ui/Pagination';
 import { bookmarkService } from '@/services/bookmarkService';
 import { useState, useEffect, useCallback } from 'react';
 
 const FilterTabs = ({ filter, onFilterChange }) => (
   <div className="flex gap-2 mb-6">
-    {[{ k: 'ALL', l: 'All', Ic: null }, { k: 'PAPER', l: 'Papers', Ic: null }, { k: 'KEYWORD', l: 'Keywords', Ic: null }].map(({ k, l }) => (
+    {['ALL', 'PAPER', 'KEYWORD'].map((k) => (
       <button key={k} onClick={() => onFilterChange(k)}
         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
           filter === k ? 'bg-[#0058be] text-white' : 'bg-[#1e1e1e] text-gray-400 hover:text-white border border-gray-800'
-        }`}>{l}
+        }`}>
+        {k === 'ALL' ? 'All' : k === 'PAPER' ? 'Papers' : 'Keywords'}
       </button>
     ))}
-  </div>
-);
-
-const EmptyState = () => (
-  <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-    <Bookmark className="w-16 h-16 mb-4 opacity-20" />
-    <p className="text-lg font-medium text-gray-300">No bookmarks yet</p>
-    <p className="text-sm mt-1">Search papers and bookmark them to access here</p>
-  </div>
-);
-
-const Pagination = ({ page, totalPages, onPageChange }) => (
-  <div className="flex justify-center gap-2 mt-6">
-    <button onClick={() => onPageChange(Math.max(0, page - 1))} disabled={page === 0}
-      className="px-4 py-2 bg-[#1e1e1e] border border-gray-800 text-white rounded-xl disabled:opacity-30 hover:border-gray-700 transition-colors">Previous</button>
-    <span className="px-4 py-2 text-gray-400 text-sm">Page {page + 1} of {totalPages}</span>
-    <button onClick={() => onPageChange(page + 1)} disabled={page >= totalPages - 1}
-      className="px-4 py-2 bg-[#1e1e1e] border border-gray-800 text-white rounded-xl disabled:opacity-30 hover:border-gray-700 transition-colors">Next</button>
   </div>
 );
 
@@ -51,9 +36,13 @@ export default function BookmarksPage() {
       const params = { page, size: 10 };
       if (filter !== 'ALL') params.type = filter;
       const data = await bookmarkService.getBookmarks(params);
-      setBookmarks(data.content || []); setTotalPages(data.totalPages || 0);
-    } catch { showToast('Failed to load bookmarks', 'error'); }
-    finally { setLoading(false); }
+      setBookmarks(data.content || []);
+      setTotalPages(data.totalPages || 0);
+    } catch {
+      showToast('Failed to load bookmarks', 'error');
+    } finally {
+      setLoading(false);
+    }
   }, [page, filter]);
 
   useEffect(() => { loadBookmarks(); }, [loadBookmarks]);
@@ -87,7 +76,7 @@ export default function BookmarksPage() {
         {loading ? (
           <div className="flex justify-center py-16"><LoadingSpinner /></div>
         ) : bookmarks.length === 0 ? (
-          <EmptyState />
+          <EmptyState icon={Bookmark} title="No bookmarks yet" description="Search papers and bookmark them to access here" />
         ) : (
           <>
             <div className="space-y-3">

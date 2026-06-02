@@ -1,38 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Users, Pencil } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ROLES, ROLE_LABELS, ROLE_COLORS } from '@/constants/roles';
 import { formatDate, timeAgo } from '@/utils/dateUtils';
 import UserAvatar from '@/components/ui/UserAvatar';
 import RoleIcon from '@/components/ui/RoleIcon';
+import { Pagination } from '@/components/ui/Pagination';
 
 const ITEMS_PER_PAGE = 5;
 const COLUMNS = ['', 'User', 'Phone', 'Date of Birth', 'Role', 'Status', 'Last Login', 'Created', 'Actions'];
 const STATUS_DOT = { ACTIVE: 'bg-emerald-400', INACTIVE: 'bg-yellow-400' };
 const STATUS_LABEL = { ACTIVE: 'Active', INACTIVE: 'Inactive' };
-
-function Pagination({ currentPage, totalPages, users, onPageChange }) {
-  const pageNums = Array.from({ length: totalPages }, (_, i) => i + 1).filter((page) => totalPages <= 7 || page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1 || page === 2 || page === totalPages - 1);
-  return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 border-t border-gray-800">
-      <p className="text-xs text-gray-400">Showing <span className="text-white font-semibold">{(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, users.length)}</span> of <span className="text-white font-semibold">{users.length}</span> users</p>
-      <div className="flex items-center gap-1">
-        <button onClick={() => onPageChange((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-all">Prev</button>
-        {pageNums.map((page, idx) => {
-          const prev = pageNums[idx - 1];
-          return (<span key={page} className="flex items-center">
-            {prev && page - prev > 1 && <span className="px-1.5 text-xs text-gray-700">...</span>}
-            <button onClick={() => onPageChange(page)}
-              className={`w-8 h-8 rounded-lg text-xs font-semibold border transition-all ${page === currentPage ? 'bg-[#0058be] text-white border-[#0058be] shadow-sm' : 'text-gray-400 hover:text-white hover:bg-white/5 border-transparent'}`}>
-              {page}
-            </button>
-          </span>);
-        })}
-        <button onClick={() => onPageChange((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-all">Next</button>
-      </div>
-    </div>
-  );
-}
 
 export default function UserTable({ users, onEdit, onView, onDelete, selectedIds = [], onSelect, onSelectAll }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,7 +97,7 @@ export default function UserTable({ users, onEdit, onView, onDelete, selectedIds
                       {user.dateOfBirth || user.dob ? formatDate(user.dateOfBirth || user.dob) : '-'}
                     </td>
                     <td className="px-4 py-3.5 first:pl-6 last:pr-6">
-                      <span className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold w-[110px] ${ROLE_COLORS[user.role]?.badge || ''}`}>
+                      <span className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold w-[160px] whitespace-nowrap ${ROLE_COLORS[user.role]?.badge || ''}`}>
                         <span className="opacity-70">{RoleIcon[user.role]}</span>{ROLE_LABELS[user.role] || user.role}
                       </span>
                     </td>
@@ -149,7 +127,15 @@ export default function UserTable({ users, onEdit, onView, onDelete, selectedIds
             </tbody>
           </table>
         </div>
-        {users.length > 0 && <Pagination currentPage={currentPage} totalPages={totalPages} users={users} onPageChange={setCurrentPage} />}
+        {users.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={users.length}
+            itemsPerPage={ITEMS_PER_PAGE}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
     </>
   );

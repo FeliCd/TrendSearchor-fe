@@ -5,125 +5,11 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { ToastContainer } from '@/components/ui/Toast';
 import { useToast } from '@/hooks/useToast';
 import { User, Mail, Lock, Phone, Calendar, Building2 } from 'lucide-react';
+import { Steps } from '@/components/auth/Steps';
+import { AuthField } from '@/components/auth/AuthField';
+import { AuthSelect } from '@/components/auth/AuthSelect';
+import { RoleCard } from '@/components/auth/RoleCard';
 
-/* ── Step indicator ────────────────────────────────────────── */
-function Steps({ current }) {
-  const steps = ['Account', 'Details'];
-  return (
-    <div className="flex items-center justify-center gap-2 mb-6">
-      {steps.map((label, i) => {
-        const num = i + 1;
-        const isDone = num < current;
-        const isActive = num === current;
-        return (
-          <div key={num} className="flex items-center gap-2">
-            <div className={`w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center transition-all ${
-              isDone ? 'bg-white text-black border border-white' :
-              isActive ? 'bg-[#0058be] text-white' :
-              'bg-[#1e1e1e] text-gray-500 border border-gray-800'
-            }`}>
-              {isDone ? (
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              ) : num}
-            </div>
-            <span className={`text-xs font-bold uppercase tracking-widest ${isActive ? 'text-white' : isDone ? 'text-gray-300' : 'text-gray-600'}`}>
-              {label}
-            </span>
-            {i < steps.length - 1 && (
-              <div className={`w-8 h-px mx-2 ${isDone ? 'bg-white/30' : 'bg-gray-800'}`} />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/* ── Field ─────────────────────────────────────────────────── */
-function Field({ id, name, label, type = 'text', placeholder, value, onChange, icon: Icon, error, helperText, autoComplete, autoFocus }) {
-  const [show, setShow] = useState(false);
-  const isPassword = type === 'password' || name === 'confirmPassword';
-  const inputType = isPassword ? (show ? 'text' : 'password') : type;
-
-  return (
-    <div>
-      <label htmlFor={id} className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">{label}</label>
-      <div className="relative">
-        {Icon && (
-          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-            <Icon className="w-4 h-4 text-gray-500" />
-          </div>
-        )}
-        <input
-          id={id} name={name} type={inputType}
-          placeholder={placeholder} value={value} onChange={onChange}
-          autoComplete={autoComplete || name} autoFocus={autoFocus}
-          className={`w-full ${Icon ? 'pl-11' : 'pl-4'} ${isPassword ? 'pr-11' : 'pr-4'} py-3 bg-[#1e1e1e] border-2 text-white font-medium text-sm
-            placeholder:text-gray-600 focus:outline-none transition-all
-            border-gray-800 focus:border-[#0058be]`}
-        />
-        {isPassword && (
-          <button type="button" onClick={() => setShow(!show)}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors">
-            {show ? (
-              <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>
-            ) : (
-              <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-            )}
-          </button>
-        )}
-      </div>
-      {helperText && !error && (
-        <p className="text-xs mt-1 text-[#76777d]">{helperText}</p>
-      )}
-    </div>
-  );
-}
-
-/* ── Select ───────────────────────────────────────────────── */
-function Select({ id, name, label, value, onChange, options, error }) {
-  return (
-    <div>
-      <label htmlFor={id} className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">{label}</label>
-      <div className="relative">
-        <select id={id} name={name} value={value} onChange={onChange}
-          className="w-full pl-4 pr-11 py-3 bg-[#1e1e1e] border-2 text-sm font-medium appearance-none cursor-pointer focus:outline-none transition-all
-            border-gray-800 focus:border-[#0058be] text-white"
-        >
-          {options.map((o) => <option key={o.value} value={o.value} disabled={o.disabled} className="bg-[#151515] text-white">{o.label}</option>)}
-        </select>
-        <svg className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-      </div>
-
-    </div>
-  );
-}
-
-/* ── Role card ────────────────────────────────────────────── */
-function RoleCard({ id, name, label, description, selected, onChange }) {
-  return (
-    <label className={`flex-1 flex items-center gap-3 p-3.5 border-2 cursor-pointer transition-all duration-200 ${
-      selected ? 'border-white bg-white text-black' : 'border-gray-800 bg-[#1e1e1e] hover:border-gray-600 text-white'
-    }`}>
-      <input type="radio" id={id} name={name} value={id} checked={selected} onChange={onChange} className="sr-only" />
-      <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${
-        selected ? 'bg-[#0058be] text-white' : 'bg-transparent border border-gray-600'
-      }`}>
-        {selected && (
-          <div className="w-2.5 h-2.5 rounded-full bg-white" />
-        )}
-      </div>
-      <div>
-        <div className={`text-xs font-black uppercase tracking-widest leading-tight ${selected ? 'text-black' : 'text-white'}`}>{label}</div>
-        <div className={`text-[10px] font-bold uppercase tracking-wider mt-1 leading-tight ${selected ? 'text-gray-600' : 'text-gray-500'}`}>{description}</div>
-      </div>
-    </label>
-  );
-}
-
-/* ── Main component ──────────────────────────────────────── */
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
   const { formData, errors, globalError, successMsg, isLoading, handleChange, handleSubmit, validateStep1 } = useRegisterForm();
@@ -171,17 +57,17 @@ export default function RegisterPage() {
         {step === 1 && (
           <div className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field id="fullName" name="fullName" label="Full Name" placeholder="John Doe"
+              <AuthField id="fullName" name="fullName" label="Full Name" placeholder="John Doe"
                 value={formData.fullName} onChange={handleChange} icon={User}
                 error={errors.fullName} autoComplete="name" autoFocus />
-              <Field id="mail" name="mail" type="email" label="Email" placeholder="you@university.edu"
+              <AuthField id="mail" name="mail" type="email" label="Email" placeholder="you@university.edu"
                 value={formData.mail} onChange={handleChange} icon={Mail}
                 error={errors.mail} autoComplete="email" />
-              <Field id="password" name="password" type="password" label="Password" placeholder="Min 9 characters"
+              <AuthField id="password" name="password" type="password" label="Password" placeholder="Min 9 characters"
                 value={formData.password} onChange={handleChange} icon={Lock}
                 error={errors.password} autoComplete="new-password"
                 helperText={errors.password ? undefined : '1 uppercase, 1 number, 1 special char'} />
-              <Field id="confirmPassword" name="confirmPassword" type="password" label="Confirm Password" placeholder="Re-enter your password"
+              <AuthField id="confirmPassword" name="confirmPassword" type="password" label="Confirm Password" placeholder="Re-enter your password"
                 value={formData.confirmPassword} onChange={handleChange} icon={Lock}
                 error={errors.confirmPassword} autoComplete="new-password" />
             </div>
@@ -237,13 +123,13 @@ export default function RegisterPage() {
         {step === 2 && (
           <div className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field id="phone" name="phone" type="tel" label="Phone Number" placeholder="0912 345 678"
+              <AuthField id="phone" name="phone" type="tel" label="Phone Number" placeholder="0912 345 678"
                 value={formData.phone} onChange={handleChange} icon={Phone}
                 error={errors.phone} autoComplete="tel" />
-              <Field id="dob" name="dob" type="date" label="Date of Birth"
+              <AuthField id="dob" name="dob" type="date" label="Date of Birth"
                 value={formData.dob} onChange={handleChange} icon={Calendar}
                 error={errors.dob} />
-              <Select id="gender" name="gender" label="Gender" value={formData.gender}
+              <AuthSelect id="gender" name="gender" label="Gender" value={formData.gender}
                 onChange={handleChange}
                 options={[
                   { value: '', label: 'Select gender', disabled: true },
@@ -252,7 +138,7 @@ export default function RegisterPage() {
                   { value: 'OTHERS', label: 'Others' },
                 ]}
                 error={errors.gender} />
-              <Field id="workplace" name="workplace" label="Workplace / University"
+              <AuthField id="workplace" name="workplace" label="Workplace / University"
                 placeholder="FPT University" value={formData.workplace}
                 onChange={handleChange} icon={Building2}
                 error={errors.workplace} autoComplete="organization" />
@@ -268,7 +154,6 @@ export default function RegisterPage() {
                   description="Deep analysis, topic reports"
                   selected={formData.role === 'RESEARCHER'} onChange={handleChange} />
               </div>
-
             </div>
 
             <div className="flex gap-4 mt-6">

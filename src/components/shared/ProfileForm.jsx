@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Shield, Loader2, Edit2, Check, X, Calendar, User, Mail, Phone, Briefcase, MapPin, Camera } from 'lucide-react';
+import { Loader2, Edit2, Check, X, Calendar, User, Mail, Phone, Camera } from 'lucide-react';
 import { profileService } from '@/services/profileService';
-import { ROLE_LABELS, ROLE_COLORS } from '@/constants/roles';
+import { ROLE_LABELS } from '@/constants/roles';
+import { isValidEmail, isValidPhone } from '@/utils/validationUtils';
 import UserAvatar from '@/components/ui/UserAvatar';
 import SelectDropdown from '@/components/ui/SelectDropdown';
 
@@ -14,8 +15,8 @@ function InlineField({ label, icon: Icon, name, value, type = 'text', options = 
 
   const handleSave = async () => {
     if (name === 'fullName' && editValue.trim().length < 3) { setError('Must be at least 3 characters'); return; }
-    if (name === 'mail' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editValue)) { setError('Invalid email'); return; }
-    if (name === 'phone' && editValue && !/^0\d{9}$/.test(editValue)) { setError('Must be 10 digits starting with 0'); return; }
+    if (name === 'mail' && !isValidEmail(editValue)) { setError('Invalid email'); return; }
+    if (name === 'phone' && editValue && !isValidPhone(editValue)) { setError('Must be 10 digits starting with 09, 03, 05, 07, or 08'); return; }
 
     try {
       setSaving(true);
@@ -35,7 +36,7 @@ function InlineField({ label, icon: Icon, name, value, type = 'text', options = 
         msg = 'Failed to update field';
       }
       setError(msg);
-    } 
+    }
     finally { setSaving(false); }
   };
 
@@ -58,7 +59,7 @@ function InlineField({ label, icon: Icon, name, value, type = 'text', options = 
         {Icon && <Icon className="w-4 h-4 text-[#0058be]" />}
         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">{label}</label>
       </div>
-      
+
       <div className="h-[32px] flex items-center w-full relative">
         {isEditing ? (
           <div className="flex items-center gap-2 w-full">
@@ -98,17 +99,18 @@ function InlineField({ label, icon: Icon, name, value, type = 'text', options = 
   );
 }
 
-export default function ProfileForm({ initialProfile, onSuccess, onToast }) {
+export default function ProfileForm({ initialProfile = {}, onSuccess, onToast }) {
   const { user } = useAuth();
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
+  const profileData = initialProfile || {};
   const [profile, setProfile] = useState({
-    fullName: initialProfile?.fullName || '',
-    mail: initialProfile?.mail || '',
-    dob: initialProfile?.dob || '',
-    phone: initialProfile?.phone || '',
-    gender: initialProfile?.gender || '',
-    workplace: initialProfile?.workplace || '',
+    fullName: profileData.fullName || '',
+    mail: profileData.mail || '',
+    dob: profileData.dob || '',
+    phone: profileData.phone || '',
+    gender: profileData.gender || '',
+    workplace: profileData.workplace || '',
   });
 
   const handleSaveField = async (name, value) => {
@@ -121,7 +123,7 @@ export default function ProfileForm({ initialProfile, onSuccess, onToast }) {
     } catch (err) {
       const msg = err?.response?.data?.message || err?.response?.data;
       onToast(typeof msg === 'string' ? msg : Object.values(msg || {})[0] || 'Failed to update field', 'error');
-      throw err; // throw to be caught by InlineField
+      throw err;
     }
   };
 
@@ -136,13 +138,12 @@ export default function ProfileForm({ initialProfile, onSuccess, onToast }) {
 
     try {
       setIsUploading(true);
-      // Optimistic update
       const objectUrl = URL.createObjectURL(file);
       setProfile((prev) => ({ ...prev, avatarUrl: objectUrl }));
 
       const formData = new FormData();
       formData.append('file', file);
-      
+
       const updatedProfile = await profileService.uploadAvatar(formData);
       setProfile((prev) => ({ ...prev, avatarUrl: updatedProfile.data?.avatarUrl || updatedProfile.avatarUrl }));
       onSuccess();
@@ -170,7 +171,7 @@ export default function ProfileForm({ initialProfile, onSuccess, onToast }) {
             className="group relative w-32 h-32 rounded-2xl border-4 shadow-sm flex items-center justify-center overflow-hidden flex-shrink-0 cursor-pointer bg-[var(--dark-bg-base)] border-[var(--dark-bg-base)]"
           >
             <UserAvatar user={user} profile={profile} size="full" shape="square" />
-            
+
             <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               {isUploading ? (
                 <Loader2 className="w-8 h-8 text-white animate-spin" />
@@ -187,35 +188,35 @@ export default function ProfileForm({ initialProfile, onSuccess, onToast }) {
             {ROLE_LABELS[user?.role] || user?.role || 'Admin'}
           </div>
         </div>
-        
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          onChange={handleFileChange} 
-          accept="image/jpeg, image/png, image/webp" 
-          hidden 
+
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/jpeg, image/png, image/webp"
+          hidden
         />
-        
+
         <div className="pt-[76px] flex items-baseline">
           <p className="text-white font-bold text-[28px] sm:text-3xl tracking-tight leading-none">{displayName}</p>
         </div>
       </div>
-      
+
       {/* Fields Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 pb-2">
         <InlineField icon={User} label="Full Name" name="fullName" value={profile.fullName} onSave={handleSaveField} />
         <InlineField icon={Mail} label="Email Address" name="mail" type="email" value={profile.mail} onSave={handleSaveField} />
         <InlineField icon={Phone} label="Phone Number" name="phone" type="tel" placeholder="0912345678" value={profile.phone} onSave={handleSaveField} />
-        <InlineField icon={Briefcase} label="Workplace" name="workplace" value={profile.workplace} onSave={handleSaveField} />
+        <InlineField icon={User} label="Workplace" name="workplace" value={profile.workplace} onSave={handleSaveField} />
         <InlineField icon={Calendar} label="Date of Birth" name="dob" type="date" value={profile.dob} onSave={handleSaveField} />
-        <InlineField 
+        <InlineField
           icon={User}
-          label="Gender" 
-          name="gender" 
-          type="select" 
-          value={profile.gender} 
-          options={[{ value: 'MALE', label: 'Male' }, { value: 'FEMALE', label: 'Female' }, { value: 'OTHERS', label: 'Other' }]} 
-          onSave={handleSaveField} 
+          label="Gender"
+          name="gender"
+          type="select"
+          value={profile.gender}
+          options={[{ value: 'MALE', label: 'Male' }, { value: 'FEMALE', label: 'Female' }, { value: 'OTHERS', label: 'Other' }]}
+          onSave={handleSaveField}
         />
       </div>
     </div>

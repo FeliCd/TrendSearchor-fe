@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { BookOpen, MousePointerClick } from 'lucide-react';
+import { MousePointerClick } from 'lucide-react';
 import { searchService } from '@/services/searchService';
 import { bookmarkService } from '@/services/bookmarkService';
 import PaperPreview from '@/components/ui/PaperPreview';

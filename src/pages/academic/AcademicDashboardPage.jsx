@@ -5,7 +5,7 @@ import DashboardLayout from '@/components/ui/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
 import TrendList from '@/components/ui/TrendList';
 
-export default function LecturerDashboardPage() {
+export default function AcademicDashboardPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -29,7 +29,7 @@ export default function LecturerDashboardPage() {
   }, []);
 
   return (
-    <DashboardLayout title="Lecturer Dashboard" description="Manage your courses and research trends.">
+    <DashboardLayout title="Academic Dashboard" description="Manage your courses and research trends.">
       {loading ? (
         <div className="flex justify-center py-12">
           <Loader2 className="w-8 h-8 text-[#0058be] animate-spin" />

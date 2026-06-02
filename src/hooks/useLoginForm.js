@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { getDashboardPath } from '@/utils/roleUtils';
+import { isValidEmail } from '@/utils/validationUtils';
 
 export function useLoginForm() {
   const { login } = useAuth();
@@ -29,7 +30,7 @@ export function useLoginForm() {
     const errs = {};
     if (!formData.email.trim()) {
       errs.email = 'Email is required.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!isValidEmail(formData.email)) {
       errs.email = 'Please enter a valid email address.';
     }
     if (!formData.password) errs.password = 'Password is required.';

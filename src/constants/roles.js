@@ -7,7 +7,7 @@ export const ROLES = {
 
 export const ROLE_LABELS = {
   [ROLES.ADMIN]: 'Admin',
-  [ROLES.LECTURER]: 'Lecturer',
+  [ROLES.LECTURER]: 'Lecturer / Student',
   [ROLES.STUDENT]: 'Student',
   [ROLES.RESEARCHER]: 'Researcher',
 };

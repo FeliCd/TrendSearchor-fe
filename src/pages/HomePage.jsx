@@ -4,6 +4,8 @@ import FeaturesSection from '@/components/home/FeaturesSection';
 import StatsMarqueeSection from '@/components/home/StatsMarqueeSection';
 import Footer from '@/components/layout/Footer';
 import { useLenis } from '@/providers/LenisProvider';
+import { heroData, featuresData, statsData, ctaData } from '@/mocks/homeData';
+import CTASection from '@/components/home/CTASection';
 
 export default function HomePage() {
     const scrollContainerRef = useRef(null);
@@ -65,9 +67,10 @@ export default function HomePage() {
 
             {/* The single content wrapper that Lenis will translate horizontally */}
             <div className="flex flex-nowrap h-full w-max relative z-10">
-                <HeroSection scrollContainer={scrollContainerRef} />
-                <FeaturesSection scrollContainer={scrollContainerRef} />
-                <StatsMarqueeSection scrollContainer={scrollContainerRef} />
+                <HeroSection scrollContainer={scrollContainerRef} data={heroData} />
+                <FeaturesSection scrollContainer={scrollContainerRef} data={featuresData} />
+                <StatsMarqueeSection scrollContainer={scrollContainerRef} data={statsData} />
+                <CTASection scrollContainer={scrollContainerRef} data={ctaData} />
                 <div className="w-screen h-screen shrink-0 relative flex flex-col justify-center items-center bg-transparent">
                     <Footer />
                 </div>

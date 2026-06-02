@@ -3,6 +3,7 @@ import { X, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ROLES, ROLE_LABELS, ROLE_COLORS, USER_STATUS } from '@/constants/roles';
 import { formatDate, timeAgo } from '@/utils/dateUtils';
+import { isValidEmail } from '@/utils/validationUtils';
 import UserAvatar from '@/components/ui/UserAvatar';
 import RoleIcon from '@/components/ui/RoleIcon';
 import FormField from './FormField';
@@ -48,7 +49,7 @@ export default function UserModal({ user, mode, onClose, onSave }) {
   const validate = () => {
     const errs = {};
     if (!form.mail.trim()) errs.mail = 'Required.';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.mail)) errs.mail = 'Invalid email.';
+    else if (!isValidEmail(form.mail)) errs.mail = 'Invalid email.';
     if (isCreate && !form.password) errs.password = 'Required.';
     else if (form.password && form.password.length < 9) errs.password = 'Min 9 characters.';
     setErrors(errs);

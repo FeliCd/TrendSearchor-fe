@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Trash2, Settings, ChevronDown, Shield, KeyRound, Download } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, Shield, KeyRound, Download } from 'lucide-react';
 import { ROLES, ROLE_LABELS } from '@/constants/roles';
 import { motion, AnimatePresence } from 'framer-motion';
 import { userManagementService } from '@/services/userManagementService';
@@ -11,6 +11,7 @@ import UserTable from '@/components/admin/users/UserTable';
 import UserModal from '@/components/admin/users/UserModal';
 import DeleteConfirmModal from '@/components/admin/users/DeleteConfirmModal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import Toast from '@/components/ui/Toast';
 
 function PageBackground() {
   return (
@@ -45,6 +46,12 @@ export default function UserManagementPage() {
   const [showBulkRoleModal, setShowBulkRoleModal] = useState(false);
   const [bulkRoleTarget, setBulkRoleTarget] = useState(null);
   const [showBulkResetModal, setShowBulkResetModal] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  }, []);
 
   const handleExportCSV = () => {
     // Generate CSV from filteredUsers
@@ -72,8 +79,10 @@ export default function UserManagementPage() {
       // Clear selection
       setSelectedUserIds([]);
       setShowBulkResetModal(false);
+      showToast(`${selectedUserIds.length} passwords reset successfully`);
     } catch (err) {
       setError('Failed to reset passwords.');
+      showToast('Failed to reset passwords', 'error');
     } finally {
       setLoading(false);
     }
@@ -104,7 +113,11 @@ export default function UserManagementPage() {
       await userManagementService.deleteUser(deleteTarget.id);
       setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
       setSelectedUserIds((prev) => prev.filter((id) => id !== deleteTarget.id));
-    } catch (err) { setError(err.response?.data?.message || 'Failed to delete user.'); }
+      showToast('User deleted successfully');
+    } catch (err) { 
+      setError(err.response?.data?.message || 'Failed to delete user.'); 
+      showToast('Failed to delete user', 'error');
+    }
     finally { setShowDeleteModal(false); setDeleteTarget(null); }
   };
 
@@ -125,9 +138,11 @@ export default function UserManagementPage() {
       setLoading(true);
       await Promise.all(selectedUserIds.map((id) => userManagementService.deleteUser(id)));
       setUsers((prev) => prev.filter((u) => !selectedUserIds.includes(u.id)));
+      showToast(`${selectedUserIds.length} users deleted successfully`);
       setSelectedUserIds([]);
     } catch (err) {
       setError('Failed to delete some users. They may have already been deleted.');
+      showToast('Failed to delete some users', 'error');
     } finally {
       setLoading(false);
       setShowBulkDeleteModal(false);
@@ -139,9 +154,11 @@ export default function UserManagementPage() {
       setLoading(true);
       await Promise.all(selectedUserIds.map((id) => userManagementService.updateUserRole(id, bulkRoleTarget)));
       setUsers((prev) => prev.map((u) => selectedUserIds.includes(u.id) ? { ...u, role: bulkRoleTarget } : u));
+      showToast(`Roles updated successfully for ${selectedUserIds.length} users`);
       setSelectedUserIds([]);
     } catch (err) {
       setError('Failed to change roles for some users.');
+      showToast('Failed to change roles', 'error');
     } finally {
       setLoading(false);
       setShowBulkRoleModal(false);
@@ -153,13 +170,16 @@ export default function UserManagementPage() {
       if (modalMode === 'create') {
         const created = await userManagementService.createUser(payload);
         setUsers((prev) => [created, ...prev]);
+        showToast('User created successfully');
       } else {
         const updated = await userManagementService.updateUser(userId, payload);
         setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
+        showToast('User updated successfully');
       }
       setShowModal(false);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save user.');
+      showToast('Failed to save user', 'error');
       throw err;
     }
   };
@@ -178,6 +198,7 @@ export default function UserManagementPage() {
   return (
     <div className="min-h-screen bg-transparent relative">
       <PageBackground />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <div className="relative z-10">
         <PageHeader title="User Management" description="Manage all users, roles, and account statuses." />
         <div className="w-full px-6 pb-10 mt-6">

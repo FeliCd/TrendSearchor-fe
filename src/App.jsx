@@ -13,23 +13,17 @@ const RegisterPage = lazy(() => import('@/pages/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'));
 
 const AdminLayout = lazy(() => import('@/components/admin/layout/AdminLayout'));
-const LecturerLayout = lazy(() => import('@/components/lecturer/layout/LecturerLayout'));
-const StudentLayout = lazy(() => import('@/components/student/layout/StudentLayout'));
+const AcademicLayout = lazy(() => import('@/components/academic/layout/AcademicLayout'));
 const ResearcherLayout = lazy(() => import('@/components/researcher/layout/ResearcherLayout'));
-const UserLayout = lazy(() => import('@/components/user/layout/UserLayout'));
 
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
 const UserManagementPage = lazy(() => import('@/pages/admin/UserManagementPage'));
-const AdminTrendsPage = lazy(() => import('@/pages/admin/AdminTrendsPage'));
-const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettingsPage'));
-const LecturerDashboardPage = lazy(() => import('@/pages/lecturer/LecturerDashboardPage'));
-const StudentDashboardPage = lazy(() => import('@/pages/student/StudentDashboardPage'));
+const AcademicDashboardPage = lazy(() => import('@/pages/academic/AcademicDashboardPage'));
 const ResearcherDashboardPage = lazy(() => import('@/pages/researcher/ResearcherDashboardPage'));
-const UserDashboardPage = lazy(() => import('@/pages/user/UserDashboardPage'));
 const PaperSearchPage = lazy(() => import('@/pages/researcher/PaperSearchPage'));
 const TrendsPage = lazy(() => import('@/pages/researcher/TrendsPage'));
-const BookmarksPage = lazy(() => import('@/pages/user/BookmarksPage'));
-const NotificationsPage = lazy(() => import('@/pages/user/NotificationsPage'));
+const BookmarksPage = lazy(() => import('@/pages/shared/BookmarksPage'));
+const NotificationsPage = lazy(() => import('@/pages/shared/NotificationsPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 
 function PageLoader() {
@@ -90,41 +84,18 @@ function AnimatedRoutes() {
           </Route>
         </Route>
 
-        {/* ─── LECTURER routes ─── */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.LECTURER]} />}>
-          <Route element={<Suspense fallback={<PageLoader />}><LecturerLayout /></Suspense>}>
-            <Route path="/lecturer" element={<LecturerDashboardPage />} end />
-            <Route path="/lecturer/search" element={<PaperSearchPage />} />
-            <Route path="/lecturer/trends" element={<TrendsPage />} />
-            <Route path="/lecturer/bookmarks" element={<BookmarksPage />} />
-            <Route path="/lecturer/notifications" element={<NotificationsPage />} />
-            <Route path="/lecturer/profile" element={<ProfilePage />} />
+        {/* ─── ACADEMIC (LECTURER / STUDENT) routes ─── */}
+        <Route element={<ProtectedRoute allowedRoles={[ROLES.LECTURER, ROLES.STUDENT]} />}>
+          <Route element={<Suspense fallback={<PageLoader />}><AcademicLayout /></Suspense>}>
+            <Route path="/academic" element={<AcademicDashboardPage />} end />
+            <Route path="/academic/search" element={<PaperSearchPage />} />
+            <Route path="/academic/trends" element={<TrendsPage />} />
+            <Route path="/academic/bookmarks" element={<BookmarksPage />} />
+            <Route path="/academic/notifications" element={<NotificationsPage />} />
+            <Route path="/academic/profile" element={<ProfilePage />} />
           </Route>
         </Route>
 
-        {/* ─── STUDENT routes ─── */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.STUDENT]} />}>
-          <Route element={<Suspense fallback={<PageLoader />}><StudentLayout /></Suspense>}>
-            <Route path="/student" element={<StudentDashboardPage />} end />
-            <Route path="/student/search" element={<PaperSearchPage />} />
-            <Route path="/student/trends" element={<TrendsPage />} />
-            <Route path="/student/bookmarks" element={<BookmarksPage />} />
-            <Route path="/student/notifications" element={<NotificationsPage />} />
-            <Route path="/student/profile" element={<ProfilePage />} />
-          </Route>
-        </Route>
-
-        {/* ─── USER routes ─── */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
-          <Route element={<Suspense fallback={<PageLoader />}><UserLayout /></Suspense>}>
-            <Route path="/user" element={<UserDashboardPage />} end />
-            <Route path="/user/search" element={<PaperSearchPage />} />
-            <Route path="/user/trends" element={<TrendsPage />} />
-            <Route path="/user/bookmarks" element={<BookmarksPage />} />
-            <Route path="/user/notifications" element={<NotificationsPage />} />
-            <Route path="/user/profile" element={<ProfilePage />} />
-          </Route>
-        </Route>
       </Routes>
     </AnimatePresence>
   );

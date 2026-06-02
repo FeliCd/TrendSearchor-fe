@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
-import { User, RefreshCw, Key, Loader2 } from 'lucide-react';
+import { RefreshCw, Key, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/ui/DashboardLayout';
 import Toast from '@/components/ui/Toast';
-import ProfileForm from '@/components/user/ProfileForm';
-import RoleSwitcher from '@/components/user/RoleSwitcher';
-import PasswordForm from '@/components/user/PasswordForm';
+import ProfileForm from '@/components/shared/ProfileForm';
+import RoleSwitcher from '@/components/shared/RoleSwitcher';
+import PasswordForm from '@/components/shared/PasswordForm';
 import { profileService } from '@/services/profileService';
 import { ROLE_LABELS } from '@/constants/roles';
 import { getDashboardPath } from '@/utils/roleUtils';
 import { useAuth } from '@/contexts/AuthContext';
-import UserStatsCard from '@/components/user/UserStatsCard';
-import ConnectedAccounts from '@/components/user/ConnectedAccounts';
-import RecentDevices from '@/components/user/RecentDevices';
+import UserStatsCard from '@/components/shared/UserStatsCard';
+import ConnectedAccounts from '@/components/shared/ConnectedAccounts';
+import RecentDevices from '@/components/shared/RecentDevices';
 
 
 
@@ -48,7 +48,7 @@ export default function ProfilePage() {
 
   return (
     <DashboardLayout title="My Profile" description="Manage your personal information and security settings.">
-      {toast && <Toast message={toast.message} type={toast.type} />}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Left Column (40%) - Profile Information & Connected Accounts */}
         <div className="lg:col-span-2 flex flex-col gap-6">
