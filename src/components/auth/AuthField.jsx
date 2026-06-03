@@ -18,6 +18,7 @@ export function AuthField({ id, name, label, type = 'text', placeholder, value, 
           id={id} name={name} type={inputType}
           placeholder={placeholder} value={value} onChange={onChange}
           autoComplete={autoComplete || name} autoFocus={autoFocus}
+          style={{ colorScheme: 'dark' }}
           className={`w-full ${Icon ? 'pl-11' : 'pl-4'} ${isPassword ? 'pr-11' : 'pr-4'} py-3 bg-[#1e1e1e] border-2 text-white font-medium text-sm
             placeholder:text-gray-600 focus:outline-none transition-all
             border-gray-800 focus:border-[#0058be]`}

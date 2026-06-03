@@ -19,20 +19,41 @@ export default function PaperSearchPage() {
     return () => { cleanupRef.current?.(); };
   }, [initScroller]);
 
-  const [query, setQuery] = useState('');
-  const [papers, setPapers] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
+  const [query, setQuery] = useState(() => sessionStorage.getItem('ts_search_query') || '');
+  const [papers, setPapers] = useState(() => {
+    const saved = sessionStorage.getItem('ts_search_papers');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [total, setTotal] = useState(() => parseInt(sessionStorage.getItem('ts_search_total') || '0', 10));
+  const [page, setPage] = useState(() => parseInt(sessionStorage.getItem('ts_search_page') || '0', 10));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
   const [loadingBookmarks, setLoadingBookmarks] = useState(false);
-  const [totalPages, setTotalPages] = useState(0);
-  const [filters, setFilters] = useState({ year: '', sortBy: 'relevance' });
-  const [hasSearched, setHasSearched] = useState(false);
+  const [totalPages, setTotalPages] = useState(() => parseInt(sessionStorage.getItem('ts_search_totalPages') || '0', 10));
+  const [filters, setFilters] = useState(() => {
+    const saved = sessionStorage.getItem('ts_search_filters');
+    return saved ? JSON.parse(saved) : { dateFrom: '', dateTo: '', sortBy: 'relevance' };
+  });
+  const [hasSearched, setHasSearched] = useState(() => sessionStorage.getItem('ts_search_hasSearched') === 'true');
   const [toast, setToast] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
-  const [selectedPaper, setSelectedPaper] = useState(null);
+  const [selectedPaper, setSelectedPaper] = useState(() => {
+    const saved = sessionStorage.getItem('ts_search_selectedPaper');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem('ts_search_query', query);
+    sessionStorage.setItem('ts_search_papers', JSON.stringify(papers));
+    sessionStorage.setItem('ts_search_total', total.toString());
+    sessionStorage.setItem('ts_search_page', page.toString());
+    sessionStorage.setItem('ts_search_totalPages', totalPages.toString());
+    sessionStorage.setItem('ts_search_filters', JSON.stringify(filters));
+    sessionStorage.setItem('ts_search_hasSearched', hasSearched.toString());
+    if (selectedPaper) sessionStorage.setItem('ts_search_selectedPaper', JSON.stringify(selectedPaper));
+    else sessionStorage.removeItem('ts_search_selectedPaper');
+  }, [query, papers, total, page, totalPages, filters, hasSearched, selectedPaper]);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -61,7 +82,7 @@ export default function PaperSearchPage() {
     if (!searchQuery.trim()) return;
     setLoading(true); setError(null); setHasSearched(true); setBookmarkedIds(new Set()); setSelectedPaper(null);
     try {
-      const params = { query: searchQuery, page: pageNum, size: 10, ...(filters.year && { year: filters.year }), ...(filters.sortBy && { sortBy: filters.sortBy }) };
+      const params = { query: searchQuery, page: pageNum, size: 10, ...(filters.dateFrom && { dateFrom: filters.dateFrom }), ...(filters.dateTo && { dateTo: filters.dateTo }), ...(filters.sortBy && { sortBy: filters.sortBy }) };
       const data = await searchService.searchPapers(params);
       setPapers(data.papers || []); setTotal(data.total || 0); setTotalPages(data.totalPages || 0); setPage(pageNum);
     } catch (err) {
@@ -113,7 +134,7 @@ export default function PaperSearchPage() {
             </div>
           </div>
           <div className="flex-[4] bg-[#151515] border-2 border-gray-800 rounded-none shadow-none overflow-hidden flex flex-col min-w-0">
-            <div className="flex-1 overflow-y-auto scrollbar-thin">
+            <div className="flex-1 min-h-0 flex flex-col">
               {selectedPaper ? (
                 <PaperPreview paper={selectedPaper} isBookmarked={bookmarkedIds.has(selectedPaper.externalId)}
                   isToggling={togglingId === selectedPaper.externalId} onBookmark={() => handleBookmark(selectedPaper)} onClose={() => setSelectedPaper(null)} />

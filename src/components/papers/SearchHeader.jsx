@@ -22,15 +22,27 @@ export default function SearchHeader({ query, setQuery, filters, setFilters, loa
         </div>
         
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Year Filter */}
+          {/* Date Filter */}
           <input 
-            type="number" 
-            value={filters.year} 
-            onChange={(e) => setFilters((f) => ({ ...f, year: e.target.value }))}
-            placeholder="Year" 
-            className="w-24 px-3 h-11 rounded-none text-sm text-white bg-[#1e1e1e] border-2 border-gray-800
+            type="date" 
+            value={filters.dateFrom} 
+            onChange={(e) => setFilters((f) => ({ ...f, dateFrom: e.target.value }))}
+            placeholder="From Date" 
+            style={{ colorScheme: 'dark' }}
+            className="w-[150px] px-3 h-11 rounded-none text-sm text-white bg-[#1e1e1e] border-2 border-gray-800
               placeholder:text-gray-400 focus:outline-none focus:border-[#0058be] focus:ring-0
-              transition-all shadow-none text-center" 
+              transition-all shadow-none" 
+          />
+          <span className="text-gray-500 font-bold">-</span>
+          <input 
+            type="date" 
+            value={filters.dateTo} 
+            onChange={(e) => setFilters((f) => ({ ...f, dateTo: e.target.value }))}
+            placeholder="To Date" 
+            style={{ colorScheme: 'dark' }}
+            className="w-[150px] px-3 h-11 rounded-none text-sm text-white bg-[#1e1e1e] border-2 border-gray-800
+              placeholder:text-gray-400 focus:outline-none focus:border-[#0058be] focus:ring-0
+              transition-all shadow-none" 
           />
           
           {/* Sort By Filter */}
