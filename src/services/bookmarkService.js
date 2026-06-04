@@ -42,4 +42,9 @@ export const bookmarkService = {
     const response = await api.get(`/api/bookmarks/check/keyword/${keywordId}`);
     return response.data;
   },
+
+  getBookmarkNetwork: async (params = {}) => {
+    const response = await api.get('/api/bookmarks/network', { params });
+    return response.data;
+  },
 };

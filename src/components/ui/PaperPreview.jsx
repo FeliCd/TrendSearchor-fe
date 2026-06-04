@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
-import { ExternalLink, Bookmark, X, BookOpen, Users, Tag, FileText, Award, Globe, Bold, Italic, Underline as UnderlineIcon, Loader2 } from 'lucide-react';
+import { ExternalLink, Bookmark, X, BookOpen, Users, Tag, FileText, Award, Globe, Bold, Italic, Underline as UnderlineIcon, Loader2, FolderPlus } from 'lucide-react';
 import { useLenis } from '@/providers/LenisProvider';
 import { noteService } from '@/services/noteService';
 
-export default function PaperPreview({ paper, isBookmarked, isToggling, onBookmark, onClose }) {
+export default function PaperPreview({ paper, isBookmarked, isToggling, onBookmark, onAddToCollection, onClose }) {
   const [note, setNote] = useState('');
   const [noteLoading, setNoteLoading] = useState(false);
   const [noteSaving, setNoteSaving] = useState(false);
+  const [showAllAuthors, setShowAllAuthors] = useState(false);
+  const [showAllKeywords, setShowAllKeywords] = useState(false);
   const editorRef = useRef(null);
   const scrollRef = useRef(null);
   const { initScroller } = useLenis();
@@ -100,12 +102,22 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
 
         {paper.authors?.length > 0 && (
           <div>
-            <h4 className="text-gray-400 text-xs font-medium mb-2 uppercase tracking-wider flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5" />
-              Authors
-            </h4>
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-gray-400 text-xs font-medium uppercase tracking-wider flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5" />
+                Authors ({paper.authors.length})
+              </h4>
+              {paper.authors.length > 5 && (
+                <button
+                  onClick={() => setShowAllAuthors(!showAllAuthors)}
+                  className="text-[10px] text-[#0058be] hover:text-white font-bold uppercase tracking-widest transition-colors"
+                >
+                  {showAllAuthors ? 'Show less' : `+ ${paper.authors.length - 5} more`}
+                </button>
+              )}
+            </div>
             <div className="space-y-1.5">
-              {paper.authors.map((author, i) => (
+              {(showAllAuthors ? paper.authors : paper.authors.slice(0, 5)).map((author, i) => (
                 <div key={i} className="text-gray-300 text-sm">
                   {author.name}
                   {author.affiliation && (
@@ -119,12 +131,22 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
 
         {paper.keywords?.length > 0 && (
           <div>
-            <h4 className="text-gray-400 text-xs font-medium mb-2 uppercase tracking-wider flex items-center gap-1.5">
-              <Tag className="w-3.5 h-3.5" />
-              Keywords
-            </h4>
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-gray-400 text-xs font-medium uppercase tracking-wider flex items-center gap-1.5">
+                <Tag className="w-3.5 h-3.5" />
+                Keywords ({paper.keywords.length})
+              </h4>
+              {paper.keywords.length > 8 && (
+                <button
+                  onClick={() => setShowAllKeywords(!showAllKeywords)}
+                  className="text-[10px] text-[#0058be] hover:text-white font-bold uppercase tracking-widest transition-colors"
+                >
+                  {showAllKeywords ? 'Show less' : `+ ${paper.keywords.length - 8} more`}
+                </button>
+              )}
+            </div>
             <div className="flex flex-wrap gap-1.5">
-              {paper.keywords.map((kw, i) => (
+              {(showAllKeywords ? paper.keywords : paper.keywords.slice(0, 8)).map((kw, i) => (
                 <span
                   key={i}
                   className="px-2.5 py-1 border-2 border-[#0058be]/30 bg-[#0058be]/5 text-[#4A90E2] text-[11px] font-bold uppercase tracking-wide rounded-none"
@@ -192,6 +214,13 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
                 {isBookmarked ? 'Saved' : 'Save'}
               </>
             )}
+          </button>
+          <button
+            onClick={() => onAddToCollection(paper)}
+            disabled={!paper.externalId}
+            className="flex-1 flex items-center justify-center gap-2 h-11 border-2 rounded-none transition-all disabled:opacity-50 text-[11px] font-black uppercase tracking-widest shadow-none bg-transparent border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 hover:bg-[#2a2a2a]"
+          >
+            <FolderPlus className="w-4 h-4" /> Collection
           </button>
         </div>
 
