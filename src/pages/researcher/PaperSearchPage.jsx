@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { MousePointerClick, FolderPlus, X, Folder, Loader2 } from 'lucide-react';
 import { searchService } from '@/services/searchService';
 import { bookmarkService } from '@/services/bookmarkService';
@@ -12,6 +13,9 @@ import { useLenis } from '@/providers/LenisProvider';
 
 export default function PaperSearchPage() {
   const { initScroller } = useLenis();
+  const [searchParams] = useSearchParams();
+  const urlQuery = searchParams.get('q');
+  
   const resultsRef = useRef(null);
   const cleanupRef = useRef(null);
 
@@ -20,7 +24,7 @@ export default function PaperSearchPage() {
     return () => { cleanupRef.current?.(); };
   }, [initScroller]);
 
-  const [query, setQuery] = useState(() => sessionStorage.getItem('ts_search_query') || '');
+  const [query, setQuery] = useState(() => urlQuery || sessionStorage.getItem('ts_search_query') || '');
   const [papers, setPapers] = useState(() => {
     const saved = sessionStorage.getItem('ts_search_papers');
     return saved ? JSON.parse(saved) : [];
@@ -100,6 +104,14 @@ export default function PaperSearchPage() {
       setPapers([]); setTotal(0); setTotalPages(0);
     } finally { setLoading(false); }
   }, [filters]);
+
+  useEffect(() => {
+    if (urlQuery) {
+      setQuery(urlQuery);
+      searchPapers(urlQuery, 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlQuery]);
 
   useEffect(() => { if (papers.length > 0) loadBookmarkedIds(papers); }, [papers, loadBookmarkedIds]);
 

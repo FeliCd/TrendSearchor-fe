@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Compass, BookOpen, Bookmark, Loader2, TrendingUp } from 'lucide-react';
 import DashboardLayout from '@/components/ui/DashboardLayout';
 import SectionCard from '@/components/ui/SectionCard';
 import { trendService } from '@/services/trendService';
 
 export default function StudentDashboard() {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
   const [trendingRanking, setTrendingRanking] = useState([]);
   const [trendingKeywords, setTrendingKeywords] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +30,13 @@ export default function StudentDashboard() {
     };
     fetchData();
   }, []);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/academic/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   const getDifficulty = (trendScore) => {
     if (trendScore == null) return { label: 'Medium', color: 'border-amber-500/30 text-amber-400' };
@@ -61,17 +71,19 @@ export default function StudentDashboard() {
         <h2 className="text-3xl font-black text-white uppercase tracking-widest mb-4">Discover Research Topics</h2>
         <p className="text-gray-400 mb-8 max-w-lg">Search through millions of academic papers, or explore our curated roadmaps for beginners.</p>
         
-        <div className="w-full max-w-2xl relative flex items-center">
+        <form onSubmit={handleSearch} className="w-full max-w-2xl relative flex items-center">
           <Search className="w-5 h-5 text-gray-500 absolute left-4" />
           <input 
             type="text" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search topics (e.g. Machine Learning, IoT)..." 
             className="w-full bg-[#1e1e1e] border-2 border-gray-700 text-white pl-12 pr-4 py-4 font-bold focus:outline-none focus:border-[#0058be] transition-colors placeholder:font-normal"
           />
-          <button className="absolute right-2 px-6 py-2 bg-[#0058be] text-white text-[10px] font-black uppercase tracking-widest border-2 border-[#0058be] hover:bg-[#004a9f] transition-colors">
+          <button type="submit" className="absolute right-2 px-6 py-2 bg-[#0058be] text-white text-[10px] font-black uppercase tracking-widest border-2 border-[#0058be] hover:bg-[#004a9f] transition-colors">
             Search
           </button>
-        </div>
+        </form>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
