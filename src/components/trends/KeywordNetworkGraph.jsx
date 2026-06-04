@@ -19,8 +19,8 @@ function KeywordNode({ node, onKeywordClick, selectedKeyword }) {
         className={`
           rounded-full flex items-center justify-center transition-all duration-300
           ${isSelected
-            ? 'bg-blue-500/30 border-2 border-blue-400 shadow-lg shadow-blue-500/20'
-            : 'bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/40'}
+            ? 'bg-[#0058be]/30 border-2 border-blue-400 shadow-lg shadow-blue-500/20'
+            : 'bg-white/5 border border-gray-800 hover:bg-white/10 hover:border-white/40'}
         `}
         style={{ width: size, height: size }}
         title={`${node.keyword} (${node.cooccurrenceCount || 0} co-occurrences)`}
@@ -115,7 +115,7 @@ export default function KeywordNetworkGraph({ data, onKeywordClick, selectedKeyw
             y1={`${edge.y1}%`}
             x2={`${edge.x2}%`}
             y2={`${edge.y2}%`}
-            stroke="#4A90E2"
+            stroke="#0058be"
             strokeWidth={edge.width}
             strokeOpacity={edge.opacity}
           />

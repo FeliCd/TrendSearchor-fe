@@ -6,7 +6,7 @@ function CustomTooltip({ active, payload, label }) {
   if (!active || !payload || !payload.length) return null;
 
   return (
-    <div className="bg-[#161b22]/95 border border-white/10 rounded-xl px-3 py-2.5 shadow-xl backdrop-blur-sm">
+    <div className="bg-[#1e1e1e] border-2 border-gray-800 rounded-none px-3 py-2.5 shadow-xl backdrop-blur-sm">
       <p className="text-sm font-semibold text-white mb-1.5">{label}</p>
       <div className="space-y-1">
         {payload.map((entry, i) => (
@@ -41,7 +41,6 @@ function ChartStats({ yearlyData, totalPapers, maxPapers, avgPapers, useBar }) {
 
 const sharedAxisStyle = { tick: { fontSize: 11, fill: '#9ca3af' }, tickLine: false, axisLine: { stroke: '#ffffff15' } };
 const sharedYAxis = { ...sharedAxisStyle, tickFormatter: (v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v, width: 45 };
-const avgLine = { y: avgPapers, stroke: '#4A90E2', strokeDasharray: '4 4', strokeOpacity: 0.5, label: { value: `Avg: ${Math.round(avgPapers).toLocaleString()}`, position: 'insideTopRight', fontSize: 10, fill: '#6b7280' } };
 
 export default function PublicationTimelineChart({ yearlyData }) {
   if (!yearlyData || yearlyData.length === 0) {
@@ -58,6 +57,7 @@ export default function PublicationTimelineChart({ yearlyData }) {
   const avgPapers = yearlyData.length > 0 ? totalPapers / yearlyData.length : 0;
   const useBar = yearlyData.length <= 8 && maxPapers < 200;
   const chartData = yearlyData.map((item) => ({ year: item.year, Papers: item.paperCount || 0, Citations: item.citationCount || 0 }));
+  const avgLine = { y: avgPapers, stroke: '#0058be', strokeDasharray: '4 4', strokeOpacity: 0.5, label: { value: `Avg: ${Math.round(avgPapers).toLocaleString()}`, position: 'insideTopRight', fontSize: 10, fill: '#6b7280' } };
 
   if (useBar) {
     return (
@@ -70,7 +70,7 @@ export default function PublicationTimelineChart({ yearlyData }) {
             <YAxis domain={[0, Math.ceil(maxPapers * 1.3) || 10]} {...sharedYAxis} />
             <Tooltip content={<CustomTooltip />} />
             <ReferenceLine {...avgLine} />
-            <Bar dataKey="Papers" fill="#4A90E2" fillOpacity={0.85} radius={[4, 4, 0, 0]}>
+            <Bar dataKey="Papers" fill="#0058be" fillOpacity={0.85} radius={[4, 4, 0, 0]}>
               <LabelList dataKey="Papers" position="top" style={{ fontSize: 10, fill: '#9ca3af', fontWeight: 500 }} formatter={(v) => v > 0 ? v.toLocaleString() : ''} />
             </Bar>
           </BarChart>
@@ -86,8 +86,8 @@ export default function PublicationTimelineChart({ yearlyData }) {
         <AreaChart data={chartData} margin={{ top: 15, right: 20, bottom: 5, left: 0 }}>
           <defs>
             <linearGradient id="papersGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#4A90E2" stopOpacity={0.25} />
-              <stop offset="95%" stopColor="#4A90E2" stopOpacity={0.02} />
+              <stop offset="5%" stopColor="#0058be" stopOpacity={0.25} />
+              <stop offset="95%" stopColor="#0058be" stopOpacity={0.02} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" vertical={false} />
@@ -95,9 +95,9 @@ export default function PublicationTimelineChart({ yearlyData }) {
           <YAxis domain={[0, Math.ceil(maxPapers * 1.3) || 10]} {...sharedYAxis} />
           <Tooltip content={<CustomTooltip />} />
           <ReferenceLine {...avgLine} />
-          <Area type="monotone" dataKey="Papers" stroke="#4A90E2" strokeWidth={2.5} fill="url(#papersGradient)"
-            dot={{ r: 4, fill: '#4A90E2', strokeWidth: 0, strokeOpacity: 0 }}
-            activeDot={{ r: 6, fill: '#4A90E2', strokeWidth: 0 }} />
+          <Area type="monotone" dataKey="Papers" stroke="#0058be" strokeWidth={2.5} fill="url(#papersGradient)"
+            dot={{ r: 4, fill: '#0058be', strokeWidth: 0, strokeOpacity: 0 }}
+            activeDot={{ r: 6, fill: '#0058be', strokeWidth: 0 }} />
         </AreaChart>
       </ResponsiveContainer>
     </div>

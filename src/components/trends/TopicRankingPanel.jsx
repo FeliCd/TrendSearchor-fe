@@ -11,7 +11,7 @@ export function TopicCard({ topic, onClick, compact = false }) {
 
   return (
     <button onClick={() => onClick?.(topic)}
-      className={`w-full text-left p-${compact ? '2.5' : '3'} rounded-xl border ${config.border} ${config.bg} hover:brightness-125 transition-all group`}>
+      className={`w-full text-left p-${compact ? '2.5' : '3'} rounded-none border ${config.border} ${config.bg} hover:brightness-125 transition-all group`}>
       <div className={`flex ${compact ? 'items-center gap-2' : 'items-start gap-2'}`}>
         <div className={`flex-shrink-0 w-${compact ? '6' : '8'} h-${compact ? '6' : '8'} rounded-${compact ? 'md' : 'lg'} bg-black/20 flex items-center justify-center mt-0.5`}>
           <span className="text-[10px] font-bold text-gray-500">#{topic.rank}</span>
@@ -43,7 +43,7 @@ export function TopicCard({ topic, onClick, compact = false }) {
 export function TopicRankingPanel({ risingTopics = [], stableTopics = [], decliningTopics = [], onTopicClick }) {
   const columns = [
     { label: 'Rising', icon: TrendingUp, color: 'text-emerald-400', data: risingTopics },
-    { label: 'Stable', icon: Shield, color: 'text-blue-400', data: stableTopics },
+    { label: 'Stable', icon: Shield, color: 'text-[#0058be]', data: stableTopics },
     { label: 'Declining', icon: TrendingDown, color: 'text-gray-400', data: decliningTopics },
   ];
 

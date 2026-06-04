@@ -3,7 +3,7 @@ import { AlertCircle, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 const STATUS_COLORS = {
   EMERGING: 'border-emerald-500/40 bg-emerald-500/5',
   HOT: 'border-red-500/40 bg-red-500/5',
-  STABLE: 'border-blue-500/40 bg-blue-500/5',
+  STABLE: 'border-[#0058be]/40 bg-[#0058be]/5',
   MATURE: 'border-purple-500/40 bg-purple-500/5',
   DECLINING: 'border-gray-500/40 bg-gray-500/5',
 };
@@ -11,7 +11,7 @@ const STATUS_COLORS = {
 const STATUS_LABELS = {
   EMERGING: { text: 'Emerging', color: 'text-emerald-400', icon: TrendingUp },
   HOT: { text: 'Hot', color: 'text-red-400', icon: TrendingUp },
-  STABLE: { text: 'Stable', color: 'text-blue-400', icon: Minus },
+  STABLE: { text: 'Stable', color: 'text-[#0058be]', icon: Minus },
   MATURE: { text: 'Mature', color: 'text-purple-400', icon: Minus },
   DECLINING: { text: 'Declining', color: 'text-gray-400', icon: TrendingDown },
 };
@@ -19,9 +19,9 @@ const STATUS_LABELS = {
 export default function TrendInsightCard({ analysis }) {
   if (!analysis || !analysis.insight) {
     return (
-      <div className={`border rounded-xl p-4 ${STATUS_COLORS.STABLE}`}>
+      <div className={`border rounded-none p-4 ${STATUS_COLORS.STABLE}`}>
         <div className="flex items-center gap-2 mb-2">
-          <AlertCircle className="w-4 h-4 text-blue-400" />
+          <AlertCircle className="w-4 h-4 text-[#0058be]" />
           <span className="text-sm font-medium text-white">AI Insight</span>
         </div>
         <p className="text-sm text-gray-400">No insight available yet. Try searching for a keyword.</p>
@@ -42,7 +42,7 @@ export default function TrendInsightCard({ analysis }) {
     : null;
 
   return (
-    <div className={`border rounded-xl p-4 ${STATUS_COLORS[status] || STATUS_COLORS.STABLE}`}>
+    <div className={`border rounded-none p-4 ${STATUS_COLORS[status] || STATUS_COLORS.STABLE}`}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <StatusIcon className={`w-4 h-4 ${label.color}`} />
@@ -75,7 +75,7 @@ export default function TrendInsightCard({ analysis }) {
         {forecastPercent && (
           <div className="flex items-center gap-1">
             <span className="text-gray-500">Forecast:</span>
-            <span className="font-medium text-blue-400">
+            <span className="font-medium text-[#0058be]">
               {forecastPercent} next year
             </span>
           </div>
@@ -89,7 +89,7 @@ export default function TrendInsightCard({ analysis }) {
           </div>
           <div className="w-full bg-gray-700 rounded-full h-1">
             <div
-              className="bg-blue-500 h-1 rounded-full transition-all"
+              className="bg-[#0058be] h-1 rounded-full transition-all"
               style={{ width: `${Math.round(analysis.forecastConfidence * 100)}%` }}
             />
           </div>

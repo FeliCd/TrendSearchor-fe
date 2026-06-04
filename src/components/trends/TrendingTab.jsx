@@ -6,11 +6,11 @@ import EmergingTopicsChart from './EmergingTopicsChart';
 import AllTopicsList from './AllTopicsList';
 
 export default function TrendingTab({ rankingData, rankingLoading, risingTopics, selectedKeyword, bookmarkedKeywordIds, onTopicSelect, onBookmark }) {
-  if (rankingLoading) return <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 text-[#4A90E2] animate-spin" /></div>;
+  if (rankingLoading) return <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 text-[#0058be] animate-spin" /></div>;
   return (
     <div className="space-y-4">
       {rankingData.ranking?.length > 0 && (
-        <div className="bg-[#161b22] border border-white/5 rounded-xl p-5">
+        <div className="bg-[#1e1e1e] border-2 border-gray-800 rounded-none p-5">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-4 h-4 text-emerald-400" />
             <h3 className="text-sm font-semibold text-white">Topic Ranking</h3>
@@ -24,7 +24,7 @@ export default function TrendingTab({ rankingData, rankingLoading, risingTopics,
         </div>
       )}
       {rankingData.emerging?.length > 0 && (
-        <div className="bg-[#161b22] border border-white/5 rounded-xl p-5">
+        <div className="bg-[#1e1e1e] border-2 border-gray-800 rounded-none p-5">
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="w-4 h-4 text-amber-400" />
             <h3 className="text-sm font-semibold text-white">Emerging Topics</h3>

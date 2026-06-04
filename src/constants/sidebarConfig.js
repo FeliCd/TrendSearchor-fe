@@ -21,7 +21,7 @@ const ACADEMIC_CONFIG = {
     navItems: [
       { to: '/academic', label: 'Dashboard', icon: LayoutDashboard, end: true },
       { to: '/academic/search', label: 'Search Papers', icon: Search },
-      { to: '/academic/trends', label: 'Trends', icon: TrendingUp, comingSoon: true },
+      { to: '/academic/trends', label: 'Trends', icon: TrendingUp },
       { to: '/academic/bookmarks', label: 'Bookmarks', icon: BookOpen },
       { to: '/academic/notifications', label: 'Notifications', icon: Bell, comingSoon: true },
       { to: '/academic/profile', label: 'My Profile', icon: UserCircle },
@@ -51,7 +51,7 @@ export const ROLE_SIDEBAR_CONFIG = {
     navItems: [
       { to: '/researcher', label: 'Dashboard', icon: LayoutDashboard, end: true },
       { to: '/researcher/search', label: 'Search Papers', icon: Search },
-      { to: '/researcher/trends', label: 'Trends', icon: TrendingUp, comingSoon: true },
+      { to: '/researcher/trends', label: 'Trends', icon: TrendingUp },
       { to: '/researcher/analytics', label: 'Analytics', icon: BarChart2, comingSoon: true },
       { to: '/researcher/bookmarks', label: 'Bookmarks', icon: BookOpen },
       { to: '/researcher/profile', label: 'My Profile', icon: UserCircle },
