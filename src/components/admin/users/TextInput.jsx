@@ -2,9 +2,9 @@ export default function TextInput({ type = 'text', value, onChange, error, place
   return (
     <div className="relative">
       <input type={type} value={value} onChange={onChange} placeholder={placeholder}
-        className={`w-full pl-3 pr-3 py-2.5 rounded-xl text-sm text-white bg-[#161b22]/80 border placeholder:text-[#484f58] focus:outline-none transition-all duration-200 ${
-          error ? 'border-red-500/50 focus:border-red-500 focus:ring-2 focus:ring-red-500/10'
-            : 'border-white/[0.08] focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10'
+        className={`w-full pl-3 pr-3 py-2.5 border-2 text-sm text-white bg-[#1e1e1e] placeholder:text-gray-500 focus:outline-none transition-all duration-200 ${
+          error ? 'border-red-500/50 focus:border-red-500 focus:ring-0'
+            : 'border-gray-800 focus:border-[#0058be] focus:ring-0'
         }`} />
       {error && <p className="mt-1.5 text-xs text-red-400">{error}</p>}
     </div>

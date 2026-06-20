@@ -1,7 +1,7 @@
 export default function FieldView({ value }) {
   return (
-    <div className="px-3 py-2.5 rounded-xl text-sm text-white bg-[#161b22]/60 border border-white/[0.06] flex items-center gap-2">
-      <span className="text-[#8b949e]">{value}</span>
+    <div className="px-3 py-2.5 border-2 text-sm text-white bg-[#1e1e1e] border-gray-800 flex items-center gap-2">
+      <span>{value}</span>
     </div>
   );
 }

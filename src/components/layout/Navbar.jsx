@@ -2,7 +2,6 @@ import { Menu, X, LogIn, UserPlus, User, LogOut, UserCircle } from 'lucide-react
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
-import NavbarSearchBar from './NavbarSearchBar';
 import MobileMenu from './MobileMenu';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROLES, ROLE_LABELS } from '@/constants/roles';
@@ -46,52 +45,50 @@ export default function Navbar() {
 
   return (
     <div className="sticky top-4 z-50 px-4 sm:px-6 mx-auto w-full sm:w-fit transition-all duration-300">
-      <div className={`bg-[#0d1117]/80 backdrop-blur-xl border border-white/[0.08] rounded-2xl shadow-2xl transition-all duration-300 ${scrolled ? 'shadow-black/50 bg-[#0d1117]/95' : 'shadow-black/20'}`}>
+      <div className={`bg-white/80 backdrop-blur-xl border border-[#c6c6cd]/40 rounded-2xl shadow-lg transition-all duration-300 ${scrolled ? 'shadow-black/10 bg-white/95' : 'shadow-black/5'}`}>
         <div className="flex items-center justify-between h-14 px-4 sm:px-6 gap-4 sm:gap-8">
 
           <Link to="/" className="group flex-shrink-0">
             <Logo variant="navbar" />
           </Link>
 
-          <NavbarSearchBar scrolled={scrolled} />
-
           <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
             {isLoading ? (
-              <div className="w-9 h-9 rounded-full bg-[#161b22] border border-white/10 animate-pulse" />
+              <div className="w-9 h-9 rounded-full bg-[#f8f9ff] border border-[#c6c6cd]/50 animate-pulse" />
             ) : user ? (
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center justify-center w-9 h-9 rounded-full bg-[#161b22] border border-white/10 hover:border-white/20 transition-all overflow-hidden focus:outline-none focus:ring-2 focus:ring-[#4A90E2]/50"
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-[#f8f9ff] border border-[#c6c6cd]/50 hover:border-[#0058be]/40 transition-all overflow-hidden focus:outline-none focus:ring-2 focus:ring-[#0058be]/50"
                 >
-                  <User className="w-5 h-5 text-[#8b949e]" />
+                  <User className="w-5 h-5 text-[#45464d]" />
                 </button>
 
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-3 w-56 bg-[#161b22] border border-white/10 rounded-xl shadow-2xl py-1 z-50">
-                    <div className="px-4 py-2.5 border-b border-white/5">
-                      <p className="text-sm font-semibold text-white">{user.username}</p>
-                      <p className="text-xs text-[#8b949e] mt-0.5">{ROLE_LABELS[user.role] || user.role}</p>
+                  <div className="absolute right-0 mt-3 w-56 bg-white border border-[#c6c6cd]/60 rounded-xl shadow-xl py-1 z-50">
+                    <div className="px-4 py-2.5 border-b border-[#c6c6cd]/30">
+                      <p className="text-sm font-semibold text-[#0b1c30]">{user.mail}</p>
+                      <p className="text-xs text-[#76777d] mt-0.5">{ROLE_LABELS[user.role] || user.role}</p>
                     </div>
                     <div className="py-1">
                       <Link
                         to={dashboardPath}
                         onClick={() => setShowUserMenu(false)}
-                        className="block px-4 py-2 text-sm text-[#e6edf3] hover:text-white hover:bg-white/5 transition-colors"
+                        className="block px-4 py-2 text-sm text-[#45464d] hover:text-[#0b1c30] hover:bg-[#f8f9ff] transition-colors"
                       >
                         Dashboard
                       </Link>
                       <Link
                         to={`${dashboardPath}/profile`}
                         onClick={() => setShowUserMenu(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-[#e6edf3] hover:text-white hover:bg-white/5 transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-[#45464d] hover:text-[#0b1c30] hover:bg-[#f8f9ff] transition-colors"
                       >
                         <UserCircle className="w-4 h-4" />
                         My Profile
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-sm text-[#f85149] hover:text-[#ff7b72] hover:bg-white/5 transition-colors flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors flex items-center gap-2"
                       >
                         <LogOut className="w-4 h-4" />
                         Sign Out
@@ -105,7 +102,7 @@ export default function Navbar() {
                 <Link
                   to="/login"
                   className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium
-                    text-[#8b949e] hover:text-white hover:bg-white/5 transition-all duration-300"
+                    text-[#45464d] hover:text-[#0b1c30] hover:bg-[#f8f9ff] transition-all duration-300"
                 >
                   <LogIn className="w-4 h-4" />
                   <span>Sign In</span>
@@ -113,8 +110,8 @@ export default function Navbar() {
                 <Link
                   to="/register"
                   className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold
-                    text-white bg-[#4A90E2] hover:bg-[#357ABD] transition-all duration-300
-                    shadow-lg shadow-[#4A90E2]/20 border border-[#4A90E2]/50 hover:border-[#4A90E2]"
+                    text-white bg-[#0058be] hover:bg-[#004395] transition-all duration-300
+                    shadow-sm shadow-[#0058be]/20"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>Sign Up</span>
@@ -126,7 +123,7 @@ export default function Navbar() {
           <div className="flex items-center gap-1 sm:hidden">
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/[0.06] transition-all"
+              className="p-2 rounded-lg text-[#45464d] hover:text-[#0b1c30] hover:bg-[#f8f9ff] transition-all"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>

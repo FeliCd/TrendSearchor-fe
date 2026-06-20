@@ -9,10 +9,10 @@ import { KpiCard } from './TrendKpiCards';
 export default function KeywordOverview({ analysis, loading, displayName, statusConfig,
   trendingKeywords, selectedKeyword, bookmarkedKeywordIds, hasSearched,
   onKeywordSelect, onBookmark }) {
-  if (loading && !analysis) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 text-[#4A90E2] animate-spin" /></div>;
+  if (loading && !analysis) return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 text-[#0058be] animate-spin" /></div>;
   if (!analysis) return (
     <div className="flex flex-col items-center justify-center py-24 text-gray-500">
-      <div className="w-16 h-16 rounded-2xl bg-[#161b22] border border-white/5 flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-2xl bg-[#1e1e1e] border-2 border-gray-800 flex items-center justify-center mb-4">
         <Search className="w-7 h-7 opacity-20" />
       </div>
       <p className="text-base font-medium text-gray-400 mb-1">Search for a research keyword</p>
@@ -35,7 +35,7 @@ export default function KeywordOverview({ analysis, loading, displayName, status
           sub="Next year" color="#fbbf24" />
       </div>
 
-      <div className="bg-[#161b22] border border-white/5 rounded-xl p-5">
+      <div className="bg-[#1e1e1e] border-2 border-gray-800 rounded-none p-5">
         <div className="flex items-center justify-between mb-1">
           <div>
             <h3 className="text-base font-semibold text-white">{displayName}</h3>
@@ -50,7 +50,7 @@ export default function KeywordOverview({ analysis, loading, displayName, status
         </div>
         <PublicationTimelineChart yearlyData={analysis.yearlyData || []} keyword={analysis.keyword} />
         {analysis.yearlyData?.some((d) => d.yoyGrowth != null) && (
-          <div className="mt-3 pt-3 border-t border-white/5">
+          <div className="mt-3 pt-3 border-t border-gray-800">
             <h4 className="text-xs font-medium text-gray-500 mb-2">Year-over-Year Growth</h4>
             <YoYGrowthChart yearlyData={analysis.yearlyData} />
           </div>
@@ -69,7 +69,7 @@ export default function KeywordOverview({ analysis, loading, displayName, status
 
 export function RelatedKeywords({ tags, selectedKeyword, bookmarkedKeywordIds, onSelect, onBookmark }) {
   return (
-    <div className="bg-[#161b22] border border-white/5 rounded-xl p-5">
+    <div className="bg-[#1e1e1e] border-2 border-gray-800 rounded-none p-5">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-white">Related Keywords</h3>
         <span className="text-xs text-gray-500">Click to explore</span>
@@ -82,15 +82,15 @@ export function RelatedKeywords({ tags, selectedKeyword, bookmarkedKeywordIds, o
           return (
             <div key={kw.keyword} className="group relative">
               <button onClick={() => onSelect(kw)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  isSelected ? 'bg-[#4A90E2]/20 text-[#4A90E2] border border-[#4A90E2]/40'
-                    : 'bg-[#0d1117] text-gray-400 border border-white/5 hover:bg-[#0d1117]/60 hover:text-white'
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none text-xs font-medium transition-all ${
+                  isSelected ? 'bg-[#0058be]/20 text-[#0058be] border border-[#0058be]/40'
+                    : 'bg-[#151515] text-gray-400 border-2 border-gray-800 hover:bg-[#151515]/60 hover:text-white'
                 }`}>
                 {name}
               </button>
               <button onClick={(e) => { e.stopPropagation(); onBookmark(kw); }}
                 className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Bookmark className={`w-3 h-3 ${isBookmarked ? 'text-[#4A90E2] fill-current' : 'text-gray-600'}`} />
+                <Bookmark className={`w-3 h-3 ${isBookmarked ? 'text-[#0058be] fill-current' : 'text-gray-600'}`} />
               </button>
             </div>
           );

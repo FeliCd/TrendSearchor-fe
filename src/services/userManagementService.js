@@ -35,4 +35,14 @@ export const userManagementService = {
     const res = await api.patch(`/api/admin/users/${id}/role`, { role });
     return res.data;
   },
+
+  resetPassword: async (id) => {
+    const res = await api.post(`/api/admin/users/${id}/reset-password`);
+    return res.data;
+  },
+
+  bulkResetPassword: async (ids) => {
+    const res = await api.post('/api/admin/users/bulk-reset-password', { ids });
+    return res.data;
+  },
 };

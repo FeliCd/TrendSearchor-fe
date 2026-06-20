@@ -1,4 +1,4 @@
-import { Github, Twitter, Linkedin } from 'lucide-react';
+import { Github, Twitter, Linkedin, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
 
@@ -28,12 +28,12 @@ const SOCIAL_LINKS = [
 
 function FooterLinkGroup({ title, links }) {
   return (
-    <div className="space-y-3">
-      <h4 className="text-xs font-semibold text-white uppercase tracking-wider">{title}</h4>
-      <ul className="space-y-2">
+    <div className="flex flex-col gap-4">
+      <h4 className="text-xs font-black text-white uppercase tracking-widest">{title}</h4>
+      <ul className="flex flex-col gap-3">
         {links.map(({ label, href }) => (
           <li key={label}>
-            <a href={href} className="text-sm text-[#8b949e] hover:text-white transition-colors">
+            <a href={href} className="text-sm font-medium text-gray-400 hover:text-white transition-colors">
               {label}
             </a>
           </li>
@@ -45,44 +45,42 @@ function FooterLinkGroup({ title, links }) {
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/[0.06] bg-[#0d1117]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-          <div className="lg:col-span-2 space-y-4">
-            <Link to="/" className="inline-block group">
-              <Logo variant="footer" />
-            </Link>
-            <p className="text-[#8b949e] text-sm leading-relaxed max-w-xs">
-              AI-powered scientific journal trend tracking platform. Stay ahead of the curve with real-time insights from millions of research publications.
-            </p>
-            <div className="flex items-center gap-3">
-              {SOCIAL_LINKS.map(({ icon: Icon, label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="w-8 h-8 rounded-lg bg-[#161b22] border border-white/10 flex items-center
-                    justify-center text-[#8b949e] hover:text-white hover:border-white/20 transition-all"
-                >
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
-          </div>
+    <footer className="w-full flex flex-col justify-center max-w-4xl mx-auto px-8 py-16">
+      <div className="flex flex-col gap-8 w-full max-w-2xl">
+        <Link to="/" className="inline-block hover:opacity-80 transition-opacity">
+          <Logo variant="footer" className="scale-110 origin-left" />
+        </Link>
 
+        <p className="text-gray-400 text-sm md:text-base font-medium leading-relaxed">
+          AI-powered scientific journal trend tracking platform. Stay ahead of the curve with real-time insights from millions of research publications.
+        </p>
+
+        <div className="flex items-center gap-3">
+          {SOCIAL_LINKS.map(({ icon: Icon, label, href }) => (
+            <a
+              key={label}
+              href={href}
+              aria-label={label}
+              className="w-10 h-10 rounded-sm bg-[#1e1e1e] flex items-center justify-center text-gray-400 hover:text-white transition-all"
+            >
+              <Icon className="w-4 h-4" />
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-16 w-full max-w-3xl">
+        <div className="grid grid-cols-3 gap-8">
           <FooterLinkGroup title="Platform" links={PLATFORM_LINKS} />
           <FooterLinkGroup title="Resources" links={RESOURCE_LINKS} />
           <FooterLinkGroup title="Company" links={COMPANY_LINKS} />
         </div>
+      </div>
 
-        <div className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-[#8b949e]">
-            © {new Date().getFullYear()} TrendSearchor. All rights reserved.
-          </p>
-          <p className="text-xs text-[#8b949e]">
-            Data powered by Semantic Scholar · OpenAlex · Crossref
-          </p>
-        </div>
+      <div className="mt-20 pt-8 w-full">
+        <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+          © {new Date().getFullYear()} TrendSearchor. All rights reserved.
+        </p>
       </div>
     </footer>
   );

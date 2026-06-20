@@ -1,22 +1,9 @@
 import { TrendingUp, TrendingDown, ChevronRight, Sparkles, Flame, Shield, Award, TrendingDown as TrendingDownAlt } from 'lucide-react';
 import { TOPIC_STATUS_CONFIG } from '@/constants/chartConfig';
+import TrendChip from '@/components/trends/TrendChip';
+
 
 const ICON_MAP = { Sparkles, Flame, Shield, Award, TrendingDown: TrendingDownAlt };
-
-const TREND_ICONS = { Rising: TrendingUp, Stable: Shield, Declining: TrendingDown };
-
-export { TOPIC_STATUS_CONFIG };
-
-function TrendChip({ growthRate }) {
-  if (growthRate == null) return null;
-  const isPositive = growthRate >= 0;
-  return (
-    <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
-      {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-      {`${isPositive ? '+' : ''}${Math.round(growthRate * 100)}%`}
-    </span>
-  );
-}
 
 export function TopicCard({ topic, onClick, compact = false }) {
   const config = TOPIC_STATUS_CONFIG[topic.status] || TOPIC_STATUS_CONFIG.STABLE;
@@ -24,7 +11,7 @@ export function TopicCard({ topic, onClick, compact = false }) {
 
   return (
     <button onClick={() => onClick?.(topic)}
-      className={`w-full text-left p-${compact ? '2.5' : '3'} rounded-xl border ${config.border} ${config.bg} hover:brightness-125 transition-all group`}>
+      className={`w-full text-left p-${compact ? '2.5' : '3'} rounded-none border ${config.border} ${config.bg} hover:brightness-125 transition-all group`}>
       <div className={`flex ${compact ? 'items-center gap-2' : 'items-start gap-2'}`}>
         <div className={`flex-shrink-0 w-${compact ? '6' : '8'} h-${compact ? '6' : '8'} rounded-${compact ? 'md' : 'lg'} bg-black/20 flex items-center justify-center mt-0.5`}>
           <span className="text-[10px] font-bold text-gray-500">#{topic.rank}</span>
@@ -56,7 +43,7 @@ export function TopicCard({ topic, onClick, compact = false }) {
 export function TopicRankingPanel({ risingTopics = [], stableTopics = [], decliningTopics = [], onTopicClick }) {
   const columns = [
     { label: 'Rising', icon: TrendingUp, color: 'text-emerald-400', data: risingTopics },
-    { label: 'Stable', icon: Shield, color: 'text-blue-400', data: stableTopics },
+    { label: 'Stable', icon: Shield, color: 'text-[#0058be]', data: stableTopics },
     { label: 'Declining', icon: TrendingDown, color: 'text-gray-400', data: decliningTopics },
   ];
 
@@ -78,5 +65,3 @@ export function TopicRankingPanel({ risingTopics = [], stableTopics = [], declin
     </div>
   );
 }
-
-export { TrendChip };

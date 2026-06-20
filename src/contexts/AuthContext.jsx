@@ -39,6 +39,27 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
+  // Poll /api/auth/me every 30s to detect session invalidation (e.g. admin reset password)
+  useEffect(() => {
+    if (!user) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const data = await authService.getMe();
+        // Update user data (e.g. mustChangePassword flag changes)
+        setUser(data);
+      } catch (err) {
+        // If 401, the axios interceptor in api.js will handle redirect to /login
+        // We just clear the interval to stop further polling
+        if (err.response?.status === 401) {
+          clearInterval(interval);
+        }
+      }
+    }, 30_000);
+
+    return () => clearInterval(interval);
+  }, [!!user]); // Only re-run when user changes between null <-> non-null
+
   const login = useCallback(async (credentials) => {
     const data = await authService.login(credentials);
     let userData = data?.user || null;
@@ -47,7 +68,7 @@ export function AuthProvider({ children }) {
       try {
         userData = await authService.getMe();
       } catch {
-        userData = { username: credentials.username, role: data?.role };
+        userData = { email: credentials.email, role: data?.role };
       }
     }
 

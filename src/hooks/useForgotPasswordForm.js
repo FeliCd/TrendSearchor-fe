@@ -1,15 +1,9 @@
 import { useState } from 'react';
 import { authService } from '@/services/authService';
-
-const extractError = (err) => {
-  if (!err.response) return 'Network error. Please check your connection.';
-  const data = err.response.data;
-  if (typeof data === 'string') return data;
-  return data?.message || data?.error || 'Failed to send reset link. Please try again.';
-};
+import { isValidEmail } from '@/utils/validationUtils';
 
 export function useForgotPasswordForm() {
-  const [formData, setFormData] = useState({ emailOrUsername: '' });
+  const [formData, setFormData] = useState({ mail: '' });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -22,13 +16,23 @@ export function useForgotPasswordForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setIsLoading(true);
 
+    if (!isValidEmail(formData.mail)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      await authService.requestPasswordReset(formData.emailOrUsername);
+      await authService.requestPasswordReset({ mail: formData.mail });
       setSuccess(true);
     } catch (err) {
-      setError(extractError(err));
+      const data = err.response?.data;
+      if (typeof data === 'string') {
+        setError(data);
+      } else {
+        setError(data?.message || data?.error || 'Failed to send reset password. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

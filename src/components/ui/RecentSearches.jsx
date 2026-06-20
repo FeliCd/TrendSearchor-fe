@@ -49,7 +49,7 @@ export default function RecentSearches() {
     return (
       <SectionCard title="Recent Searches">
         <div className="flex justify-center py-6">
-          <Loader2 className="w-5 h-5 text-[#4A90E2] animate-spin" />
+          <Loader2 className="w-5 h-5 text-[#0058be] animate-spin" />
         </div>
       </SectionCard>
     );
@@ -57,14 +57,14 @@ export default function RecentSearches() {
 
   return (
     <SectionCard title="Recent Searches">
-      <div className="divide-y divide-white/[0.04]">
+      <div className="divide-y divide-gray-800">
         {searches.length === 0 ? (
-          <div className="px-5 py-8 text-center text-[#8b949e] text-sm">No recent searches yet.</div>
+          <div className="px-5 py-8 text-center text-gray-500 text-sm">No recent searches yet.</div>
         ) : (
           searches.map((item) => (
             <div key={item.id} className="flex items-center gap-3 px-5 py-3 group hover:bg-white/[0.02] transition-colors">
-              <div className="w-6 h-6 rounded-md bg-[#4A90E2]/10 border border-[#4A90E2]/20 flex items-center justify-center flex-shrink-0">
-                <Search className="w-3 h-3 text-[#4A90E2]" />
+              <div className="w-6 h-6 rounded-xl bg-[#0058be]/10 border border-[#0058be]/20 flex items-center justify-center flex-shrink-0">
+                <Search className="w-3 h-3 text-[#0058be]" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-white truncate">{item.searchQuery}</p>

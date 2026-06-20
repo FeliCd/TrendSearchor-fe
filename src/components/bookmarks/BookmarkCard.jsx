@@ -28,8 +28,8 @@ function PaperBookmarkItem({ bookmark }) {
     <>
       <h3 className="text-white font-semibold text-base mb-1 line-clamp-2 leading-snug">{paper.title}</h3>
       <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400 mb-2">
-        {paper.year && <span className="px-2 py-0.5 bg-[#0d1117] rounded">{paper.year}</span>}
-        {paper.citationCount > 0 && <span className="px-2 py-0.5 bg-[#0d1117] text-[#4A90E2] rounded">{paper.citationCount} citations</span>}
+        {paper.year && <span className="px-2 py-0.5 bg-[var(--dark-bg-base)] rounded">{paper.year}</span>}
+        {paper.citationCount > 0 && <span className="px-2 py-0.5 bg-[var(--dark-bg-base)] text-[#4A90E2] rounded">{paper.citationCount} citations</span>}
         {paper.openAccess && <span className="px-2 py-0.5 bg-green-900/30 text-green-400 rounded">Open Access</span>}
       </div>
       {paper.keywords?.length > 0 && (

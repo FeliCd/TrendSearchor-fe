@@ -31,7 +31,7 @@ function CustomTooltip({ active, payload }) {
   if (!data) return null;
 
   return (
-    <div className="bg-[#161b22]/95 border border-white/10 rounded-xl px-3 py-2 shadow-xl backdrop-blur-sm">
+    <div className="bg-[#1e1e1e] border-2 border-gray-800 rounded-none px-3 py-2 shadow-xl backdrop-blur-sm">
       <p className="text-sm font-medium text-white mb-1">{data.displayName || data.keyword}</p>
       <div className="space-y-0.5 text-xs text-gray-400">
         <p>Growth: <span className={data.growthRate >= 0 ? 'text-emerald-400' : 'text-red-400'}>

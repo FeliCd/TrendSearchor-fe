@@ -25,13 +25,21 @@ export const authService = {
     }
   },
 
-  requestPasswordReset: async (emailOrUsername) => {
-    const response = await api.post('/api/auth/forgot-password', { emailOrUsername });
+  requestPasswordReset: async ({ mail }) => {
+    const response = await api.post('/api/auth/forgot-password', { mail });
     return response.data;
   },
 
   getMe: async () => {
     const response = await api.get('/api/auth/me');
+    return response.data;
+  },
+
+  changePassword: async ({ oldPassword, newPassword }) => {
+    const response = await api.post('/api/auth/change-password', { oldPassword, newPassword });
+    if (response.data?.accessToken) {
+      localStorage.setItem('accessToken', response.data.accessToken);
+    }
     return response.data;
   },
 };

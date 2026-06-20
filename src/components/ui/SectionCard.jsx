@@ -1,12 +1,12 @@
 export default function SectionCard({ title, children, className = '' }) {
   return (
-    <div className={`bg-[#0d1117]/60 border border-white/[0.06] rounded-xl ${className}`}>
+    <div className={`bg-[#151515] border-2 border-gray-800 p-6 flex flex-col ${className}`}>
       {title && (
-        <div className="px-5 py-4 border-b border-white/[0.06]">
-          <h2 className="text-sm font-semibold text-white">{title}</h2>
-        </div>
+        <h2 className="text-lg font-bold text-white mb-6 uppercase tracking-widest">{title}</h2>
       )}
-      {children}
+      <div className="flex-1 min-h-0">
+        {children}
+      </div>
     </div>
   );
 }

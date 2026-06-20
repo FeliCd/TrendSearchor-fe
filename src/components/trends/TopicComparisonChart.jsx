@@ -5,7 +5,7 @@ import { KEYWORD_COLORS, CHART_TOOLTIP_STYLE } from '@/constants/chartConfig';
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#161b22]/95 border border-white/10 rounded-xl px-3 py-2.5 shadow-xl backdrop-blur-sm">
+    <div className="bg-[#1e1e1e] border-2 border-gray-800 rounded-none px-3 py-2.5 shadow-xl backdrop-blur-sm">
       <p className="text-sm font-semibold text-white mb-1.5">{label}</p>
       <div className="space-y-1">
         {payload.map((entry, i) => (
@@ -41,9 +41,9 @@ export default function TopicComparisonChart({ comparison }) {
   return (
     <div className="space-y-3">
       {comparison.insight && (
-        <div className="bg-[#0d1117] border border-white/10 rounded-xl p-3">
+        <div className="bg-[#151515] border-2 border-gray-800 rounded-none p-3">
           <p className="text-xs text-gray-400 leading-relaxed">
-            <span className="text-[#4A90E2] font-medium">AI Insight: </span>{comparison.insight}
+            <span className="text-[#0058be] font-medium">AI Insight: </span>{comparison.insight}
           </p>
         </div>
       )}
@@ -68,7 +68,7 @@ export default function TopicComparisonChart({ comparison }) {
           const prev = data.length > 1 ? data[data.length - 2]?.paperCount || 0 : 0;
           const growth = prev > 0 ? ((latest - prev) / prev) * 100 : 0;
           return (
-            <div key={kw} className="bg-[#0d1117] rounded-xl p-3 border border-white/5">
+            <div key={kw} className="bg-[#151515] rounded-none p-3 border-2 border-gray-800">
               <div className="flex items-center gap-1.5 mb-1">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: KEYWORD_COLORS[i % KEYWORD_COLORS.length] }} />
                 <span className="text-xs font-medium text-white truncate">{kw}</span>
