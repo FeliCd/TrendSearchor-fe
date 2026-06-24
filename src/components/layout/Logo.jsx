@@ -1,7 +1,7 @@
-export default function Logo({ 
-  className = '', 
+export default function Logo({
+  className = '',
   variant = 'default',
-  showText = true 
+  showText = true
 }) {
   const isWhite = variant === 'navbar' || variant === 'footer';
 
@@ -36,10 +36,10 @@ export default function Logo({
 
   return (
     <div className={`flex items-center gap-3 ${wrapper} ${className} group cursor-pointer`}>
-      <img 
-        src="/logo.svg" 
-        alt="TrendSearchor Logo" 
-        className={`${size} object-contain transition-transform group-hover:scale-105 ${isWhite ? 'brightness-0 invert' : ''}`} 
+      <img
+        src="/logo.svg"
+        alt="TrendSearchor Logo"
+        className={`${size} object-contain transition-transform group-hover:scale-105 ${isWhite ? 'brightness-0 invert' : ''}`}
       />
       {showText && (
         <span className={`font-black tracking-tight ${textSize} ${textColor}`}>
