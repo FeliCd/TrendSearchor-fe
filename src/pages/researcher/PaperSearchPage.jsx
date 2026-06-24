@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { MousePointerClick, FolderPlus, X, Folder, Loader2 } from 'lucide-react';
+import { MousePointerClick, FolderPlus, X, Folder, Loader2, Bookmark } from 'lucide-react';
 import { searchService } from '@/services/searchService';
 import { bookmarkService } from '@/services/bookmarkService';
 import { collectionService } from '@/services/collectionService';
@@ -119,13 +119,19 @@ export default function PaperSearchPage() {
     if (!paper.externalId) return;
     const extId = paper.externalId;
     const isBookmarked = bookmarkedIds.has(extId);
-    setBookmarkedIds((prev) => { const next = new Set(prev); isBookmarked ? next.delete(extId) : next.add(extId); return next; });
+
+    if (!isBookmarked) {
+      handleOpenCollectionModal(paper);
+      return;
+    }
+
     setTogglingId(extId);
+    setBookmarkedIds((prev) => { const next = new Set(prev); next.delete(extId); return next; });
     try {
-      if (isBookmarked) { await bookmarkService.removePaperBookmark(extId); showToast('Removed from bookmarks'); }
-      else { await bookmarkService.addPaperBookmark(extId); showToast('Added to bookmarks'); }
+      await bookmarkService.removePaperBookmark(extId); 
+      showToast('Removed from bookmarks'); 
     } catch (err) {
-      setBookmarkedIds((prev) => { const next = new Set(prev); isBookmarked ? next.add(extId) : next.delete(extId); return next; });
+      setBookmarkedIds((prev) => { const next = new Set(prev); next.add(extId); return next; });
       showToast(typeof err?.response?.data?.message === 'string' ? err.response.data.message : 'Failed to update bookmark', 'error');
     } finally { setTogglingId(null); }
   };
@@ -164,7 +170,7 @@ export default function PaperSearchPage() {
                   papers={papers} loading={loading} hasSearched={hasSearched} total={total}
                   page={page} totalPages={totalPages} loadingBookmarks={loadingBookmarks}
                   bookmarkedIds={bookmarkedIds} togglingId={togglingId} selectedPaper={selectedPaper}
-                  onSelect={setSelectedPaper} onBookmark={handleBookmark} onAddToCollection={handleOpenCollectionModal} onPageChange={(p) => searchPapers(query, p)} />
+                  onSelect={setSelectedPaper} onBookmark={handleBookmark} onPageChange={(p) => searchPapers(query, p)} />
               </div>
             </div>
             {/* Preview pane */}
@@ -172,7 +178,7 @@ export default function PaperSearchPage() {
               <div className="flex-1 min-h-0 flex flex-col">
                 {selectedPaper ? (
                   <PaperPreview paper={selectedPaper} isBookmarked={bookmarkedIds.has(selectedPaper.externalId)}
-                    isToggling={togglingId === selectedPaper.externalId} onBookmark={() => handleBookmark(selectedPaper)} onAddToCollection={handleOpenCollectionModal} onClose={() => setSelectedPaper(null)} />
+                    isToggling={togglingId === selectedPaper.externalId} onBookmark={() => handleBookmark(selectedPaper)} onClose={() => setSelectedPaper(null)} />
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center h-full px-6 min-h-[400px]">
                     <div className="w-14 h-14 border-2 border-[#0058be] bg-[#0058be]/10 flex items-center justify-center mb-4">
@@ -205,6 +211,29 @@ export default function PaperSearchPage() {
               </button>
             </div>
             <div className="max-h-64 overflow-y-auto scrollbar-thin p-2">
+              <button
+                disabled={savingToCollectionId !== null}
+                onClick={async () => {
+                  setSavingToCollectionId('default');
+                  try {
+                    await bookmarkService.addPaperBookmark(savingToCollectionPaper.externalId);
+                    setBookmarkedIds(prev => new Set(prev).add(savingToCollectionPaper.externalId));
+                    showToast('Added to bookmarks');
+                    setSavingToCollectionPaper(null);
+                  } catch (err) {
+                    showToast('Failed to add bookmark', 'error');
+                  } finally {
+                    setSavingToCollectionId(null);
+                  }
+                }}
+                className="w-full flex items-center justify-between p-3 hover:bg-[#1e1e1e] transition-colors rounded-sm text-left group disabled:opacity-50 border-b border-gray-800"
+              >
+                <div className="flex items-center gap-3">
+                  <Bookmark className="w-4 h-4 text-gray-500 group-hover:text-[#0058be]" />
+                  <span className="text-sm text-gray-300 font-medium">Bookmarks (Uncategorized)</span>
+                </div>
+                {savingToCollectionId === 'default' && <Loader2 className="w-4 h-4 text-[#0058be] animate-spin" />}
+              </button>
               {collections.length === 0 ? (
                 <p className="text-center text-gray-500 text-sm py-4">No collections found.</p>
               ) : (

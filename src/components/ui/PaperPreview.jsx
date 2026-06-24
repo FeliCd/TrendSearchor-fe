@@ -3,7 +3,7 @@ import { ExternalLink, Bookmark, X, BookOpen, Users, Tag, FileText, Award, Globe
 import { useLenis } from '@/providers/LenisProvider';
 import { noteService } from '@/services/noteService';
 
-export default function PaperPreview({ paper, isBookmarked, isToggling, onBookmark, onAddToCollection, onClose }) {
+export default function PaperPreview({ paper, isBookmarked, isToggling, onBookmark, onClose }) {
   const [note, setNote] = useState('');
   const [noteLoading, setNoteLoading] = useState(false);
   const [noteSaving, setNoteSaving] = useState(false);
@@ -214,13 +214,6 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
                 {isBookmarked ? 'Saved' : 'Save'}
               </>
             )}
-          </button>
-          <button
-            onClick={() => onAddToCollection(paper)}
-            disabled={!paper.externalId}
-            className="flex-1 flex items-center justify-center gap-2 h-11 border-2 rounded-none transition-all disabled:opacity-50 text-[11px] font-black uppercase tracking-widest shadow-none bg-transparent border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 hover:bg-[#2a2a2a]"
-          >
-            <FolderPlus className="w-4 h-4" /> Collection
           </button>
         </div>
 

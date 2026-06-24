@@ -10,7 +10,7 @@ function MousePointerIcon({ isSelected }) {
   );
 }
 
-function PaperCard({ paper, isBookmarked, isToggling, isSelected, onSelect, onBookmark, onAddToCollection }) {
+function PaperCard({ paper, isBookmarked, isToggling, isSelected, onSelect, onBookmark }) {
   return (
     <div onClick={() => onSelect(paper)}
       className={`bg-[#151515] border-2 rounded-none p-4 transition-all cursor-pointer ${
@@ -48,11 +48,6 @@ function PaperCard({ paper, isBookmarked, isToggling, isSelected, onSelect, onBo
             }`} title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}>
             {isToggling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />}
           </button>
-          <button onClick={(e) => { e.stopPropagation(); onAddToCollection(paper); }} disabled={!paper.externalId}
-            className="p-1.5 border-2 rounded-none transition-all border-gray-800 text-gray-400 hover:text-white hover:border-gray-700 hover:bg-[#1e1e1e]"
-            title="Add to Collection">
-            <FolderPlus className="w-4 h-4" />
-          </button>
         </div>
       </div>
     </div>
@@ -60,7 +55,7 @@ function PaperCard({ paper, isBookmarked, isToggling, isSelected, onSelect, onBo
 }
 
 export default function PaperResults({ papers, loading, hasSearched, total, page, totalPages, loadingBookmarks,
-  bookmarkedIds, togglingId, selectedPaper, onSelect, onBookmark, onAddToCollection, onPageChange }) {
+  bookmarkedIds, togglingId, selectedPaper, onSelect, onBookmark, onPageChange }) {
 
   if (loading) return <div className="flex justify-center py-12"><LoadingSpinner /></div>;
   if (hasSearched && papers.length === 0) return (
@@ -92,7 +87,7 @@ export default function PaperResults({ papers, loading, hasSearched, total, page
             isBookmarked={bookmarkedIds.has(paper.externalId)}
             isToggling={togglingId === paper.externalId}
             isSelected={selectedPaper?.externalId === paper.externalId}
-            onSelect={onSelect} onBookmark={onBookmark} onAddToCollection={onAddToCollection} />
+            onSelect={onSelect} onBookmark={onBookmark} />
         ))}
         {totalPages > 1 && (
           <div className="flex justify-center gap-2 pt-4 pb-2">

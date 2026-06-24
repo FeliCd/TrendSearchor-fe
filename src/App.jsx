@@ -49,64 +49,64 @@ function AnimatedRoutes() {
       />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-        <Route element={<RootLayout />}>
+          <Route element={<RootLayout />}>
+            <Route
+              path="/"
+              element={<Suspense fallback={<PageLoader />}><HomePage /></Suspense>}
+            />
+            <Route
+              path="*"
+              element={<Suspense fallback={<PageLoader />}><NotFoundPage /></Suspense>}
+            />
+          </Route>
+
           <Route
-            path="/"
-            element={<Suspense fallback={<PageLoader />}><HomePage /></Suspense>}
+            path="/login"
+            element={<Suspense fallback={<PageLoader />}><LoginPage /></Suspense>}
           />
           <Route
-            path="*"
-            element={<Suspense fallback={<PageLoader />}><NotFoundPage /></Suspense>}
+            path="/register"
+            element={<Suspense fallback={<PageLoader />}><RegisterPage /></Suspense>}
           />
-        </Route>
+          <Route
+            path="/forgot-password"
+            element={<Suspense fallback={<PageLoader />}><ForgotPasswordPage /></Suspense>}
+          />
 
-        <Route
-          path="/login"
-          element={<Suspense fallback={<PageLoader />}><LoginPage /></Suspense>}
-        />
-        <Route
-          path="/register"
-          element={<Suspense fallback={<PageLoader />}><RegisterPage /></Suspense>}
-        />
-        <Route
-          path="/forgot-password"
-          element={<Suspense fallback={<PageLoader />}><ForgotPasswordPage /></Suspense>}
-        />
-
-        {/* ─── ADMIN routes ─── */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
-          <Route element={<Suspense fallback={<PageLoader />}><AdminLayout /></Suspense>}>
-            <Route path="/admin" element={<Navigate to="/admin/users" replace />} end />
-            <Route path="/admin/users" element={<UserManagementPage />} />
-            <Route path="/admin/profile" element={<ProfilePage />} />
+          {/* ─── ADMIN routes ─── */}
+          <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+            <Route element={<Suspense fallback={<PageLoader />}><AdminLayout /></Suspense>}>
+              <Route path="/admin" element={<Navigate to="/admin/users" replace />} end />
+              <Route path="/admin/users" element={<UserManagementPage />} />
+              <Route path="/admin/profile" element={<ProfilePage />} />
+            </Route>
           </Route>
-        </Route>
 
-        {/* ─── RESEARCHER routes ─── */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.RESEARCHER]} />}>
-          <Route element={<Suspense fallback={<PageLoader />}><ResearcherLayout /></Suspense>}>
-            <Route path="/researcher" element={<ResearcherDashboardPage />} end />
-            <Route path="/researcher/search" element={<PaperSearchPage />} />
-            <Route path="/researcher/trends" element={<TrendsPage />} />
-            <Route path="/researcher/analytics" element={<ResearcherDashboardPage />} />
-            <Route path="/researcher/bookmarks" element={<BookmarksPage />} />
-            <Route path="/researcher/profile" element={<ProfilePage />} />
+          {/* ─── RESEARCHER routes ─── */}
+          <Route element={<ProtectedRoute allowedRoles={[ROLES.RESEARCHER]} />}>
+            <Route element={<Suspense fallback={<PageLoader />}><ResearcherLayout /></Suspense>}>
+              <Route path="/researcher" element={<ResearcherDashboardPage />} end />
+              <Route path="/researcher/search" element={<PaperSearchPage />} />
+              <Route path="/researcher/trends" element={<TrendsPage />} />
+              <Route path="/researcher/analytics" element={<ResearcherDashboardPage />} />
+              <Route path="/researcher/bookmarks" element={<BookmarksPage />} />
+              <Route path="/researcher/profile" element={<ProfilePage />} />
+            </Route>
           </Route>
-        </Route>
 
-        {/* ─── ACADEMIC (LECTURER / STUDENT) routes ─── */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.LECTURER, ROLES.STUDENT]} />}>
-          <Route element={<Suspense fallback={<PageLoader />}><AcademicLayout /></Suspense>}>
-            <Route path="/academic" element={<AcademicDashboardPage />} end />
-            <Route path="/academic/search" element={<PaperSearchPage />} />
-            <Route path="/academic/trends" element={<TrendsPage />} />
-            <Route path="/academic/bookmarks" element={<BookmarksPage />} />
-            <Route path="/academic/notifications" element={<NotificationsPage />} />
-            <Route path="/academic/profile" element={<ProfilePage />} />
+          {/* ─── ACADEMIC (LECTURER / STUDENT) routes ─── */}
+          <Route element={<ProtectedRoute allowedRoles={[ROLES.LECTURER, ROLES.STUDENT]} />}>
+            <Route element={<Suspense fallback={<PageLoader />}><AcademicLayout /></Suspense>}>
+              <Route path="/academic" element={<AcademicDashboardPage />} end />
+              <Route path="/academic/search" element={<PaperSearchPage />} />
+              <Route path="/academic/trends" element={<TrendsPage />} />
+              <Route path="/academic/bookmarks" element={<BookmarksPage />} />
+              <Route path="/academic/notifications" element={<NotificationsPage />} />
+              <Route path="/academic/profile" element={<ProfilePage />} />
+            </Route>
           </Route>
-        </Route>
 
-      </Routes>
+        </Routes>
       </AnimatePresence>
     </>
   );
