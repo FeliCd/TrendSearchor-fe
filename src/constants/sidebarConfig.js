@@ -10,6 +10,8 @@ import {
   Shield,
   Bell,
   UserCircle,
+  Upload,
+  ClipboardCheck,
 } from 'lucide-react';
 
 const ACADEMIC_CONFIG = {
@@ -37,6 +39,7 @@ export const ROLE_SIDEBAR_CONFIG = {
     HeaderIcon: Shield,
     navItems: [
       { to: '/admin/users', label: 'User Management', icon: Users, end: false },
+      { to: '/admin/papers/pending', label: 'Paper Moderation', icon: ClipboardCheck },
       { to: '/admin/profile', label: 'My Profile', icon: UserCircle },
     ],
   },
@@ -54,6 +57,7 @@ export const ROLE_SIDEBAR_CONFIG = {
       { to: '/researcher/trends', label: 'Trends', icon: TrendingUp },
       { to: '/researcher/analytics', label: 'Analytics', icon: BarChart2, comingSoon: true },
       { to: '/researcher/bookmarks', label: 'Bookmarks', icon: BookOpen },
+      { to: '/researcher/upload', label: 'Upload Paper', icon: Upload },
       { to: '/researcher/profile', label: 'My Profile', icon: UserCircle },
     ],
   },

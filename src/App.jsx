@@ -20,10 +20,12 @@ const ResearcherLayout = lazy(() => import('@/components/researcher/layout/Resea
 
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
 const UserManagementPage = lazy(() => import('@/pages/admin/UserManagementPage'));
+const PaperModerationPage = lazy(() => import('@/pages/admin/PaperModerationPage'));
 const AcademicDashboardPage = lazy(() => import('@/pages/academic/AcademicDashboardPage'));
 const ResearcherDashboardPage = lazy(() => import('@/pages/researcher/ResearcherDashboardPage'));
 const PaperSearchPage = lazy(() => import('@/pages/researcher/PaperSearchPage'));
 const TrendsPage = lazy(() => import('@/pages/researcher/TrendsPage'));
+const PaperUploadPage = lazy(() => import('@/pages/researcher/PaperUploadPage'));
 const BookmarksPage = lazy(() => import('@/pages/shared/BookmarksPage'));
 const NotificationsPage = lazy(() => import('@/pages/shared/NotificationsPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
@@ -78,6 +80,7 @@ function AnimatedRoutes() {
             <Route element={<Suspense fallback={<PageLoader />}><AdminLayout /></Suspense>}>
               <Route path="/admin" element={<Navigate to="/admin/users" replace />} end />
               <Route path="/admin/users" element={<UserManagementPage />} />
+              <Route path="/admin/papers/pending" element={<PaperModerationPage />} />
               <Route path="/admin/profile" element={<ProfilePage />} />
             </Route>
           </Route>
@@ -90,6 +93,7 @@ function AnimatedRoutes() {
               <Route path="/researcher/trends" element={<TrendsPage />} />
               <Route path="/researcher/analytics" element={<ResearcherDashboardPage />} />
               <Route path="/researcher/bookmarks" element={<BookmarksPage />} />
+              <Route path="/researcher/upload" element={<PaperUploadPage />} />
               <Route path="/researcher/profile" element={<ProfilePage />} />
             </Route>
           </Route>
