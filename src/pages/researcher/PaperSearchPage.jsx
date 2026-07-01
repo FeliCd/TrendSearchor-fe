@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { MousePointerClick, FolderPlus, X, Folder, Loader2, Bookmark } from 'lucide-react';
+import { useSearchParams, useLocation } from 'react-router-dom';
+import { MousePointerClick, FolderPlus, X, Folder, Loader2, Bookmark, User, BookOpen } from 'lucide-react';
 import { searchService } from '@/services/searchService';
 import { bookmarkService } from '@/services/bookmarkService';
 import { collectionService } from '@/services/collectionService';
@@ -14,6 +14,7 @@ import { useLenis } from '@/providers/LenisProvider';
 export default function PaperSearchPage() {
   const { initScroller } = useLenis();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const urlQuery = searchParams.get('q');
   
   const resultsRef = useRef(null);
@@ -38,7 +39,7 @@ export default function PaperSearchPage() {
   const [totalPages, setTotalPages] = useState(() => parseInt(sessionStorage.getItem('ts_search_totalPages') || '0', 10));
   const [filters, setFilters] = useState(() => {
     const saved = sessionStorage.getItem('ts_search_filters');
-    return saved ? JSON.parse(saved) : { yearFrom: '', yearTo: '', sortBy: 'relevance' };
+    return saved ? JSON.parse(saved) : { yearFrom: '', yearTo: '', sortBy: 'relevance', author: '', journal: '' };
   });
   const [hasSearched, setHasSearched] = useState(() => sessionStorage.getItem('ts_search_hasSearched') === 'true');
   const [toast, setToast] = useState(null);
@@ -87,15 +88,18 @@ export default function PaperSearchPage() {
     finally { setLoadingBookmarks(false); }
   }, []);
 
-  const searchPapers = useCallback(async (searchQuery, pageNum = 0) => {
-    if (!searchQuery.trim()) return;
+  const searchPapers = useCallback(async (searchQuery, pageNum = 0, overrideFilters = null) => {
+    const activeFilters = overrideFilters || filters;
+    if (!searchQuery.trim() && !activeFilters.author && !activeFilters.journal && !activeFilters.yearFrom) return;
     setLoading(true); setError(null); setHasSearched(true); setBookmarkedIds(new Set()); setSelectedPaper(null);
     try {
       const params = {
-        query: searchQuery, page: pageNum, size: 10,
-        ...(filters.yearFrom && { dateFrom: `${filters.yearFrom}-01-01` }),
-        ...(filters.yearTo   && { dateTo:   `${filters.yearTo}-12-31`   }),
-        ...(filters.sortBy   && { sortBy:   filters.sortBy   }),
+        query: searchQuery || '', page: pageNum, size: 10,
+        ...(activeFilters.yearFrom && { dateFrom: `${activeFilters.yearFrom}-01-01` }),
+        ...(activeFilters.yearTo   && { dateTo:   `${activeFilters.yearTo}-12-31`   }),
+        ...(activeFilters.sortBy   && { sortBy:   activeFilters.sortBy   }),
+        ...(activeFilters.author   && { author:   activeFilters.author   }),
+        ...(activeFilters.journal  && { journal:  activeFilters.journal  }),
       };
       const data = await searchService.searchPapers(params);
       setPapers(data.papers || []); setTotal(data.total || 0); setTotalPages(data.totalPages || 0); setPage(pageNum);
@@ -106,12 +110,19 @@ export default function PaperSearchPage() {
   }, [filters]);
 
   useEffect(() => {
-    if (urlQuery) {
+    const navState = location.state;
+    if (navState?.triggerSearch) {
+      const q = navState.query !== undefined ? navState.query : urlQuery;
+      const f = navState.filters || filters;
+      setQuery(q || '');
+      setFilters(f);
+      searchPapers(q || '', 0, f);
+    } else if (urlQuery !== null && urlQuery !== undefined) {
       setQuery(urlQuery);
       searchPapers(urlQuery, 0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlQuery]);
+  }, [urlQuery, location.state?.triggerSearch]);
 
   useEffect(() => { if (papers.length > 0) loadBookmarkedIds(papers); }, [papers, loadBookmarkedIds]);
 
@@ -158,9 +169,34 @@ export default function PaperSearchPage() {
           description="Discover academic papers, track trends, and explore research topics" 
         />
         <div className="flex-1 min-h-0 flex flex-col px-8 pt-6 pb-8 gap-4">
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 space-y-2">
             <SearchHeader query={query} setQuery={setQuery} filters={filters} setFilters={setFilters} loading={loading}
               onSearch={(e) => { e.preventDefault(); searchPapers(query); }} error={error} />
+            {(filters.author || filters.journal) && (
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Active AI Filters:</span>
+                {filters.author && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#0058be]/15 border border-[#0058be]/40 text-[#4A90E2] text-xs font-semibold">
+                    <User className="w-3.5 h-3.5" /> Author: {filters.author}
+                    <button onClick={() => {
+                      const nextF = { ...filters, author: '' };
+                      setFilters(nextF);
+                      searchPapers(query, 0, nextF);
+                    }} className="hover:text-white ml-1"><X className="w-3 h-3" /></button>
+                  </span>
+                )}
+                {filters.journal && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-semibold">
+                    <BookOpen className="w-3.5 h-3.5" /> Journal: {filters.journal}
+                    <button onClick={() => {
+                      const nextF = { ...filters, journal: '' };
+                      setFilters(nextF);
+                      searchPapers(query, 0, nextF);
+                    }} className="hover:text-white ml-1"><X className="w-3 h-3" /></button>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex-1 min-h-0 flex overflow-hidden border-2 border-gray-800">
             {/* Results pane */}
