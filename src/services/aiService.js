@@ -1,5 +1,8 @@
 import { searchService } from './searchService';
 import { trendService } from './trendService';
+import { bookmarkService } from './bookmarkService';
+import { followService } from './followService';
+import { recentSearchService } from './recentSearchService';
 
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const FALLBACK_MODEL = 'nvidia/nemotron-nano-9b-v2:free';
@@ -108,6 +111,63 @@ async function getLiveDatabaseSnapshot() {
   }
 }
 
+async function getUserResearchProfile() {
+  try {
+    const [bookmarksRes, followsRes, searchesRes] = await Promise.allSettled([
+      bookmarkService.getBookmarks({ page: 0, size: 20 }),
+      followService.getFollows({ page: 0, size: 20 }),
+      recentSearchService.getRecentSearches({ page: 0, size: 10 }),
+    ]);
+
+    const bookmarksList = bookmarksRes.status === 'fulfilled'
+      ? (bookmarksRes.value?.content || bookmarksRes.value || [])
+      : [];
+    
+    const bookmarkedPapers = [];
+    const bookmarkedKeywords = [];
+    bookmarksList.forEach(b => {
+      if (b.paper && b.paper.title) {
+        bookmarkedPapers.push(b.paper.title);
+        if (b.paper.keywords) b.paper.keywords.forEach(k => bookmarkedKeywords.push(k));
+      } else if (b.paperTitle) {
+        bookmarkedPapers.push(b.paperTitle);
+      }
+      if (b.keyword && b.keyword.displayName) {
+        bookmarkedKeywords.push(b.keyword.displayName);
+      } else if (b.keyword && b.keyword.name) {
+        bookmarkedKeywords.push(b.keyword.name);
+      }
+    });
+
+    const followsList = followsRes.status === 'fulfilled'
+      ? (followsRes.value?.content || followsRes.value || [])
+      : [];
+    
+    const followedTopics = [];
+    const followedJournals = [];
+    followsList.forEach(f => {
+      if (f.topic && f.topic.name) followedTopics.push(f.topic.name);
+      if (f.journal && f.journal.name) followedJournals.push(f.journal.name);
+    });
+
+    const searchesList = searchesRes.status === 'fulfilled'
+      ? (searchesRes.value?.content || searchesRes.value || [])
+      : [];
+    const recentSearches = searchesList.map(s => s.searchQuery || s.queryText || s).filter(Boolean);
+
+    return {
+      bookmarkedPapers: [...new Set(bookmarkedPapers)].slice(0, 10),
+      bookmarkedKeywords: [...new Set(bookmarkedKeywords)].slice(0, 10),
+      followedTopics: [...new Set(followedTopics)].slice(0, 10),
+      followedJournals: [...new Set(followedJournals)].slice(0, 10),
+      recentSearches: [...new Set(recentSearches)].slice(0, 10)
+    };
+  } catch (err) {
+    console.warn('Failed to fetch user research profile for AI:', err);
+    return null;
+  }
+}
+
 export const aiService = {
   /**
    * Analyzes user message to classify whether it is general chat conversation or a paper search request.
@@ -122,24 +182,84 @@ export const aiService = {
     if (commonGreetings.includes(cleanText)) {
       return {
         intent: 'chat',
-        reply: "Hello! I am your AI Research Assistant. You can ask me general questions about research, or tell me what papers you are looking for in natural language (e.g., 'Find papers on deep learning by Yann LeCun in 2021'). How can I help you today?"
+        reply: "Hello! I am your AI Research Assistant. You can ask me general questions about research, tell me what papers you are looking for in natural language, or ask for personalized research recommendations based on your bookmarks and follow list!"
       };
     }
     if (commonQuestions.includes(cleanText)) {
       return {
         intent: 'chat',
-        reply: "I am TrendScholar's AI Research Assistant powered by OpenRouter AI! I can help you find scientific publications, analyze paper relevance, summarize key findings, and answer research questions. Just describe what you're looking for!"
+        reply: "I am TrendScholar's AI Research Assistant! I can analyze your bookmarks, follow list, and search history to recommend new emerging topics, help you find scientific publications, and answer research questions. Just tell me what you need!"
       };
     }
 
+    const recKeywords = ['gợi ý', 'follow thêm', 'topic nào', 'keyword nào', 'recommend', 'suggestion', 'dựa trên research', 'liên quan đến bài', 'nên follow', 'chủ đề đang nổi', 'chưa theo dõi'];
+    const isRecommendationIntent = recKeywords.some(kw => cleanText.includes(kw));
+
     const dbSnapshot = await getLiveDatabaseSnapshot();
+
+    if (isRecommendationIntent) {
+      const profile = await getUserResearchProfile();
+      const profileText = profile ? `
+=== USER'S PERSONALIZED RESEARCH PROFILE ===
+Bookmarked Papers: ${profile.bookmarkedPapers.join(' | ') || 'None yet'}
+Bookmarked/Paper Keywords: ${profile.bookmarkedKeywords.join(', ') || 'AI, Deep Learning'}
+Currently Followed Topics: ${profile.followedTopics.join(', ') || 'None yet'}
+Currently Followed Journals: ${profile.followedJournals.join(', ') || 'None yet'}
+Recent Search History: ${profile.recentSearches.join(', ') || 'None yet'}
+============================================` : '';
+
+      const systemPrompt = `You are TrendScholar's personalized AI academic research advisor.
+${profileText}
+Top Emerging Topics in Database: ${dbSnapshot?.emergingTopics?.join(', ') || 'Quantum Computing, Large Language Models, CRISPR Gene Editing, Neuromorphic Engineering'}
+Top Keywords in Database: ${dbSnapshot?.topKeywords?.join(', ') || 'Deep Learning, NLP, Computer Vision, BioInformatics, Reinforcement Learning'}
+
+The user is asking for personalized research recommendations: "${userMessageText}".
+Analyze their bookmarked papers, keywords, followed topics, and recent searches.
+Identify 3 to 5 NEW emerging topics and keywords that the user is NOT currently following, but which directly complement or connect to their existing bookmarks and search trajectory!
+
+Return ONLY valid JSON with exact structure:
+{
+  "intent": "recommendation",
+  "recommendationSummary": "Brief executive summary (2 sentences) analyzing their research profile and explaining where their field is heading.",
+  "recommendations": [
+    {
+      "name": "string (Exact keyword or research topic name to explore)",
+      "type": "TOPIC" | "KEYWORD",
+      "reason": "string (Personalized 1-2 sentence explanation connecting this suggestion directly to their bookmarks or search history)"
+    }
+  ]
+}`;
+
+      try {
+        const result = await callOpenRouter([
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessageText },
+        ], { temperature: 0.3 });
+
+        const cleanJson = result.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const parsed = JSON.parse(cleanJson);
+        if (parsed && Array.isArray(parsed.recommendations) && parsed.recommendations.length > 0) {
+          return {
+            intent: 'recommendation',
+            recommendationSummary: parsed.recommendationSummary || "Based on your research profile and bookmarks, here are emerging topics and keywords recommended for you:",
+            recommendations: parsed.recommendations
+          };
+        }
+      } catch (err) {
+        console.error('Real AI recommendation generation failed:', err);
+        throw new Error('Failed to generate personalized research recommendations from real AI. Please check your OpenRouter API key or connection.');
+      }
+
+      throw new Error('Real AI returned an unexpected recommendation structure.');
+    }
+
     const snapshotText = dbSnapshot ? `
 === CURRENT LIVE TRENDSCHOLAR DATABASE & SEARCH ENGINE SNAPSHOT ===
 Top Research Keywords in Database: ${dbSnapshot.topKeywords.join(', ') || 'AI, Deep Learning, CRISPR'}
 Emerging Research Topics: ${dbSnapshot.emergingTopics.join(', ') || 'Quantum Computing, LLM Agents'}
 Sample Highly Cited Papers Available in Database:
 ${dbSnapshot.topPapers.map(p => `- "${p.title}" (${p.year}, ${p.citations} citations)`).join('\n') || '- "Attention Is All You Need" (2017, 10000 citations)'}
-===================================================================` : '';
+==================================================================` : '';
 
     const systemPrompt = `You are TrendScholar's intelligent academic research AI assistant. You are integrated directly into TrendScholar's scientific database and analytics engine.
 ${snapshotText}
@@ -162,7 +282,8 @@ Return ONLY valid JSON with exact structure:
 
 Rules:
 1. If the user asks about what papers, topics, trends, keywords, or data are in the database, or asks general questions -> set intent="chat" and answer thoroughly using the LIVE DATABASE SNAPSHOT provided above!
-2. If the user explicitly asks to find, search, retrieve, or list individual papers matching specific criteria -> set intent="search".`;
+2. If the user explicitly asks to find, search, retrieve, or list individual papers matching specific criteria -> set intent="search".
+3. If the user enters a topic name, scientific concept, or keyword phrase (e.g. "Large Language Models", "BioInformatics", "Deep Learning") -> set intent="search" with keyword set to that exact concept!`;
 
     try {
       const result = await callOpenRouter([
@@ -182,6 +303,15 @@ Rules:
       }
 
       if (parsed.intent === 'search' && parsed.searchParams) {
+        let dFrom = parsed.searchParams.dateFrom || '';
+        let dTo = parsed.searchParams.dateTo || '';
+        if (parsed.searchParams.year && (!dFrom || !dTo)) {
+          const y = parseInt(parsed.searchParams.year, 10);
+          if (!isNaN(y)) {
+            if (!dFrom) dFrom = `${y}-01-01`;
+            if (!dTo) dTo = `${y}-12-31`;
+          }
+        }
         return {
           intent: 'search',
           searchParams: {
@@ -189,8 +319,8 @@ Rules:
             author: parsed.searchParams.author || '',
             journal: parsed.searchParams.journal || '',
             year: parsed.searchParams.year || '',
-            dateFrom: parsed.searchParams.dateFrom || '',
-            dateTo: parsed.searchParams.dateTo || '',
+            dateFrom: dFrom,
+            dateTo: dTo,
           }
         };
       }
@@ -198,16 +328,7 @@ Rules:
       console.warn('AI intent classification fallback triggered:', error);
     }
 
-    // Fallback heuristic if AI fails
-    const searchKeywords = ['find', 'search', 'paper', 'article', 'publication', 'journal', 'author', 'about'];
-    const hasSearchIntent = searchKeywords.some(kw => cleanText.includes(kw)) || cleanText.length > 25;
-    if (!hasSearchIntent) {
-      return {
-        intent: 'chat',
-        reply: "Hello! I am your AI Research Assistant. Let me know if you would like me to find specific scientific papers or assist with your research!"
-      };
-    }
-
+    // Default to search intent if message wasn't classified as general chat or recommendation
     return null;
   },
 
@@ -236,13 +357,23 @@ Return ONLY valid JSON without markdown fences or extra explanations.`;
       const cleanJson = result.replace(/```json/gi, '').replace(/```/g, '').trim();
       const parsed = JSON.parse(cleanJson);
 
+      let dFrom = parsed.dateFrom || '';
+      let dTo = parsed.dateTo || '';
+      if (parsed.year && (!dFrom || !dTo)) {
+        const y = parseInt(parsed.year, 10);
+        if (!isNaN(y)) {
+          if (!dFrom) dFrom = `${y}-01-01`;
+          if (!dTo) dTo = `${y}-12-31`;
+        }
+      }
+
       return {
         keyword: parsed.keyword || '',
         author: parsed.author || '',
         journal: parsed.journal || '',
         year: parsed.year || '',
-        dateFrom: parsed.dateFrom || '',
-        dateTo: parsed.dateTo || '',
+        dateFrom: dFrom,
+        dateTo: dTo,
       };
     } catch (error) {
       console.warn('AI query parsing fallback triggered due to error:', error);

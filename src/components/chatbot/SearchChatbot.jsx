@@ -10,7 +10,15 @@ import {
   ArrowRight,
   FileText,
   RotateCcw,
-  Square
+  Square,
+  Search,
+  Lightbulb,
+  Compass,
+  PlusCircle,
+  TrendingUp,
+  Bookmark,
+  Tag,
+  ChevronRight
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { parseNaturalLanguageQuery } from '@/utils/nlpParser';
@@ -94,12 +102,12 @@ export default function SearchChatbot() {
   // If user is not logged in, do not render chatbot
   if (!user) return null;
 
-  const handleSend = async (e) => {
-    if (e) e.preventDefault();
-    if (!input.trim() || loading) return;
+  const handleSend = async (e, customText = null) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const messageToSend = typeof customText === 'string' ? customText.trim() : input.trim();
+    if (!messageToSend || loading) return;
 
-    const userMessageText = input.trim();
-    setInput('');
+    if (typeof customText !== 'string') setInput('');
     abortRef.current = false;
     setLoading(true);
 
@@ -108,116 +116,148 @@ export default function SearchChatbot() {
     setMessages(prev => [...prev, {
       id: userMsgId,
       sender: 'user',
-      text: userMessageText,
+      text: messageToSend,
       type: 'text'
     }]);
 
-    // First check intent: general chat or academic search
-    const analysis = await aiService.analyzeUserMessage(userMessageText, messages);
-    if (abortRef.current) return;
-
-    if (analysis && analysis.intent === 'chat') {
-      setMessages(prev => [...prev, {
-        id: 'bot-' + Date.now(),
-        sender: 'bot',
-        text: analysis.reply,
-        type: 'text'
-      }]);
-      setLoading(false);
-      return;
-    }
-
-    // Parse search query parameters
-    let parsed = analysis?.searchParams || await aiService.parseQueryWithAI(userMessageText);
-    if (abortRef.current) return;
-
-    if (!parsed || !parsed.keyword) {
-      parsed = parseNaturalLanguageQuery(userMessageText);
-    }
-
-    // Build the status message text
-    let searchStatusText = `Searching for papers about "${parsed.keyword}"`;
-    if (parsed.author) searchStatusText += ` by ${parsed.author}`;
-    if (parsed.journal) searchStatusText += ` in ${parsed.journal}`;
-    if (parsed.year) {
-      searchStatusText += ` (year ${parsed.year})`;
-    } else if (parsed.dateFrom || parsed.dateTo) {
-      if (parsed.dateFrom && parsed.dateTo) {
-        searchStatusText += ` (between ${parsed.dateFrom.slice(0, 4)} and ${parsed.dateTo.slice(0, 4)})`;
-      } else if (parsed.dateFrom) {
-        searchStatusText += ` (since ${parsed.dateFrom.slice(0, 4)})`;
-      } else if (parsed.dateTo) {
-        searchStatusText += ` (before ${parsed.dateTo.slice(0, 4)})`;
-      }
-    }
-    searchStatusText += '...';
-
-    // Add bot loading status message to history
-    const loadingMsgId = 'loading-' + Date.now();
-    setMessages(prev => [...prev, {
-      id: loadingMsgId,
-      sender: 'bot',
-      text: searchStatusText,
-      type: 'loading'
-    }]);
-
     try {
-      const params = {
-        query: parsed.keyword || '',
-        page: 0,
-        size: 5,
-        ...(parsed.author && { author: parsed.author }),
-        ...(parsed.journal && { journal: parsed.journal }),
-        ...(parsed.year && { year: parseInt(parsed.year, 10) }),
-        ...(parsed.dateFrom && { dateFrom: parsed.dateFrom }),
-        ...(parsed.dateTo && { dateTo: parsed.dateTo }),
-      };
-
-      const data = await searchService.searchPapers(params);
+      // First check intent: general chat, recommendation, or academic search
+      const analysis = await aiService.analyzeUserMessage(messageToSend, messages);
       if (abortRef.current) return;
 
-      let papers = data.papers || [];
-      const total = data.total || 0;
+      if (analysis && analysis.intent === 'recommendation') {
+        setMessages(prev => [...prev, {
+          id: 'rec-' + Date.now(),
+          sender: 'bot',
+          type: 'recommendations',
+          text: analysis.recommendationSummary || "Based on your research profile and bookmarks, here are recommended topics and keywords to explore:",
+          data: {
+            recommendations: analysis.recommendations || []
+          }
+        }]);
+        return;
+      }
 
-      // Enhance search results with AI reranking
-      if (papers.length > 1) {
-        try {
-          setMessages(prev => prev.map(m => m.id === loadingMsgId ? { ...m, text: 'AI reranking and analyzing relevance...' } : m));
-          papers = await aiService.rerankPapers(userMessageText, papers);
-          if (abortRef.current) return;
-        } catch (rerankErr) {
-          console.warn('AI reranking failed:', rerankErr);
+      if (analysis && analysis.intent === 'chat') {
+        setMessages(prev => [...prev, {
+          id: 'bot-' + Date.now(),
+          sender: 'bot',
+          text: analysis.reply,
+          type: 'text'
+        }]);
+        return;
+      }
+
+      // Parse search query parameters
+      let parsed = analysis?.searchParams || await aiService.parseQueryWithAI(messageToSend);
+      if (abortRef.current) return;
+
+      if (!parsed || !parsed.keyword) {
+        parsed = parseNaturalLanguageQuery(messageToSend);
+      }
+
+      // Build the status message text
+      let searchStatusText = `Searching for papers about "${parsed.keyword}"`;
+      if (parsed.author) searchStatusText += ` by ${parsed.author}`;
+      if (parsed.journal) searchStatusText += ` in ${parsed.journal}`;
+      if (parsed.year) {
+        searchStatusText += ` (year ${parsed.year})`;
+      } else if (parsed.dateFrom || parsed.dateTo) {
+        if (parsed.dateFrom && parsed.dateTo) {
+          searchStatusText += ` (between ${parsed.dateFrom.slice(0, 4)} and ${parsed.dateTo.slice(0, 4)})`;
+        } else if (parsed.dateFrom) {
+          searchStatusText += ` (since ${parsed.dateFrom.slice(0, 4)})`;
+        } else if (parsed.dateTo) {
+          searchStatusText += ` (before ${parsed.dateTo.slice(0, 4)})`;
         }
       }
-      if (abortRef.current) return;
+      searchStatusText += '...';
 
-      // Remove the loading message and add search results
-      setMessages(prev => {
-        const filtered = prev.filter(m => m.id !== loadingMsgId);
-        return [...filtered, {
-          id: 'results-' + Date.now(),
-          sender: 'bot',
-          text: `I found ${total} papers matching your query:`,
-          type: 'results',
-          data: {
-            papers,
-            total,
-            params: parsed
+      // Add bot loading status message to history
+      const loadingMsgId = 'loading-' + Date.now();
+      setMessages(prev => [...prev, {
+        id: loadingMsgId,
+        sender: 'bot',
+        text: searchStatusText,
+        type: 'loading'
+      }]);
+
+      try {
+        let dateFromStr = parsed.dateFrom || '';
+        let dateToStr = parsed.dateTo || '';
+        if (parsed.year && (!dateFromStr || !dateToStr)) {
+          const y = parseInt(parsed.year, 10);
+          if (!isNaN(y)) {
+            if (!dateFromStr) dateFromStr = `${y}-01-01`;
+            if (!dateToStr) dateToStr = `${y}-12-31`;
           }
-        }];
-      });
-    } catch (err) {
-      if (abortRef.current) return;
-      console.error(err);
-      setMessages(prev => {
-        const filtered = prev.filter(m => m.id !== loadingMsgId);
-        return [...filtered, {
-          id: 'error-' + Date.now(),
-          sender: 'bot',
-          text: 'Sorry, I encountered an error searching for papers. Please try again.',
-          type: 'text'
-        }];
-      });
+        }
+
+        const params = {
+          query: parsed.keyword || '',
+          page: 0,
+          size: 5,
+          ...(parsed.author && { author: parsed.author }),
+          ...(parsed.journal && { journal: parsed.journal }),
+          ...(parsed.year && { year: parseInt(parsed.year, 10) }),
+          ...(dateFromStr && { dateFrom: dateFromStr }),
+          ...(dateToStr && { dateTo: dateToStr }),
+        };
+
+        const data = await searchService.searchPapers(params);
+        if (abortRef.current) return;
+
+        let papers = data.papers || [];
+        const total = data.total || 0;
+
+        // Enhance search results with AI reranking
+        if (papers.length > 1) {
+          try {
+            setMessages(prev => prev.map(m => m.id === loadingMsgId ? { ...m, text: 'AI reranking and analyzing relevance...' } : m));
+            papers = await aiService.rerankPapers(messageToSend, papers);
+            if (abortRef.current) return;
+          } catch (rerankErr) {
+            console.warn('AI reranking failed:', rerankErr);
+          }
+        }
+        if (abortRef.current) return;
+
+        // Remove the loading message and add search results
+        setMessages(prev => {
+          const filtered = prev.filter(m => m.id !== loadingMsgId);
+          return [...filtered, {
+            id: 'results-' + Date.now(),
+            sender: 'bot',
+            text: `I found ${total} papers matching your query:`,
+            type: 'results',
+            data: {
+              papers,
+              total,
+              params: parsed
+            }
+          }];
+        });
+      } catch (err) {
+        if (abortRef.current) return;
+        console.error(err);
+        setMessages(prev => {
+          const filtered = prev.filter(m => m.id !== loadingMsgId);
+          return [...filtered, {
+            id: 'error-' + Date.now(),
+            sender: 'bot',
+            text: 'Sorry, I encountered an error searching for papers. Please try again.',
+            type: 'text'
+          }];
+        });
+      }
+    } catch (outerErr) {
+      console.error('Error processing user message:', outerErr);
+      setMessages(prev => [...prev, {
+        id: 'err-' + Date.now(),
+        sender: 'bot',
+        text: 'An unexpected error occurred while processing your request. Please try again.',
+        type: 'text'
+      }]);
     } finally {
       if (!abortRef.current) {
         setLoading(false);
@@ -425,6 +465,58 @@ export default function SearchChatbot() {
                   );
                 }
 
+                // If recommendation results message
+                if (msg.type === 'recommendations') {
+                  const { recommendations = [] } = msg.data || {};
+                  return (
+                    <div key={msg.id} className="flex gap-3">
+                      <div className="w-8 h-8 bg-[#0058be] border border-[#4A90E2] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#0058be]/20">
+                        <Sparkles className="w-3.5 h-3.5 text-white animate-pulse" />
+                      </div>
+                      <div className="flex-1 space-y-3 min-w-0">
+                        <div className="bg-[#1e1e1e] border border-[#0058be]/50 text-gray-200 px-4 py-3 text-sm leading-relaxed shadow-sm">
+                          <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#4A90E2] mb-1.5">
+                            <Compass className="w-3.5 h-3.5" /> Personalized Research Recommendations
+                          </div>
+                          {msg.text}
+                        </div>
+                        
+                        <div className="space-y-2.5">
+                          {recommendations.map((rec, idx) => (
+                            <div
+                              key={idx}
+                              className="bg-[#1c1c1c] border border-gray-800 hover:border-[#0058be]/60 p-3.5 transition-all flex flex-col justify-between gap-2.5 shadow-sm"
+                            >
+                              <div>
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#4A90E2]"></span>
+                                    {rec.name}
+                                  </span>
+                                  <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 bg-[#282828] text-gray-400 border border-gray-750">
+                                    {rec.type || 'TOPIC'}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-300 mt-2 leading-relaxed bg-[#141414] p-2.5 border-l-2 border-[#0058be]">
+                                  "{rec.reason}"
+                                </p>
+                              </div>
+                              <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-850">
+                                <button
+                                  onClick={() => handleSend(null, `Find papers about ${rec.name}`)}
+                                  className="px-3 py-1 bg-[#242424] hover:bg-[#0058be] text-gray-300 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5"
+                                >
+                                  <Search className="w-3 h-3" /> Search Papers
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
                 // Standard text bot message
                 return (
                   <div key={msg.id} className="flex gap-3">
@@ -440,8 +532,46 @@ export default function SearchChatbot() {
               <div ref={messagesEndRef} />
             </div>
 
+            {/* Quick Suggestions Bar - Premium UI/UX without emojis */}
+            <div className="px-3.5 py-2.5 bg-[#141414] border-t border-gray-800/80 flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                  <Lightbulb className="w-3 h-3 text-[#4A90E2]" /> Suggested Research Queries
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 hide-scrollbar scrollbar-none">
+                <button
+                  type="button"
+                  onClick={() => handleSend(null, "Dựa trên research của tôi, tôi nên follow thêm topic nào?")}
+                  disabled={loading}
+                  className="group flex items-center gap-1.5 px-3 py-1.5 bg-[#1c1c1c] hover:bg-[#0058be]/20 text-gray-300 hover:text-white text-xs font-semibold rounded border border-gray-800 hover:border-[#0058be]/60 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
+                >
+                  <Compass className="w-3.5 h-3.5 text-[#4A90E2] group-hover:scale-110 transition-transform" />
+                  <span>Nên follow topic nào?</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSend(null, "Keyword nào liên quan đến bài tôi đang bookmark?")}
+                  disabled={loading}
+                  className="group flex items-center gap-1.5 px-3 py-1.5 bg-[#1c1c1c] hover:bg-[#0058be]/20 text-gray-300 hover:text-white text-xs font-semibold rounded border border-gray-800 hover:border-[#0058be]/60 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
+                >
+                  <Bookmark className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                  <span>Keyword liên quan bookmark</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSend(null, "Gợi ý các chủ đề nghiên cứu mới đang nổi phù hợp với profile của tôi")}
+                  disabled={loading}
+                  className="group flex items-center gap-1.5 px-3 py-1.5 bg-[#1c1c1c] hover:bg-[#0058be]/20 text-gray-300 hover:text-white text-xs font-semibold rounded border border-gray-800 hover:border-[#0058be]/60 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
+                >
+                  <TrendingUp className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
+                  <span>Chủ đề nổi bật theo profile</span>
+                </button>
+              </div>
+            </div>
+
             {/* Input Bar */}
-            <form onSubmit={handleSend} className="p-3 border-t-2 border-gray-800 bg-[#1a1a1a] flex gap-2">
+            <form onSubmit={handleSend} className="p-3 border-t border-gray-800 bg-[#1a1a1a] flex gap-2">
               <input
                 type="text"
                 value={input}

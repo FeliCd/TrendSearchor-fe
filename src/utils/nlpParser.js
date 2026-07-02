@@ -102,9 +102,10 @@ export function parseNaturalLanguageQuery(queryText) {
   }
 
   // 4. Extract keyword (remaining text)
-  // Clean off common query phrases at the start of the query
+  // Clean off common query phrases at the start or end of the query (English & Vietnamese)
   keyword = cleanText
-    .replace(/^\s*(?:find|search|show|get|retrieve)?\s*(?:papers|articles|publications|documents)?\s*(?:about|on|related to|for|discussing)?\s*/i, '')
+    .replace(/^\s*(?:find|search|show|get|retrieve|tìm|tra cứu|hiển thị)?\s*(?:papers|articles|publications|documents|bài báo|bài|các bài|tài liệu)?\s*(?:about|on|related to|for|discussing|về|chủ đề|chủ đề này|liên quan đến)?\s*/gi, '')
+    .replace(/\s*(?:tìm|tra cứu|bài báo|bài|chủ đề|chủ đề này|năm|trong năm|về)\s*$/gi, '')
     .trim();
 
   // If the extracted keyword is empty or too short, fallback to the cleaned query or original text
