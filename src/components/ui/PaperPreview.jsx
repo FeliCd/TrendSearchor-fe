@@ -3,7 +3,7 @@ import { ExternalLink, Bookmark, X, BookOpen, Users, Tag, FileText, Award, Globe
 import { useLenis } from '@/providers/LenisProvider';
 import { noteService } from '@/services/noteService';
 
-export default function PaperPreview({ paper, isBookmarked, isToggling, onBookmark, onClose }) {
+export default function PaperPreview({ paper, isBookmarked, isToggling, onBookmark, onClose, onViewPaper }) {
   const [note, setNote] = useState('');
   const [noteLoading, setNoteLoading] = useState(false);
   const [noteSaving, setNoteSaving] = useState(false);
@@ -185,36 +185,47 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
           </div>
         )}
 
-        <div className="pt-4 flex gap-3 mt-2">
+        <div className="pt-4 flex flex-col gap-2.5 mt-2">
+          <div className="flex gap-3">
+            {onViewPaper && (
+              <button
+                onClick={onViewPaper}
+                className="flex-1 flex items-center justify-center gap-2 h-11 border-2 border-transparent bg-[#0058be] text-white rounded-none hover:bg-[#004a9f] transition-all text-[11px] font-black uppercase tracking-widest shadow-none"
+              >
+                <FileText className="w-4 h-4" />
+                View Paper
+              </button>
+            )}
+            <button
+              onClick={onBookmark}
+              disabled={isToggling || !paper.externalId}
+              className={`flex-1 flex items-center justify-center gap-2 h-11 border-2 rounded-none transition-all disabled:opacity-50 text-[11px] font-black uppercase tracking-widest shadow-none ${
+                isBookmarked
+                  ? 'bg-[#0058be] border-[#0058be] text-white hover:bg-[#004a9f]'
+                  : 'bg-transparent border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 hover:bg-[#2a2a2a]'
+              }`}
+            >
+              {isToggling ? (
+                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-none animate-spin" />
+              ) : (
+                <>
+                  <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                  {isBookmarked ? 'Saved' : 'Save'}
+                </>
+              )}
+            </button>
+          </div>
           {paper.paperUri && (
             <a
               href={paper.paperUri}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 h-11 border-2 border-transparent bg-[#0058be] text-white rounded-none hover:bg-[#004a9f] transition-all text-[11px] font-black uppercase tracking-widest shadow-none"
+              className="w-full flex items-center justify-center gap-2 h-11 border-2 border-gray-800 bg-[#1e1e1e] text-gray-400 rounded-none hover:border-gray-600 hover:text-white transition-all text-[11px] font-black uppercase tracking-widest"
             >
               <ExternalLink className="w-4 h-4" />
-              View Paper
+              View Source
             </a>
           )}
-          <button
-            onClick={onBookmark}
-            disabled={isToggling || !paper.externalId}
-            className={`flex-1 flex items-center justify-center gap-2 h-11 border-2 rounded-none transition-all disabled:opacity-50 text-[11px] font-black uppercase tracking-widest shadow-none ${
-              isBookmarked
-                ? 'bg-[#0058be] border-[#0058be] text-white hover:bg-[#004a9f]'
-                : 'bg-transparent border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 hover:bg-[#2a2a2a]'
-            }`}
-          >
-            {isToggling ? (
-              <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-none animate-spin" />
-            ) : (
-              <>
-                <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
-                {isBookmarked ? 'Saved' : 'Save'}
-              </>
-            )}
-          </button>
         </div>
 
         <div className="pt-6 border-t-2 border-gray-800 mt-6">

@@ -28,6 +28,7 @@ const TrendsPage = lazy(() => import('@/pages/researcher/TrendsPage'));
 const PaperUploadPage = lazy(() => import('@/pages/researcher/PaperUploadPage'));
 const BookmarksPage = lazy(() => import('@/pages/shared/BookmarksPage'));
 const NotificationsPage = lazy(() => import('@/pages/shared/NotificationsPage'));
+const PaperDetailsPage = lazy(() => import('@/pages/shared/PaperDetailsPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 
 function PageLoader() {
@@ -81,6 +82,8 @@ function AnimatedRoutes() {
               <Route path="/admin" element={<Navigate to="/admin/users" replace />} end />
               <Route path="/admin/users" element={<UserManagementPage />} />
               <Route path="/admin/papers/pending" element={<PaperModerationPage />} />
+              <Route path="/admin/paper/:id" element={<PaperDetailsPage />} />
+              <Route path="/admin/notifications" element={<NotificationsPage />} />
               <Route path="/admin/profile" element={<ProfilePage />} />
             </Route>
           </Route>
@@ -93,7 +96,9 @@ function AnimatedRoutes() {
               <Route path="/researcher/trends" element={<TrendsPage />} />
               <Route path="/researcher/analytics" element={<ResearcherDashboardPage />} />
               <Route path="/researcher/bookmarks" element={<BookmarksPage />} />
+              <Route path="/researcher/paper/:id" element={<PaperDetailsPage />} />
               <Route path="/researcher/upload" element={<PaperUploadPage />} />
+              <Route path="/researcher/notifications" element={<NotificationsPage />} />
               <Route path="/researcher/profile" element={<ProfilePage />} />
             </Route>
           </Route>
@@ -104,6 +109,7 @@ function AnimatedRoutes() {
               <Route path="/academic" element={<AcademicDashboardPage />} end />
               <Route path="/academic/search" element={<PaperSearchPage />} />
               <Route path="/academic/trends" element={<TrendsPage />} />
+              <Route path="/academic/paper/:id" element={<PaperDetailsPage />} />
               <Route path="/academic/bookmarks" element={<BookmarksPage />} />
               <Route path="/academic/notifications" element={<NotificationsPage />} />
               <Route path="/academic/profile" element={<ProfilePage />} />

@@ -26,7 +26,7 @@
   }
 
   body {
-    @apply bg-[#f8f9ff] text-[#0b1c30] antialiased;
+    @apply bg-[#151515] text-[#0b1c30] antialiased;
     font-family: 'M PLUS U', system-ui, -apple-system, sans-serif;
   }
 

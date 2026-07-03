@@ -43,7 +43,7 @@ export default function SelectDropdown({ value, onChange, options, className = '
             transition={{ duration: 0.15 }}
             className="absolute z-50 min-w-full w-max mt-1.5 shadow-xl shadow-black/30 overflow-hidden border-2 border-gray-800 bg-[#1e1e1e]"
           >
-            <div className="max-h-60 overflow-y-auto py-1 scrollbar-thin">
+            <div className="max-h-60 overflow-y-auto py-1 scrollbar-thin" data-lenis-prevent="true">
               {options.map((option) => (
                 <button
                   key={option.value}

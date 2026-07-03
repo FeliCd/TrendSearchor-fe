@@ -8,7 +8,6 @@ import {
   GraduationCap,
   FlaskConical,
   Shield,
-  Bell,
   UserCircle,
   Upload,
   ClipboardCheck,
@@ -25,7 +24,6 @@ const ACADEMIC_CONFIG = {
       { to: '/academic/search', label: 'Search Papers', icon: Search },
       { to: '/academic/trends', label: 'Trends', icon: TrendingUp },
       { to: '/academic/bookmarks', label: 'Bookmarks', icon: BookOpen },
-      { to: '/academic/notifications', label: 'Notifications', icon: Bell, comingSoon: true },
       { to: '/academic/profile', label: 'My Profile', icon: UserCircle },
     ],
 };

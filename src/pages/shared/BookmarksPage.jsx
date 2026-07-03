@@ -280,7 +280,7 @@ export default function BookmarksPage() {
       <PageBackground />
 
       {/* Header */}
-      <div className="relative z-10 shrink-0">
+      <div className="relative z-20 shrink-0">
         <PageHeader
           title="Knowledge Graph"
           description="Navigate your bookmarks as an interconnected network."
