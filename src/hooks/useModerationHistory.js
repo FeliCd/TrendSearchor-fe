@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { paperUploadService } from '@/services/paperUploadService';
 
 /**
- * Custom hook to fetch the list of papers pending moderation (Admin only).
+ * Custom hook to fetch the list of moderated papers history (Admin/Moderator only).
  */
-export function usePendingPapers() {
+export function useModerationHistory() {
   const [papers, setPapers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -14,27 +14,29 @@ export function usePendingPapers() {
   const PAGE_SIZE = 10;
 
   const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('ALL');
 
-  const fetchPending = useCallback(async (pageIndex = 0, searchVal = '') => {
+  const fetchHistory = useCallback(async (pageIndex = 0, searchVal = '', statusVal = 'ALL') => {
     setLoading(true);
     setError('');
     try {
-      const data = await paperUploadService.getPendingPapers(pageIndex, PAGE_SIZE, searchVal);
+      const data = await paperUploadService.getModerationHistory(pageIndex, PAGE_SIZE, searchVal, statusVal);
       setPapers(data.content ?? []);
       setTotalPages(data.totalPages ?? 0);
       setTotalElements(data.totalElements ?? 0);
       setPage(pageIndex);
       setSearch(searchVal);
+      setStatus(statusVal);
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Failed to load pending papers.');
+      setError(err.response?.data?.message || err.message || 'Failed to load moderation history.');
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchPending(0, '');
-  }, [fetchPending]);
+    fetchHistory(0, '', 'ALL');
+  }, [fetchHistory]);
 
   return {
     papers,
@@ -44,7 +46,8 @@ export function usePendingPapers() {
     totalPages,
     totalElements,
     search,
-    fetchPending,
+    status,
+    fetchHistory,
     setPapers,
   };
 }

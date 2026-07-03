@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload,
@@ -11,19 +12,27 @@ import {
   Plus,
   X,
   RefreshCw,
-  Link2,
   BookOpen,
   Users,
   Tag,
-  CalendarDays,
   AlignLeft,
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  List,
+  ListOrdered,
+  Highlighter,
+  Info,
 } from 'lucide-react';
 import { paperUploadService } from '@/services/paperUploadService';
+import { topicService } from '@/services/topicService';
 import { useMyUploads } from '@/hooks/useMyUploads';
 import { PAPER_STATUS, PAPER_STATUS_LABELS, PAPER_STATUS_STYLES } from '@/constants/paperStatus';
+import { useAuth } from '@/contexts/AuthContext';
 import PageHeader from '@/components/ui/PageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Toast from '@/components/ui/Toast';
+import PaperPreviewModal from '@/components/modals/PaperPreviewModal';
 
 // ─── Background grid ─────────────────────────────────────────────────────────
 function PageBackground() {
@@ -57,15 +66,23 @@ function StatusBadge({ status }) {
 }
 
 // ─── Tag input helper ─────────────────────────────────────────────────────────
-function TagInput({ label, icon: Icon, values, onChange, placeholder }) {
+function TagInput({ label, icon: Icon, values, onChange, placeholder, required, hint, validate, validationMessage }) {
   const [inputValue, setInputValue] = useState('');
+  const [error, setError] = useState('');
 
   const addTag = () => {
     const trimmed = inputValue.trim();
-    if (trimmed && !values.includes(trimmed)) {
-      onChange([...values, trimmed]);
+    if (trimmed) {
+      if (validate && !validate(trimmed)) {
+        setError(validationMessage || 'Invalid input');
+        return;
+      }
+      if (!values.includes(trimmed)) {
+        onChange([...values, trimmed]);
+      }
     }
     setInputValue('');
+    setError('');
   };
 
   const removeTag = (tag) => onChange(values.filter((t) => t !== tag));
@@ -79,62 +96,351 @@ function TagInput({ label, icon: Icon, values, onChange, placeholder }) {
 
   return (
     <div>
-      <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+      <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
         <Icon className="w-3.5 h-3.5" />
         {label}
+        {required && <span className="text-red-400">*</span>}
       </label>
-      <div className="flex flex-wrap gap-2 mb-2 min-h-[28px]">
-        <AnimatePresence>
-          {values.map((tag) => (
-            <motion.span
-              key={tag}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="inline-flex items-center gap-1 px-2 py-1 bg-[#0058be]/10 border border-[#0058be]/30 text-[#5ba3ff] text-xs font-medium"
-            >
-              {tag}
-              <button
-                type="button"
-                onClick={() => removeTag(tag)}
-                className="hover:text-red-400 transition-colors"
+      {values.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-1.5">
+          <AnimatePresence>
+            {values.map((tag) => (
+              <motion.span
+                key={tag}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#0058be]/10 border border-[#0058be]/30 text-[#5ba3ff] text-xs font-medium"
               >
-                <X className="w-3 h-3" />
-              </button>
-            </motion.span>
-          ))}
-        </AnimatePresence>
-      </div>
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => removeTag(tag)}
+                  className="hover:text-red-400 transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </motion.span>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
       <div className="flex gap-2">
         <input
           type="text"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            if (error) setError('');
+          }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="flex-1 bg-[#1e1e1e] border-2 border-gray-800 text-white text-sm px-3 py-2.5 focus:border-[#0058be] focus:outline-none transition-colors placeholder-gray-600"
+          className="flex-1 bg-[#1e1e1e] border-2 border-gray-800 text-white text-sm px-3 py-1.5 focus:border-[#0058be] focus:outline-none transition-colors placeholder-gray-600"
         />
         <button
           type="button"
           onClick={addTag}
-          className="px-3 py-2.5 border-2 border-gray-700 bg-[#1e1e1e] text-gray-400 hover:border-[#0058be] hover:text-[#5ba3ff] transition-all"
+          title="Add item"
+          className="px-3 py-1.5 border-2 border-gray-700 bg-[#1e1e1e] text-gray-400 hover:border-[#0058be] hover:text-[#5ba3ff] transition-all"
         >
           <Plus className="w-4 h-4" />
         </button>
       </div>
-      <p className="text-[10px] text-gray-600 mt-1">Press Enter or comma to add</p>
+      <div className="flex flex-col gap-0.5 mt-0.5">
+        <p className="text-[10px] text-gray-600">Press Enter or comma to add</p>
+        {hint && (
+          <p className="flex items-center gap-1 text-[10px] text-gray-600">
+            <Info className="w-3 h-3 flex-shrink-0" />
+            {hint}
+          </p>
+        )}
+        {error && (
+          <p className="text-[10px] text-red-400 mt-0.5">{error}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Async Tag Input helper ───────────────────────────────────────────────────
+function AsyncTagInput({ label, icon: Icon, values, onChange, placeholder, required, hint, fetchSuggestions }) {
+  const [inputValue, setInputValue] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (!inputValue.trim()) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setShowSuggestions(true);
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        const results = await fetchSuggestions(inputValue.trim());
+        let finalResults = [];
+        if (Array.isArray(results)) {
+          finalResults = results;
+        } else if (results && Array.isArray(results.data)) {
+          finalResults = results.data;
+        } else if (results && Array.isArray(results.content)) {
+          finalResults = results.content;
+        }
+        setSuggestions(finalResults);
+      } catch (err) {
+        setSuggestions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputValue]);
+
+  const addTag = (tag) => {
+    if (!values.includes(tag)) {
+      onChange([...values, tag]);
+    }
+    setInputValue('');
+    setShowSuggestions(false);
+  };
+
+  const removeTag = (tag) => onChange(values.filter((t) => t !== tag));
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (showSuggestions && !isLoading) {
+        if (suggestions.length > 0) {
+          addTag(suggestions[0].name || suggestions[0]);
+        } else if (inputValue.trim()) {
+          addTag(inputValue.trim());
+        }
+      }
+    }
+  };
+
+  return (
+    <div ref={wrapperRef} className="relative">
+      <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
+        <Icon className="w-3.5 h-3.5" />
+        {label}
+        {required && <span className="text-red-400">*</span>}
+      </label>
+      {values.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-1.5">
+          <AnimatePresence>
+            {values.map((tag) => (
+              <motion.span
+                key={tag}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#0058be]/10 border border-[#0058be]/30 text-[#5ba3ff] text-xs font-medium"
+              >
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => removeTag(tag)}
+                  className="hover:text-red-400 transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </motion.span>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
+      <div className="flex gap-2 relative">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onFocus={() => {
+            if (inputValue.trim()) setShowSuggestions(true);
+          }}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className="flex-1 bg-[#1e1e1e] border-2 border-gray-800 text-white text-sm px-3 py-1.5 focus:border-[#0058be] focus:outline-none transition-colors placeholder-gray-600"
+        />
+        <button
+          type="button"
+          onClick={() => {
+            if (showSuggestions && !isLoading) {
+              if (suggestions.length > 0) {
+                addTag(suggestions[0].name || suggestions[0]);
+              } else if (inputValue.trim()) {
+                addTag(inputValue.trim());
+              }
+            }
+          }}
+          disabled={!inputValue.trim()}
+          title="Add item"
+          className="px-3 py-1.5 border-2 border-gray-700 bg-[#1e1e1e] text-gray-400 hover:border-[#0058be] hover:text-[#5ba3ff] transition-all disabled:opacity-50"
+        >
+          {isLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {showSuggestions && inputValue.trim() && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            data-lenis-prevent="true"
+            className="absolute top-full z-50 left-0 right-0 mt-1 bg-[#1e1e1e] border-2 border-gray-800 shadow-xl max-h-60 overflow-y-auto"
+          >
+            {isLoading ? (
+              <div className="p-3 text-xs text-gray-500 flex items-center gap-2">
+                <RefreshCw className="w-3 h-3 animate-spin" /> Searching...
+              </div>
+            ) : suggestions.length > 0 ? (
+              <ul className="py-1">
+                {suggestions.map((item, idx) => {
+                  const tagName = item.name || item;
+                  return (
+                    <li
+                      key={idx}
+                      onClick={() => addTag(tagName)}
+                      className="px-3 py-2 text-sm text-gray-300 hover:bg-[#0058be]/20 hover:text-[#5ba3ff] cursor-pointer transition-colors"
+                    >
+                      {tagName}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <div
+                onClick={() => addTag(inputValue.trim())}
+                className="p-3 text-sm text-[#5ba3ff] hover:bg-[#0058be]/20 cursor-pointer border-t border-dashed border-gray-800 flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Create new tag: "{inputValue.trim()}"
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex flex-col gap-0.5 mt-0.5">
+        <p className="text-[10px] text-gray-600">Type to search for an existing tag or create a new one</p>
+        {hint && (
+          <p className="flex items-center gap-1 text-[10px] text-gray-600">
+            <Info className="w-3 h-3 flex-shrink-0" />
+            {hint}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Rich text abstract toolbar ───────────────────────────────────────────────
+const ABSTRACT_TOOLBAR_BUTTONS = [
+  { command: 'bold', Icon: Bold, title: 'Bold' },
+  { command: 'italic', Icon: Italic, title: 'Italic' },
+  { command: 'underline', Icon: UnderlineIcon, title: 'Underline' },
+  { command: 'insertUnorderedList', Icon: List, title: 'Bullet list' },
+  { command: 'insertOrderedList', Icon: ListOrdered, title: 'Numbered list' },
+  { command: 'hiliteColor', Icon: Highlighter, title: 'Highlight', value: '#FDE047' },
+];
+
+function AbstractEditor({ editorRef, required }) {
+  const applyFormat = (command, value = null) => {
+    document.execCommand(command, false, value);
+    editorRef.current?.focus();
+  };
+
+  return (
+    <div>
+      <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
+        <AlignLeft className="w-3.5 h-3.5" />
+        Abstract {required && <span className="text-red-400">*</span>}
+      </label>
+
+      {/* Toolbar */}
+      <div className="flex items-center gap-0 border-2 border-b-0 border-gray-800 bg-[#1e1e1e] px-1 py-1">
+        {ABSTRACT_TOOLBAR_BUTTONS.map(({ command, Icon, title, value }, idx) => (
+          <button
+            key={command}
+            type="button"
+            title={title}
+            onMouseDown={(e) => {
+              e.preventDefault(); // prevent losing focus from editor
+              applyFormat(command, value ?? null);
+            }}
+            className={`flex items-center justify-center w-8 h-7 text-gray-400 hover:text-white hover:bg-gray-700 transition-colors rounded-none ${idx > 0 ? 'border-l border-gray-800' : ''}`}
+          >
+            <Icon className="w-3.5 h-3.5" />
+          </button>
+        ))}
+      </div>
+
+      {/* Editor area */}
+      <div
+        ref={editorRef}
+        id="paper-abstract"
+        contentEditable
+        suppressContentEditableWarning
+        data-placeholder="Summarize the paper's contribution, methodology, and key findings..."
+        className="w-full min-h-[160px] bg-[#1e1e1e] border-2 border-gray-800 text-white text-sm px-4 py-3 focus:border-[#0058be] focus:outline-none transition-colors overflow-y-auto leading-relaxed break-words"
+        style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+        onPaste={(e) => {
+          e.preventDefault();
+          const text = e.clipboardData.getData('text/plain');
+          const selection = window.getSelection();
+          if (!selection.rangeCount) return;
+          selection.deleteFromDocument();
+          selection.getRangeAt(0).insertNode(document.createTextNode(text));
+          selection.collapseToEnd();
+
+          const event = new Event('input', { bubbles: true });
+          e.target.dispatchEvent(event);
+        }}
+      />
+
+      {/* Inline style for placeholder */}
+      <style>{`
+        #paper-abstract:empty::before {
+          content: attr(data-placeholder);
+          color: #4b5563;
+          pointer-events: none;
+          display: block;
+        }
+        #paper-abstract ul { list-style-type: disc; padding-left: 1.25rem; margin: 0.25rem 0; }
+        #paper-abstract ol { list-style-type: decimal; padding-left: 1.25rem; margin: 0.25rem 0; }
+        #paper-abstract b, #paper-abstract strong { font-weight: 700; }
+        #paper-abstract i, #paper-abstract em { font-style: italic; }
+        #paper-abstract u { text-decoration: underline; }
+      `}</style>
     </div>
   );
 }
 
 // ─── Upload form ──────────────────────────────────────────────────────────────
 function UploadPaperForm({ onSuccess }) {
+  const { user } = useAuth();
+  const abstractRef = useRef(null);
   const [form, setForm] = useState({
     title: '',
-    abstractText: '',
-    year: new Date().getFullYear(),
-    paperUri: '',
-    authors: [],
+    collab: [],
     journals: [],
     keywords: [],
   });
@@ -146,26 +452,51 @@ function UploadPaperForm({ onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const abstractText = abstractRef.current?.innerHTML || '';
+    const plainText = abstractRef.current?.textContent?.trim() || '';
+
+    // Validations
     if (!form.title.trim()) {
       setFormError('Title is required.');
       return;
     }
+    if (!plainText) {
+      setFormError('Abstract is required.');
+      return;
+    }
+    if (form.journals.length === 0) {
+      setFormError('At least one journal or conference is required.');
+      return;
+    }
+    if (form.keywords.length === 0) {
+      setFormError('At least one keyword is required.');
+      return;
+    }
+
     setFormError('');
     setSubmitting(true);
+
     try {
+      const allAuthors = [];
+      const uploaderName = user?.fullName || user?.mail || 'Unknown Author';
+      allAuthors.push(uploaderName);
+      allAuthors.push(...form.collab);
+
       await paperUploadService.uploadPaper({
-        ...form,
-        year: Number(form.year),
+        title: form.title.trim(),
+        abstractText,
+        authors: allAuthors,
+        journals: form.journals,
+        keywords: form.keywords,
+        // year is omitted — backend derives from submission timestamp
+        // paperUri is omitted — system-generated on approval
       });
-      setForm({
-        title: '',
-        abstractText: '',
-        year: new Date().getFullYear(),
-        paperUri: '',
-        authors: [],
-        journals: [],
-        keywords: [],
-      });
+
+      // Reset form
+      setForm({ title: '', collab: [], journals: [], keywords: [] });
+      if (abstractRef.current) abstractRef.current.innerHTML = '';
+
       onSuccess('Paper submitted successfully and is now awaiting review.');
     } catch (err) {
       setFormError(err.response?.data?.message || 'Failed to upload paper. Please try again.');
@@ -175,13 +506,13 @@ function UploadPaperForm({ onSuccess }) {
   };
 
   const inputClass =
-    'w-full bg-[#1e1e1e] border-2 border-gray-800 text-white text-sm px-3 py-2.5 focus:border-[#0058be] focus:outline-none transition-colors placeholder-gray-600';
+    'w-full bg-[#1e1e1e] border-2 border-gray-800 text-white text-sm px-3 py-1.5 focus:border-[#0058be] focus:outline-none transition-colors placeholder-gray-600';
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-3">
       {/* Title */}
       <div>
-        <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+        <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
           <FileText className="w-3.5 h-3.5" />
           Title <span className="text-red-400">*</span>
         </label>
@@ -196,62 +527,19 @@ function UploadPaperForm({ onSuccess }) {
         />
       </div>
 
-      {/* Abstract */}
-      <div>
-        <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-          <AlignLeft className="w-3.5 h-3.5" />
-          Abstract
-        </label>
-        <textarea
-          id="paper-abstract"
-          value={form.abstractText}
-          onChange={handleChange('abstractText')}
-          placeholder="Summarize the paper's contribution..."
-          rows={4}
-          className={`${inputClass} resize-none`}
-        />
-      </div>
+      {/* Abstract — rich text editor */}
+      <AbstractEditor editorRef={abstractRef} required />
 
-      {/* Year & URI */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <div>
-          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-            <CalendarDays className="w-3.5 h-3.5" />
-            Publication Year
-          </label>
-          <input
-            id="paper-year"
-            type="number"
-            min="1900"
-            max={new Date().getFullYear()}
-            value={form.year}
-            onChange={handleChange('year')}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
-            <Link2 className="w-3.5 h-3.5" />
-            Paper URL / DOI
-          </label>
-          <input
-            id="paper-uri"
-            type="url"
-            value={form.paperUri}
-            onChange={handleChange('paperUri')}
-            placeholder="https://doi.org/..."
-            className={inputClass}
-          />
-        </div>
-      </div>
-
-      {/* Authors */}
+      {/* Collab */}
       <TagInput
-        label="Authors"
+        label="Collab"
         icon={Users}
-        values={form.authors}
-        onChange={(authors) => setForm((prev) => ({ ...prev, authors }))}
-        placeholder="Add author name..."
+        values={form.collab}
+        onChange={(collab) => setForm((prev) => ({ ...prev, collab }))}
+        placeholder="Add collaborator gmail and press Enter..."
+        required={false}
+        validate={(val) => val.toLowerCase().endsWith('@gmail.com')}
+        validationMessage="Collaborator must be a @gmail.com address"
       />
 
       {/* Journals */}
@@ -260,16 +548,21 @@ function UploadPaperForm({ onSuccess }) {
         icon={BookOpen}
         values={form.journals}
         onChange={(journals) => setForm((prev) => ({ ...prev, journals }))}
-        placeholder="Add journal or conference name..."
+        placeholder="Type journal or conference name..."
+        required
+        hint="Journals are curated by administrators. Type to suggest a journal."
       />
 
       {/* Keywords */}
-      <TagInput
-        label="Keywords"
+      <AsyncTagInput
+        label="Keywords / Topics"
         icon={Tag}
         values={form.keywords}
         onChange={(keywords) => setForm((prev) => ({ ...prev, keywords }))}
-        placeholder="Add keyword..."
+        placeholder="Add keyword or topic..."
+        required
+        hint="Type to search existing topics. If not found, you can create a new one."
+        fetchSuggestions={(query) => topicService.searchTopics(query)}
       />
 
       {/* Error */}
@@ -281,7 +574,7 @@ function UploadPaperForm({ onSuccess }) {
             exit={{ opacity: 0 }}
             className="text-sm text-red-400 flex items-center gap-2"
           >
-            <XCircle className="w-4 h-4" />
+            <XCircle className="w-4 h-4 flex-shrink-0" />
             {formError}
           </motion.p>
         )}
@@ -307,103 +600,49 @@ function UploadPaperForm({ onSuccess }) {
 }
 
 // ─── Paper row ────────────────────────────────────────────────────────────────
-function PaperRow({ paper, index }) {
-  const [expanded, setExpanded] = useState(false);
-
+function PaperRow({ paper, index, onPreview }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04 }}
-      className="border-2 border-gray-800 bg-[#1a1a1a] hover:border-gray-700 transition-colors"
+      className="border-2 border-gray-800 bg-[#1a1a1a] hover:border-gray-700 transition-colors p-3 flex items-start gap-3"
     >
-      <button
-        type="button"
-        onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-start gap-4 p-4 text-left"
-      >
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold text-white truncate leading-snug">{paper.title}</p>
-          <div className="flex flex-wrap items-center gap-2 mt-1.5">
-            <StatusBadge status={paper.status} />
-            {paper.year && (
-              <span className="text-[10px] text-gray-500 font-medium">{paper.year}</span>
-            )}
-            {paper.authors?.length > 0 && (
-              <span className="text-[10px] text-gray-500">
-                {paper.authors.map((a) => a.name || a).slice(0, 3).join(', ')}
-                {paper.authors.length > 3 && ` +${paper.authors.length - 3} more`}
-              </span>
-            )}
-          </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-bold text-white truncate leading-snug">{paper.title}</p>
+        <div className="flex flex-wrap items-center gap-2 mt-1">
+          <StatusBadge status={paper.status} />
+          {paper.year && (
+            <span className="text-[10px] text-gray-500 font-medium">{paper.year}</span>
+          )}
+          {paper.authors?.length > 0 && (
+            <span className="text-[10px] text-gray-500">
+              {paper.authors.map((a) => a.name || a).slice(0, 3).join(', ')}
+              {paper.authors.length > 3 && ` +${paper.authors.length - 3} more`}
+            </span>
+          )}
         </div>
-        <ChevronRight
-          className={`w-4 h-4 text-gray-600 flex-shrink-0 mt-0.5 transition-transform ${expanded ? 'rotate-90' : ''}`}
-        />
-      </button>
-
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-t-2 border-gray-800"
-          >
-            <div className="p-4 space-y-3">
-              {paper.abstractText && (
-                <p className="text-sm text-gray-400 leading-relaxed">{paper.abstractText}</p>
-              )}
-              {paper.keywords?.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {paper.keywords.map((kw) => (
-                    <span
-                      key={kw}
-                      className="px-2 py-0.5 bg-gray-800 text-gray-400 text-[10px] font-medium border border-gray-700"
-                    >
-                      {kw}
-                    </span>
-                  ))}
-                </div>
-              )}
-              {paper.paperUri && (
-                <a
-                  href={paper.paperUri}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs text-[#5ba3ff] hover:underline"
-                >
-                  <Link2 className="w-3 h-3" />
-                  View Paper
-                </a>
-              )}
-              {paper.status === PAPER_STATUS.REJECTED && paper.statusComments && (
-                <div className="p-3 bg-red-500/5 border border-red-500/20">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-red-400 mb-1">
-                    Rejection Feedback
-                  </p>
-                  <p className="text-sm text-red-300">{paper.statusComments}</p>
-                </div>
-              )}
-              {paper.status === PAPER_STATUS.APPROVED && paper.statusComments && (
-                <div className="p-3 bg-emerald-500/5 border border-emerald-500/20">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-1">
-                    Reviewer Notes
-                  </p>
-                  <p className="text-sm text-emerald-300">{paper.statusComments}</p>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
+      <div className="flex-shrink-0 mt-0.5">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onPreview(paper);
+          }}
+          className="flex items-center gap-1.5 px-3 py-2 border-2 border-gray-800 bg-[#1e1e1e] text-gray-400 text-[10px] font-black uppercase tracking-widest hover:border-gray-600 hover:text-white transition-all"
+        >
+          Preview
+        </button>
+      </div>
     </motion.div>
   );
 }
 
 // ─── My Uploads panel ─────────────────────────────────────────────────────────
-function MyUploadsPanel() {
-  const { papers, loading, error, page, totalPages, totalElements, fetchUploads } = useMyUploads();
+function MyUploadsPanel({ onPreviewPaper }) {
+  const { papers, loading, error, page, totalPages, totalElements, fetchUploads } = useMyUploads(5);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
 
   const statusCounts = papers.reduce(
     (acc, p) => {
@@ -413,10 +652,24 @@ function MyUploadsPanel() {
     {}
   );
 
+  const filteredPapers = papers.filter((paper) => {
+    const matchesSearch =
+      paper.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      paper.authors?.some((author) => {
+        const name = author.name || author;
+        return name.toLowerCase().includes(searchQuery.toLowerCase());
+      }) ||
+      paper.keywords?.some((kw) => kw.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const matchesStatus = statusFilter === 'ALL' || paper.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <div>
           <h2 className="text-base font-bold text-white">My Submissions</h2>
           <p className="text-xs text-gray-500 mt-0.5">
@@ -434,7 +687,7 @@ function MyUploadsPanel() {
 
       {/* Stat chips */}
       {papers.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-3">
           {Object.entries(statusCounts).map(([status, count]) => (
             <span
               key={status}
@@ -445,6 +698,27 @@ function MyUploadsPanel() {
           ))}
         </div>
       )}
+
+      {/* Search and Filter bar */}
+      <div className="flex gap-2 mb-3">
+        <input
+          type="text"
+          placeholder="Search by title, author, or keyword..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-1 bg-[#1e1e1e] border-2 border-gray-800 text-white text-xs px-3 py-1.5 focus:border-[#0058be] focus:outline-none placeholder-gray-600"
+        />
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="bg-[#1e1e1e] border-2 border-gray-800 text-white text-xs px-2 py-1.5 focus:border-[#0058be] focus:outline-none cursor-pointer"
+        >
+          <option value="ALL">All Status</option>
+          <option value="PENDING">Pending</option>
+          <option value="APPROVED">Approved</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+      </div>
 
       {/* Content */}
       {loading ? (
@@ -461,17 +735,21 @@ function MyUploadsPanel() {
           <p className="text-sm text-gray-500">No papers submitted yet.</p>
           <p className="text-xs text-gray-700 mt-1">Use the form to submit your first paper.</p>
         </div>
+      ) : filteredPapers.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-8 text-center border-2 border-dashed border-gray-800 bg-[#1e1e1e]/50 p-4">
+          <p className="text-xs text-gray-500">No matching papers found.</p>
+        </div>
       ) : (
-        <div className="space-y-3">
-          {papers.map((paper, i) => (
-            <PaperRow key={paper.id ?? paper.externalId} paper={paper} index={i} />
+        <div className="space-y-2">
+          {filteredPapers.map((paper, i) => (
+            <PaperRow key={paper.id ?? paper.externalId} paper={paper} index={i} onPreview={onPreviewPaper} />
           ))}
         </div>
       )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 mt-6">
+        <div className="flex items-center justify-center gap-4 mt-4">
           <button
             onClick={() => fetchUploads(page - 1)}
             disabled={page === 0}
@@ -497,8 +775,10 @@ function MyUploadsPanel() {
 
 // ─── Main page ─────────────────────────────────────────────────────────────────
 export default function PaperUploadPage() {
+  const navigate = useNavigate();
   const [toast, setToast] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [previewTarget, setPreviewTarget] = useState(null);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -524,7 +804,7 @@ export default function PaperUploadPage() {
         />
 
         <div className="w-full px-6 pb-10 mt-6">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
             {/* Left – Upload form */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -554,11 +834,21 @@ export default function PaperUploadPage() {
               transition={{ duration: 0.35, delay: 0.08 }}
               className="border-2 border-gray-800 bg-[#1a1a1a] p-6"
             >
-              <MyUploadsPanel />
+              <MyUploadsPanel onPreviewPaper={setPreviewTarget} />
             </motion.div>
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {previewTarget && (
+          <PaperPreviewModal
+            paper={previewTarget}
+            onClose={() => setPreviewTarget(null)}
+            onViewPaper={() => navigate(`/researcher/paper/${previewTarget.id || previewTarget.externalId}`)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

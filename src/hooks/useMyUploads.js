@@ -4,20 +4,19 @@ import { paperUploadService } from '@/services/paperUploadService';
 /**
  * Custom hook to fetch the current researcher's uploaded papers with pagination.
  */
-export function useMyUploads() {
+export function useMyUploads(pageSize = 10) {
   const [papers, setPapers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
-  const PAGE_SIZE = 10;
 
   const fetchUploads = useCallback(async (pageIndex = 0) => {
     setLoading(true);
     setError('');
     try {
-      const data = await paperUploadService.getMyUploads(pageIndex, PAGE_SIZE);
+      const data = await paperUploadService.getMyUploads(pageIndex, pageSize);
       setPapers(data.content ?? []);
       setTotalPages(data.totalPages ?? 0);
       setTotalElements(data.totalElements ?? 0);
@@ -27,7 +26,7 @@ export function useMyUploads() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageSize]);
 
   useEffect(() => {
     fetchUploads(0);

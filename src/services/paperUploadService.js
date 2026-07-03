@@ -24,8 +24,26 @@ export const paperUploadService = {
    * GET /api/admin/papers/pending
    * Fetch paginated list of papers awaiting moderation (ADMIN only).
    */
-  getPendingPapers: async (page = 0, size = 10) => {
-    const res = await api.get('/api/admin/papers/pending', { params: { page, size } });
+  getPendingPapers: async (page = 0, size = 10, search = '') => {
+    const res = await api.get('/api/admin/papers/pending', { params: { page, size, search } });
+    return res.data;
+  },
+
+  /**
+   * GET /api/admin/papers/history
+   * Fetch paginated list of papers moderated (approved/rejected) (ADMIN only).
+   */
+  getModerationHistory: async (page = 0, size = 10, search = '', status = 'ALL') => {
+    const res = await api.get('/api/admin/papers/history', { params: { page, size, search, status } });
+    return res.data;
+  },
+
+  /**
+   * POST /api/admin/papers/{id}/revoke
+   * Revoke a decision made on a paper (revert back to PENDING) (ADMIN only).
+   */
+  revokePaper: async (id) => {
+    const res = await api.post(`/api/admin/papers/${id}/revoke`);
     return res.data;
   },
 

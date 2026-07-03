@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
 import MobileMenu from './MobileMenu';
+import NotificationBell from '../notifications/NotificationBell';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROLES, ROLE_LABELS } from '@/constants/roles';
 import { getDashboardPath } from '@/utils/roleUtils';
@@ -52,50 +53,53 @@ export default function Navbar() {
             <Logo variant="navbar" />
           </Link>
 
-          <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+          <div className="hidden sm:flex items-center gap-4 flex-shrink-0">
             {isLoading ? (
               <div className="w-9 h-9 rounded-full bg-[#f8f9ff] border border-[#c6c6cd]/50 animate-pulse" />
             ) : user ? (
-              <div className="relative" ref={menuRef}>
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center justify-center w-9 h-9 rounded-full bg-[#f8f9ff] border border-[#c6c6cd]/50 hover:border-[#0058be]/40 transition-all overflow-hidden focus:outline-none focus:ring-2 focus:ring-[#0058be]/50"
-                >
-                  <User className="w-5 h-5 text-[#45464d]" />
-                </button>
+              <div className="flex items-center gap-3">
+                <NotificationBell />
+                <div className="relative" ref={menuRef}>
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center justify-center w-9 h-9 rounded-full bg-[#f8f9ff] border border-[#c6c6cd]/50 hover:border-[#0058be]/40 transition-all overflow-hidden focus:outline-none focus:ring-2 focus:ring-[#0058be]/50"
+                  >
+                    <User className="w-5 h-5 text-[#45464d]" />
+                  </button>
 
-                {showUserMenu && (
-                  <div className="absolute right-0 mt-3 w-56 bg-white border border-[#c6c6cd]/60 rounded-xl shadow-xl py-1 z-50">
-                    <div className="px-4 py-2.5 border-b border-[#c6c6cd]/30">
-                      <p className="text-sm font-semibold text-[#0b1c30]">{user.mail}</p>
-                      <p className="text-xs text-[#76777d] mt-0.5">{ROLE_LABELS[user.role] || user.role}</p>
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-3 w-56 bg-white border border-[#c6c6cd]/60 rounded-xl shadow-xl py-1 z-50">
+                      <div className="px-4 py-2.5 border-b border-[#c6c6cd]/30">
+                        <p className="text-sm font-semibold text-[#0b1c30]">{user.mail}</p>
+                        <p className="text-xs text-[#76777d] mt-0.5">{ROLE_LABELS[user.role] || user.role}</p>
+                      </div>
+                      <div className="py-1">
+                        <Link
+                          to={dashboardPath}
+                          onClick={() => setShowUserMenu(false)}
+                          className="block px-4 py-2 text-sm text-[#45464d] hover:text-[#0b1c30] hover:bg-[#f8f9ff] transition-colors"
+                        >
+                          Dashboard
+                        </Link>
+                        <Link
+                          to={`${dashboardPath}/profile`}
+                          onClick={() => setShowUserMenu(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-[#45464d] hover:text-[#0b1c30] hover:bg-[#f8f9ff] transition-colors"
+                        >
+                          <UserCircle className="w-4 h-4" />
+                          My Profile
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-left px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors flex items-center gap-2"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </button>
+                      </div>
                     </div>
-                    <div className="py-1">
-                      <Link
-                        to={dashboardPath}
-                        onClick={() => setShowUserMenu(false)}
-                        className="block px-4 py-2 text-sm text-[#45464d] hover:text-[#0b1c30] hover:bg-[#f8f9ff] transition-colors"
-                      >
-                        Dashboard
-                      </Link>
-                      <Link
-                        to={`${dashboardPath}/profile`}
-                        onClick={() => setShowUserMenu(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-[#45464d] hover:text-[#0b1c30] hover:bg-[#f8f9ff] transition-colors"
-                      >
-                        <UserCircle className="w-4 h-4" />
-                        My Profile
-                      </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors flex items-center gap-2"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        Sign Out
-                      </button>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             ) : (
               <>
