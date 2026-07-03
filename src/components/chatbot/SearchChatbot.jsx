@@ -39,6 +39,25 @@ export default function SearchChatbot() {
   
   // Paper preview modal state
   const [previewPaper, setPreviewPaper] = useState(null);
+  const [aiSummary, setAiSummary] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  useEffect(() => {
+    setAiSummary(null);
+  }, [previewPaper]);
+
+  const handleGenerateAiSummary = async () => {
+    if (!previewPaper) return;
+    setAiLoading(true);
+    try {
+      const summary = await aiService.summarizePaper(previewPaper);
+      setAiSummary(summary);
+    } catch (err) {
+      console.error('Failed to generate AI summary:', err);
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   // Chat message history
   const [messages, setMessages] = useState(() => {
@@ -183,32 +202,36 @@ export default function SearchChatbot() {
       }]);
 
       try {
-        let dateFromStr = parsed.dateFrom || '';
-        let dateToStr = parsed.dateTo || '';
-        if (parsed.year && (!dateFromStr || !dateToStr)) {
-          const y = parseInt(parsed.year, 10);
-          if (!isNaN(y)) {
-            if (!dateFromStr) dateFromStr = `${y}-01-01`;
-            if (!dateToStr) dateToStr = `${y}-12-31`;
+        let data;
+        try {
+          data = await aiService.naturalLanguageSearch(messageToSend);
+        } catch (nlErr) {
+          console.warn('Backend natural language search failed, falling back to standard search:', nlErr);
+          let dateFromStr = parsed.dateFrom || '';
+          let dateToStr = parsed.dateTo || '';
+          if (parsed.year && (!dateFromStr || !dateToStr)) {
+            const y = parseInt(parsed.year, 10);
+            if (!isNaN(y)) {
+              if (!dateFromStr) dateFromStr = `${y}-01-01`;
+              if (!dateToStr) dateToStr = `${y}-12-31`;
+            }
           }
+          const params = {
+            query: parsed.keyword || '',
+            page: 0,
+            size: 5,
+            ...(parsed.author && { author: parsed.author }),
+            ...(parsed.journal && { journal: parsed.journal }),
+            ...(parsed.year && { year: parseInt(parsed.year, 10) }),
+            ...(dateFromStr && { dateFrom: dateFromStr }),
+            ...(dateToStr && { dateTo: dateToStr }),
+          };
+          data = await searchService.searchPapers(params);
         }
-
-        const params = {
-          query: parsed.keyword || '',
-          page: 0,
-          size: 5,
-          ...(parsed.author && { author: parsed.author }),
-          ...(parsed.journal && { journal: parsed.journal }),
-          ...(parsed.year && { year: parseInt(parsed.year, 10) }),
-          ...(dateFromStr && { dateFrom: dateFromStr }),
-          ...(dateToStr && { dateTo: dateToStr }),
-        };
-
-        const data = await searchService.searchPapers(params);
         if (abortRef.current) return;
 
-        let papers = data.papers || [];
-        const total = data.total || 0;
+        let papers = data?.papers || [];
+        const total = data?.total || 0;
 
         // Enhance search results with AI reranking
         if (papers.length > 1) {
@@ -532,44 +555,6 @@ export default function SearchChatbot() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick Suggestions Bar - Premium UI/UX without emojis */}
-            <div className="px-3.5 py-2.5 bg-[#141414] border-t border-gray-800/80 flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
-                  <Lightbulb className="w-3 h-3 text-[#4A90E2]" /> Suggested Research Queries
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 hide-scrollbar scrollbar-none">
-                <button
-                  type="button"
-                  onClick={() => handleSend(null, "Dựa trên research của tôi, tôi nên follow thêm topic nào?")}
-                  disabled={loading}
-                  className="group flex items-center gap-1.5 px-3 py-1.5 bg-[#1c1c1c] hover:bg-[#0058be]/20 text-gray-300 hover:text-white text-xs font-semibold rounded border border-gray-800 hover:border-[#0058be]/60 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
-                >
-                  <Compass className="w-3.5 h-3.5 text-[#4A90E2] group-hover:scale-110 transition-transform" />
-                  <span>Nên follow topic nào?</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSend(null, "Keyword nào liên quan đến bài tôi đang bookmark?")}
-                  disabled={loading}
-                  className="group flex items-center gap-1.5 px-3 py-1.5 bg-[#1c1c1c] hover:bg-[#0058be]/20 text-gray-300 hover:text-white text-xs font-semibold rounded border border-gray-800 hover:border-[#0058be]/60 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
-                >
-                  <Bookmark className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
-                  <span>Keyword liên quan bookmark</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSend(null, "Gợi ý các chủ đề nghiên cứu mới đang nổi phù hợp với profile của tôi")}
-                  disabled={loading}
-                  className="group flex items-center gap-1.5 px-3 py-1.5 bg-[#1c1c1c] hover:bg-[#0058be]/20 text-gray-300 hover:text-white text-xs font-semibold rounded border border-gray-800 hover:border-[#0058be]/60 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
-                >
-                  <TrendingUp className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
-                  <span>Chủ đề nổi bật theo profile</span>
-                </button>
-              </div>
-            </div>
-
             {/* Input Bar */}
             <form onSubmit={handleSend} className="p-3 border-t border-gray-800 bg-[#1a1a1a] flex gap-2">
               <input
@@ -690,6 +675,48 @@ export default function SearchChatbot() {
                   </div>
                 </div>
               )}
+
+              {/* AI Research Takeaways Section */}
+              <div className="pt-4 border-t border-gray-800 mt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-[#0058be] text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4" /> AI Research Takeaways
+                  </h4>
+                  <button
+                    onClick={handleGenerateAiSummary}
+                    disabled={aiLoading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0058be]/10 hover:bg-[#0058be] text-[#4A90E2] hover:text-white border border-[#0058be]/40 text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
+                  >
+                    {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                    {aiLoading ? 'Analyzing...' : aiSummary ? 'Regenerate' : 'Generate AI Summary'}
+                  </button>
+                </div>
+
+                {aiSummary && (
+                  <div className="bg-[#1a1a1a] border border-gray-800 p-4 space-y-3 mt-2">
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 block mb-1">Executive Summary</span>
+                      <p className="text-xs text-gray-200 leading-relaxed">{aiSummary.executiveSummary}</p>
+                    </div>
+                    {aiSummary.keyContributions?.length > 0 && (
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 block mb-1">Key Contributions & Methodology</span>
+                        <ul className="list-disc list-inside space-y-1 text-xs text-gray-300">
+                          {aiSummary.keyContributions.map((point, idx) => (
+                            <li key={idx} className="leading-relaxed">{point}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {aiSummary.practicalImplications && (
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 block mb-1">Practical Implications</span>
+                        <p className="text-xs text-gray-300 leading-relaxed">{aiSummary.practicalImplications}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Modal Footer */}

@@ -23,7 +23,10 @@ import {
   ListOrdered,
   Highlighter,
   Info,
+  Sparkles,
+  Loader2,
 } from 'lucide-react';
+import { aiService } from '@/services/aiService';
 import { paperUploadService } from '@/services/paperUploadService';
 import { topicService } from '@/services/topicService';
 import { useMyUploads } from '@/hooks/useMyUploads';
@@ -363,17 +366,116 @@ const ABSTRACT_TOOLBAR_BUTTONS = [
 ];
 
 function AbstractEditor({ editorRef, required }) {
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiFeedback, setAiFeedback] = useState(null);
+
   const applyFormat = (command, value = null) => {
     document.execCommand(command, false, value);
     editorRef.current?.focus();
   };
 
+  const handleAiAction = async (action) => {
+    const text = editorRef.current?.textContent?.trim() || '';
+    if (!text) {
+      alert('Please enter some abstract text first.');
+      return;
+    }
+    setAiLoading(true);
+    setAiFeedback(null);
+    try {
+      const res = await aiService.processAbstract(action, text);
+      if (action === 'CLEANUP' || action === 'SPELLCHECK') {
+        if (res?.result && editorRef.current) {
+          editorRef.current.innerHTML = res.result;
+        }
+        setAiFeedback({
+          action: res?.action || action,
+          score: res?.score,
+          suggestions: res?.suggestions,
+          feedback: res?.feedback || (action === 'SPELLCHECK'
+            ? 'Grammar and spelling checked and updated above.'
+            : 'Abstract tone and formatting polished above.')
+        });
+      } else {
+        setAiFeedback(res);
+      }
+    } catch (err) {
+      console.error('AI abstract assist error:', err);
+      alert('Failed to process abstract with AI.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   return (
     <div>
-      <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
-        <AlignLeft className="w-3.5 h-3.5" />
-        Abstract {required && <span className="text-red-400">*</span>}
-      </label>
+      <div className="flex items-center justify-between mb-1">
+        <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400">
+          <AlignLeft className="w-3.5 h-3.5" />
+          Abstract {required && <span className="text-red-400">*</span>}
+        </label>
+        <div className="flex items-center gap-1.5">
+          {aiLoading ? (
+            <span className="text-xs text-[#5ba3ff] flex items-center gap-1">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Processing AI...
+            </span>
+          ) : (
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => handleAiAction('SPELLCHECK')}
+                className="px-2 py-0.5 bg-[#0058be]/20 border border-[#0058be] text-[#5ba3ff] hover:bg-[#0058be] hover:text-white transition-all text-[10px] font-bold uppercase flex items-center gap-1"
+                title="AI Grammar & Spell Check"
+              >
+                <Sparkles className="w-3 h-3" /> Fix Grammar
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAiAction('CLEANUP')}
+                className="px-2 py-0.5 bg-[#0058be]/20 border border-[#0058be] text-[#5ba3ff] hover:bg-[#0058be] hover:text-white transition-all text-[10px] font-bold uppercase flex items-center gap-1"
+                title="AI Clean Up & Formal Academic Tone"
+              >
+                <Sparkles className="w-3 h-3" /> Polish Tone
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAiAction('SUGGEST_MISSING')}
+                className="px-2 py-0.5 bg-purple-500/20 border border-purple-500 text-purple-300 hover:bg-purple-600 hover:text-white transition-all text-[10px] font-bold uppercase flex items-center gap-1"
+                title="Suggest Missing Aspects"
+              >
+                Suggestions
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAiAction('EVALUATE')}
+                className="px-2 py-0.5 bg-green-500/20 border border-green-500 text-green-300 hover:bg-green-600 hover:text-white transition-all text-[10px] font-bold uppercase flex items-center gap-1"
+                title="Evaluate Abstract Quality"
+              >
+                Score
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {aiFeedback && (
+        <div className="mb-2 p-3 bg-gray-900 border border-[#0058be] text-xs text-gray-300 space-y-1.5">
+          <div className="flex items-center justify-between font-bold text-[#5ba3ff] uppercase tracking-wider">
+            <span>AI Feedback ({aiFeedback.action})</span>
+            {aiFeedback.score !== undefined && aiFeedback.score !== null && (
+              <span className="px-2 py-0.5 bg-[#0058be] text-white">Score: {aiFeedback.score}/10</span>
+            )}
+          </div>
+          {aiFeedback.feedback && <p className="text-gray-300">{aiFeedback.feedback}</p>}
+          {aiFeedback.suggestions && aiFeedback.suggestions.length > 0 && (
+            <ul className="list-disc pl-4 space-y-1 text-gray-400">
+              {aiFeedback.suggestions.map((s, idx) => (
+                <li key={idx}>{s}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       {/* Toolbar */}
       <div className="flex items-center gap-0 border-2 border-b-0 border-gray-800 bg-[#1e1e1e] px-1 py-1">
