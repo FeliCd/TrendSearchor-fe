@@ -1,11 +1,57 @@
-import { Activity, Search, Bookmark, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Activity, Search, Bookmark } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { bookmarkService } from '@/services/bookmarkService';
+import { recentSearchService } from '@/services/recentSearchService';
 
 export default function UserStatsCard() {
+  const [statsData, setStatsData] = useState({
+    totalSearches: 0,
+    savedItems: 0,
+    activityScore: 0,
+    loading: true,
+  });
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const [searchesRes, bookmarksRes] = await Promise.allSettled([
+          recentSearchService.getRecentSearches({ page: 0, size: 1 }),
+          bookmarkService.getBookmarks({ page: 0, size: 1 }),
+        ]);
+
+        let totalSearches = 0;
+        if (searchesRes.status === 'fulfilled') {
+          totalSearches = searchesRes.value?.totalElements || searchesRes.value?.total || searchesRes.value?.length || 0;
+        }
+
+        let savedItems = 0;
+        if (bookmarksRes.status === 'fulfilled') {
+          savedItems = bookmarksRes.value?.totalElements || bookmarksRes.value?.total || bookmarksRes.value?.length || 0;
+        }
+
+        // Calculate a dynamic engagement activity score based on real user actions
+        const score = Math.min(100, Math.round((totalSearches * 5 + savedItems * 10) / (totalSearches + savedItems + 1) + (totalSearches > 0 ? 50 : 0)));
+
+        setStatsData({
+          totalSearches,
+          savedItems,
+          activityScore: score,
+          loading: false,
+        });
+      } catch (err) {
+        console.warn('Failed to load user stats:', err);
+        setStatsData({ totalSearches: 0, savedItems: 0, activityScore: 0, loading: false });
+      }
+    }
+
+    loadStats();
+  }, []);
+
   const stats = [
-    { label: 'Total Searches', value: '1,248', icon: Search, bgColor: 'bg-[#0058be]/10', borderColor: 'border-[#0058be]/20', iconColor: 'text-[#0058be]' },
-    { label: 'Saved Items', value: '342', icon: Bookmark, bgColor: 'bg-[#0058be]/10', borderColor: 'border-[#0058be]/20', iconColor: 'text-[#0058be]' },
-    { label: 'Activity Score', value: '98%', icon: Activity, bgColor: 'bg-[#0058be]/10', borderColor: 'border-[#0058be]/20', iconColor: 'text-[#0058be]' },
+    { label: 'Total Searches', value: statsData.loading ? '...' : statsData.totalSearches.toLocaleString(), icon: Search, iconColor: 'text-[#0058be]' },
+    { label: 'Saved Items', value: statsData.loading ? '...' : statsData.savedItems.toLocaleString(), icon: Bookmark, iconColor: 'text-[#0058be]' },
+    { label: 'Activity Score', value: statsData.loading ? '...' : `${statsData.activityScore}%`, icon: Activity, iconColor: 'text-[#0058be]' },
   ];
 
   return (
@@ -27,7 +73,7 @@ export default function UserStatsCard() {
                   <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1.5 font-medium">{stat.label}</p>
                   <p className="text-2xl font-bold text-white leading-none tracking-tight">{stat.value}</p>
                 </div>
-                <div className={`mt-0.5 w-8 h-8 border-2 bg-[#151515] border-gray-800 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity duration-200`}>
+                <div className="mt-0.5 w-8 h-8 border-2 bg-[#151515] border-gray-800 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity duration-200">
                   <Icon className={`w-3.5 h-3.5 ${stat.iconColor}`} />
                 </div>
               </div>

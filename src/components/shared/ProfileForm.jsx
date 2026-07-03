@@ -116,8 +116,23 @@ export default function ProfileForm({ initialProfile = {}, onSuccess, onToast })
   const handleSaveField = async (name, value) => {
     try {
       const updatedData = { ...profile, [name]: value };
-      const updatedProfile = await profileService.updateProfile(updatedData);
-      setProfile(updatedProfile);
+      
+      // Clean payload: convert empty string representations of Date and Enum to null
+      // to prevent Jackson deserialization errors (Malformed JSON request body)
+      const payload = { ...updatedData };
+      if (payload.dob === '') payload.dob = null;
+      if (payload.gender === '') payload.gender = null;
+
+      const updatedProfile = await profileService.updateProfile(payload);
+      
+      setProfile({
+        fullName: updatedProfile.fullName || '',
+        mail: updatedProfile.mail || '',
+        dob: updatedProfile.dob || '',
+        phone: updatedProfile.phone || '',
+        gender: updatedProfile.gender || '',
+        workplace: updatedProfile.workplace || '',
+      });
       onSuccess();
       onToast(`${name} updated successfully`);
     } catch (err) {

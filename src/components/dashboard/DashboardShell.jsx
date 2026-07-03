@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import DashboardSidebar from './DashboardSidebar';
-import { Menu } from 'lucide-react';
+import SearchChatbot from '@/components/chatbot/SearchChatbot';
 
-export default function DashboardShell({ sidebarConfig }) {
+export default function DashboardShell({ sidebarConfig, children }) {
 
   return (
     <div className="flex bg-[#151515] min-h-screen text-white">
@@ -17,8 +16,10 @@ export default function DashboardShell({ sidebarConfig }) {
         id="dashboard-main"
         className="flex-1 min-w-0 transition-all duration-300 scroll-smooth ml-[240px]"
       >
-        <Outlet />
+        {children || <Outlet />}
       </main>
+
+      <SearchChatbot />
     </div>
   );
 }
