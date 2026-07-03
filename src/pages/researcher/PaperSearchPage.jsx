@@ -18,7 +18,6 @@ export default function PaperSearchPage() {
   
   const { initScroller } = useLenis();
   const [searchParams] = useSearchParams();
-  const location = useLocation();
   const urlQuery = searchParams.get('q');
   
   const resultsRef = useRef(null);
