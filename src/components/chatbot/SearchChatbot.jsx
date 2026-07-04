@@ -130,14 +130,26 @@ export default function SearchChatbot() {
     abortRef.current = false;
     setLoading(true);
 
-    // Add user message to history
+    // Add user message and initial loading status to history
     const userMsgId = 'msg-' + Date.now();
-    setMessages(prev => [...prev, {
-      id: userMsgId,
-      sender: 'user',
-      text: messageToSend,
-      type: 'text'
-    }]);
+    const loadingMsgId = 'loading-' + Date.now();
+    
+    const cleanText = messageToSend.trim().toLowerCase();
+    const recKeywords = ['gợi ý', 'follow thêm', 'topic nào', 'keyword nào', 'recommend', 'suggestion', 'dựa trên research', 'liên quan đến bài', 'nên follow', 'chủ đề đang nổi', 'chưa theo dõi', 'keyword liên quan', 'bookmark'];
+    const trendKeywords = ['xu hướng', 'trend', 'tại sao', 'trending', 'why is', 'analysis of', 'forecast', 'phân tích xu hướng'];
+
+    let initialLoadingText = 'AI Research Assistant is thinking...';
+    if (recKeywords.some(kw => cleanText.includes(kw))) {
+      initialLoadingText = 'AI is analyzing your bookmarks and profile to generate personalized recommendations...';
+    } else if (trendKeywords.some(kw => cleanText.includes(kw))) {
+      initialLoadingText = 'AI is querying OpenAlex and analyzing academic publication trends...';
+    }
+
+    setMessages(prev => [
+      ...prev,
+      { id: userMsgId, sender: 'user', text: messageToSend, type: 'text' },
+      { id: loadingMsgId, sender: 'bot', text: initialLoadingText, type: 'loading' }
+    ]);
 
     try {
       // First check intent: general chat, recommendation, or academic search
@@ -145,25 +157,31 @@ export default function SearchChatbot() {
       if (abortRef.current) return;
 
       if (analysis && analysis.intent === 'recommendation') {
-        setMessages(prev => [...prev, {
-          id: 'rec-' + Date.now(),
-          sender: 'bot',
-          type: 'recommendations',
-          text: analysis.recommendationSummary || "Based on your research profile and bookmarks, here are recommended topics and keywords to explore:",
-          data: {
-            recommendations: analysis.recommendations || []
-          }
-        }]);
+        setMessages(prev => {
+          const filtered = prev.filter(m => m.id !== loadingMsgId);
+          return [...filtered, {
+            id: 'rec-' + Date.now(),
+            sender: 'bot',
+            type: 'recommendations',
+            text: analysis.recommendationSummary || "Based on your research profile and bookmarks, here are recommended topics and keywords to explore:",
+            data: {
+              recommendations: analysis.recommendations || []
+            }
+          }];
+        });
         return;
       }
 
       if (analysis && analysis.intent === 'chat') {
-        setMessages(prev => [...prev, {
-          id: 'bot-' + Date.now(),
-          sender: 'bot',
-          text: analysis.reply,
-          type: 'text'
-        }]);
+        setMessages(prev => {
+          const filtered = prev.filter(m => m.id !== loadingMsgId);
+          return [...filtered, {
+            id: 'bot-' + Date.now(),
+            sender: 'bot',
+            text: analysis.reply,
+            type: 'text'
+          }];
+        });
         return;
       }
 
@@ -192,14 +210,8 @@ export default function SearchChatbot() {
       }
       searchStatusText += '...';
 
-      // Add bot loading status message to history
-      const loadingMsgId = 'loading-' + Date.now();
-      setMessages(prev => [...prev, {
-        id: loadingMsgId,
-        sender: 'bot',
-        text: searchStatusText,
-        type: 'loading'
-      }]);
+      // Update existing loading status message in history
+      setMessages(prev => prev.map(m => m.id === loadingMsgId ? { ...m, text: searchStatusText } : m));
 
       try {
         const data = await aiService.naturalLanguageSearch(messageToSend);
@@ -251,12 +263,15 @@ export default function SearchChatbot() {
       }
     } catch (outerErr) {
       console.error('Error processing user message:', outerErr);
-      setMessages(prev => [...prev, {
-        id: 'err-' + Date.now(),
-        sender: 'bot',
-        text: 'An unexpected error occurred while processing your request. Please try again.',
-        type: 'text'
-      }]);
+      setMessages(prev => {
+        const filtered = prev.filter(m => m.id !== loadingMsgId);
+        return [...filtered, {
+          id: 'err-' + Date.now(),
+          sender: 'bot',
+          text: 'An unexpected error occurred while processing your request. Please try again.',
+          type: 'text'
+        }];
+      });
     } finally {
       if (!abortRef.current) {
         setLoading(false);
