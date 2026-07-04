@@ -19,7 +19,7 @@ export default function DashboardShell({ sidebarConfig, children }) {
         {children || <Outlet />}
       </main>
 
-      <SearchChatbot />
+      {sidebarConfig?.roleLabel !== 'Admin Panel' && <SearchChatbot />}
     </div>
   );
 }

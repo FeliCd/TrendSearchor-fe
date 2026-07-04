@@ -118,8 +118,8 @@ export default function SearchChatbot() {
     }
   }, [messages, isOpen]);
 
-  // If user is not logged in, do not render chatbot
-  if (!user) return null;
+  // If user is not logged in, or if user is ADMIN, do not render chatbot
+  if (!user || user?.role?.toUpperCase() === 'ADMIN') return null;
 
   const handleSend = async (e, customText = null) => {
     if (e && e.preventDefault) e.preventDefault();
@@ -202,45 +202,20 @@ export default function SearchChatbot() {
       }]);
 
       try {
-        let data;
-        try {
-          data = await aiService.naturalLanguageSearch(messageToSend);
-        } catch (nlErr) {
-          console.warn('Backend natural language search failed, falling back to standard search:', nlErr);
-          let dateFromStr = parsed.dateFrom || '';
-          let dateToStr = parsed.dateTo || '';
-          if (parsed.year && (!dateFromStr || !dateToStr)) {
-            const y = parseInt(parsed.year, 10);
-            if (!isNaN(y)) {
-              if (!dateFromStr) dateFromStr = `${y}-01-01`;
-              if (!dateToStr) dateToStr = `${y}-12-31`;
-            }
-          }
-          const params = {
-            query: parsed.keyword || '',
-            page: 0,
-            size: 5,
-            ...(parsed.author && { author: parsed.author }),
-            ...(parsed.journal && { journal: parsed.journal }),
-            ...(parsed.year && { year: parseInt(parsed.year, 10) }),
-            ...(dateFromStr && { dateFrom: dateFromStr }),
-            ...(dateToStr && { dateTo: dateToStr }),
-          };
-          data = await searchService.searchPapers(params);
-        }
+        const data = await aiService.naturalLanguageSearch(messageToSend);
         if (abortRef.current) return;
 
         let papers = data?.papers || [];
         const total = data?.total || 0;
 
         // Enhance search results with AI reranking
-        if (papers.length > 1) {
+        if (papers.length > 0) {
           try {
             setMessages(prev => prev.map(m => m.id === loadingMsgId ? { ...m, text: 'AI reranking and analyzing relevance...' } : m));
             papers = await aiService.rerankPapers(messageToSend, papers);
             if (abortRef.current) return;
           } catch (rerankErr) {
-            console.warn('AI reranking failed:', rerankErr);
+            console.error('AI reranking failed:', rerankErr);
           }
         }
         if (abortRef.current) return;
@@ -263,12 +238,13 @@ export default function SearchChatbot() {
       } catch (err) {
         if (abortRef.current) return;
         console.error(err);
+        const errorMsg = err.response?.data?.message || err.message || 'Lỗi không xác định từ Backend';
         setMessages(prev => {
           const filtered = prev.filter(m => m.id !== loadingMsgId);
           return [...filtered, {
             id: 'error-' + Date.now(),
             sender: 'bot',
-            text: 'Sorry, I encountered an error searching for papers. Please try again.',
+            text: `Lỗi từ Backend khi tìm kiếm bài báo: ${errorMsg}`,
             type: 'text'
           }];
         });

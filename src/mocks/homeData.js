@@ -9,8 +9,8 @@ export const heroData = {
     line2: 'INDUSTRY EXPERTS'
   },
   navigation: [
-    { label: 'Search', to: '/search' },
-    { label: 'Trends', to: '/trends' },
+    { label: 'Search', to: '/researcher/search' },
+    { label: 'Trends', to: '/researcher/trends' },
     { label: 'About', to: '/about' },
     { label: 'Contact', to: '/contact' }
   ]

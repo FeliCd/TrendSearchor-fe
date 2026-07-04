@@ -55,12 +55,21 @@ export default function HeroSection({ scrollContainer, data }) {
           
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-16 bg-[#5b58ff] p-6 inline-block self-start shadow-xl"
+            className="mt-12 bg-[#5b58ff] p-6 inline-block self-start shadow-xl"
           >
             <p className="text-white text-xs font-bold uppercase tracking-widest leading-relaxed">
               {data.highlightBadge.line1}<br />{data.highlightBadge.line2}
             </p>
             <div className="w-10 h-0.5 bg-white mt-4" />
+          </motion.div>
+
+          {/* Horizontal Scroll Prompt Indicator */}
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1, duration: 1 }}
+            className="mt-12 flex items-center gap-3 text-white/50 text-[11px] font-bold uppercase tracking-widest animate-pulse"
+          >
+            <span>👉 Scroll / Drag horizontally to explore features</span>
+            <svg className="w-4 h-4 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
           </motion.div>
         </div>
       </motion.div>

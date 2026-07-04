@@ -39,6 +39,11 @@ function PageLoader() {
   );
 }
 
+function RedirectWithQuery({ to }) {
+  const location = useLocation();
+  return <Navigate to={`${to}${location.search}`} replace />;
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
   const { user, refreshUser } = useAuth();
@@ -57,6 +62,11 @@ function AnimatedRoutes() {
               path="/"
               element={<Suspense fallback={<PageLoader />}><HomePage /></Suspense>}
             />
+            <Route path="/search" element={<RedirectWithQuery to="/researcher/search" />} />
+            <Route path="/trends" element={<RedirectWithQuery to="/researcher/trends" />} />
+            <Route path="/dashboard" element={<RedirectWithQuery to="/researcher" />} />
+            <Route path="/about" element={<Navigate to="/" replace />} />
+            <Route path="/contact" element={<Navigate to="/" replace />} />
             <Route
               path="*"
               element={<Suspense fallback={<PageLoader />}><NotFoundPage /></Suspense>}

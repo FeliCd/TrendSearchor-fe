@@ -1,4 +1,5 @@
 import api from './api';
+import { parseNaturalLanguageQuery } from '@/utils/nlpParser';
 
 export const aiService = {
   /**
@@ -51,12 +52,12 @@ export const aiService = {
    * Rerank papers via backend AI endpoint.
    */
   rerankPapers: async (queryText, papers) => {
-    if (!papers || !Array.isArray(papers) || papers.length <= 1) return papers;
+    if (!papers || !Array.isArray(papers) || papers.length === 0) return papers;
     try {
       const response = await api.post('/api/ai/rerank', { query: queryText, papers });
       return response.data || papers;
     } catch (err) {
-      console.warn('AI rerank API failed, returning original papers:', err);
+      console.error('AI rerank API failed:', err);
       return papers;
     }
   },
@@ -92,19 +93,10 @@ export const aiService = {
         const recData = await aiService.getRecommendations();
         const recList = [];
         if (recData?.suggestedKeywords) {
-          recData.suggestedKeywords.forEach(k => recList.push({ name: k, type: 'KEYWORD', reason: 'Suggested keyword based on your research profile' }));
+          recData.suggestedKeywords.forEach(k => recList.push({ name: k, type: 'KEYWORD', reason: recData.rationale || 'Suggested keyword based on your research profile' }));
         }
         if (recData?.suggestedTopics) {
-          recData.suggestedTopics.forEach(t => recList.push({ name: t, type: 'TOPIC', reason: 'Suggested topic based on your follow list' }));
-        }
-        if (recList.length === 0) {
-          recList.push(
-            { name: "Large Language Models", type: 'KEYWORD', reason: 'High-impact emerging keyword in AI' },
-            { name: "Retrieval-Augmented Generation", type: 'KEYWORD', reason: 'Trending methodology in NLP' },
-            { name: "Medical Image Segmentation", type: 'KEYWORD', reason: 'Top keyword in healthcare AI' },
-            { name: "Artificial Intelligence & Applications", type: 'TOPIC', reason: 'Emerging multidisciplinary topic' },
-            { name: "Green Computing & Energy Efficiency", type: 'TOPIC', reason: 'Growing sustainable computing topic' }
-          );
+          recData.suggestedTopics.forEach(t => recList.push({ name: t, type: 'TOPIC', reason: recData.rationale || 'Suggested topic based on your follow list' }));
         }
         return {
           intent: 'recommendation',
@@ -113,6 +105,10 @@ export const aiService = {
         };
       } catch (err) {
         console.error('Failed to get recommendations from backend:', err);
+        return {
+          intent: 'chat',
+          reply: `Lỗi từ Backend khi lấy gợi ý research: ${err.response?.data?.message || err.message || 'Không thể kết nối tới máy chủ'}.`
+        };
       }
     }
 
@@ -121,12 +117,17 @@ export const aiService = {
     if (isTrendIntent) {
       try {
         const trendAns = await aiService.answerTrendQuestion(userMessageText);
+        const replyText = trendAns?.answer || trendAns?.dataContext?.insight || (typeof trendAns === 'string' ? trendAns : null) || "Backend không phản hồi nội dung phân tích xu hướng.";
         return {
           intent: 'chat',
-          reply: trendAns.answer || "Here is the trend analysis."
+          reply: replyText
         };
       } catch (err) {
         console.error('Trend QA failed:', err);
+        return {
+          intent: 'chat',
+          reply: `Lỗi từ Backend khi phân tích xu hướng: ${err.response?.data?.message || err.message || 'Không thể kết nối tới máy chủ'}.`
+        };
       }
     }
 
@@ -137,14 +138,7 @@ export const aiService = {
    * Helper for query parsing fallback if needed by frontend
    */
   parseQueryWithAI: async (queryText) => {
-    return {
-      keyword: queryText,
-      author: '',
-      journal: '',
-      year: '',
-      dateFrom: '',
-      dateTo: '',
-    };
+    return parseNaturalLanguageQuery(queryText);
   }
 };
 

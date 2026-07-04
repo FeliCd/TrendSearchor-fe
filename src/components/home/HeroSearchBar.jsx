@@ -9,7 +9,7 @@ export default function HeroSearchBar() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (query.trim()) {
-      navigate(`/search?q=${encodeURIComponent(query)}`);
+      navigate(`/researcher/search?q=${encodeURIComponent(query)}`);
     }
   };
 
