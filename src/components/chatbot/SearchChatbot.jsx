@@ -165,7 +165,8 @@ export default function SearchChatbot() {
             type: 'recommendations',
             text: analysis.recommendationSummary || "Based on your research profile and bookmarks, here are recommended topics and keywords to explore:",
             data: {
-              recommendations: analysis.recommendations || []
+              recommendations: analysis.recommendations || [],
+              isNoBookmark: analysis.isNoBookmark
             }
           }];
         });
@@ -481,7 +482,8 @@ export default function SearchChatbot() {
 
                 // If recommendation results message
                 if (msg.type === 'recommendations') {
-                  const { recommendations = [] } = msg.data || {};
+                  const { recommendations = [], isNoBookmark = false } = msg.data || {};
+                  const isNoBookmarkCase = isNoBookmark || /haven't bookmarked|no bookmarked|no bookmarks|haven't saved|welcome to trendscholar|emerging research areas/i.test(msg.text || '');
                   return (
                     <div key={msg.id} className="flex gap-3">
                       <div className="w-8 h-8 bg-[#0058be] border border-[#4A90E2] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#0058be]/20">
@@ -490,7 +492,8 @@ export default function SearchChatbot() {
                       <div className="flex-1 space-y-3 min-w-0">
                         <div className="bg-[#1e1e1e] border border-[#0058be]/50 text-gray-200 px-4 py-3 text-sm leading-relaxed shadow-sm">
                           <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#4A90E2] mb-1.5">
-                            <Compass className="w-3.5 h-3.5" /> Personalized Research Recommendations
+                            <Compass className="w-3.5 h-3.5" /> 
+                            {isNoBookmarkCase ? 'Trending Research Recommendations (No Bookmarks Yet)' : 'Personalized Research Recommendations (Based on Bookmarks)'}
                           </div>
                           {msg.text}
                         </div>

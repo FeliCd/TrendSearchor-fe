@@ -91,16 +91,32 @@ export const aiService = {
     if (isRecommendationIntent) {
       try {
         const recData = await aiService.getRecommendations();
+        const rationale = recData?.rationale || '';
+        const isNoBookmark = /haven't bookmarked|no bookmarked|no bookmarks|haven't saved|welcome to trendscholar|emerging research areas/i.test(rationale);
+
         const recList = [];
         if (recData?.suggestedKeywords) {
-          recData.suggestedKeywords.forEach(k => recList.push({ name: k, type: 'KEYWORD', reason: recData.rationale || 'Suggested keyword based on your research profile' }));
+          recData.suggestedKeywords.forEach(k => {
+            const defaultReason = isNoBookmark 
+              ? 'Popular emerging keyword in the scientific community (No bookmarks yet)' 
+              : 'Recommended keyword aligned with your bookmarked research papers';
+            recList.push({ name: k, type: 'KEYWORD', reason: defaultReason });
+          });
         }
         if (recData?.suggestedTopics) {
-          recData.suggestedTopics.forEach(t => recList.push({ name: t, type: 'TOPIC', reason: recData.rationale || 'Suggested topic based on your follow list' }));
+          recData.suggestedTopics.forEach(t => {
+            const defaultReason = isNoBookmark 
+              ? 'High-impact trending research topic to explore (No bookmarks yet)' 
+              : 'Recommended research topic tailored to your bookmarks and profile';
+            recList.push({ name: t, type: 'TOPIC', reason: defaultReason });
+          });
         }
         return {
           intent: 'recommendation',
-          recommendationSummary: recData?.rationale || "Based on your research profile and emerging scientific trends, here are recommended topics and keywords for you:",
+          isNoBookmark,
+          recommendationSummary: rationale || (isNoBookmark 
+            ? "Welcome! Since you haven't bookmarked any papers yet, here are top emerging research areas currently popular in the scientific community:"
+            : "Based on your bookmarked research papers and profile, here are personalized topics and keywords for you:"),
           recommendations: recList
         };
       } catch (err) {
