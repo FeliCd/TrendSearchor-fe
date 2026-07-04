@@ -20,12 +20,15 @@ const ResearcherLayout = lazy(() => import('@/components/researcher/layout/Resea
 
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
 const UserManagementPage = lazy(() => import('@/pages/admin/UserManagementPage'));
+const PaperModerationPage = lazy(() => import('@/pages/admin/PaperModerationPage'));
 const AcademicDashboardPage = lazy(() => import('@/pages/academic/AcademicDashboardPage'));
 const ResearcherDashboardPage = lazy(() => import('@/pages/researcher/ResearcherDashboardPage'));
 const PaperSearchPage = lazy(() => import('@/pages/researcher/PaperSearchPage'));
 const TrendsPage = lazy(() => import('@/pages/researcher/TrendsPage'));
+const PaperUploadPage = lazy(() => import('@/pages/researcher/PaperUploadPage'));
 const BookmarksPage = lazy(() => import('@/pages/shared/BookmarksPage'));
 const NotificationsPage = lazy(() => import('@/pages/shared/NotificationsPage'));
+const PaperDetailsPage = lazy(() => import('@/pages/shared/PaperDetailsPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 
 function PageLoader() {
@@ -49,64 +52,71 @@ function AnimatedRoutes() {
       />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-        <Route element={<RootLayout />}>
+          <Route element={<RootLayout />}>
+            <Route
+              path="/"
+              element={<Suspense fallback={<PageLoader />}><HomePage /></Suspense>}
+            />
+            <Route
+              path="*"
+              element={<Suspense fallback={<PageLoader />}><NotFoundPage /></Suspense>}
+            />
+          </Route>
+
           <Route
-            path="/"
-            element={<Suspense fallback={<PageLoader />}><HomePage /></Suspense>}
+            path="/login"
+            element={<Suspense fallback={<PageLoader />}><LoginPage /></Suspense>}
           />
           <Route
-            path="*"
-            element={<Suspense fallback={<PageLoader />}><NotFoundPage /></Suspense>}
+            path="/register"
+            element={<Suspense fallback={<PageLoader />}><RegisterPage /></Suspense>}
           />
-        </Route>
+          <Route
+            path="/forgot-password"
+            element={<Suspense fallback={<PageLoader />}><ForgotPasswordPage /></Suspense>}
+          />
 
-        <Route
-          path="/login"
-          element={<Suspense fallback={<PageLoader />}><LoginPage /></Suspense>}
-        />
-        <Route
-          path="/register"
-          element={<Suspense fallback={<PageLoader />}><RegisterPage /></Suspense>}
-        />
-        <Route
-          path="/forgot-password"
-          element={<Suspense fallback={<PageLoader />}><ForgotPasswordPage /></Suspense>}
-        />
-
-        {/* ─── ADMIN routes ─── */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
-          <Route element={<Suspense fallback={<PageLoader />}><AdminLayout /></Suspense>}>
-            <Route path="/admin" element={<Navigate to="/admin/users" replace />} end />
-            <Route path="/admin/users" element={<UserManagementPage />} />
-            <Route path="/admin/profile" element={<ProfilePage />} />
+          {/* ─── ADMIN routes ─── */}
+          <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+            <Route element={<Suspense fallback={<PageLoader />}><AdminLayout /></Suspense>}>
+              <Route path="/admin" element={<Navigate to="/admin/users" replace />} end />
+              <Route path="/admin/users" element={<UserManagementPage />} />
+              <Route path="/admin/papers/pending" element={<PaperModerationPage />} />
+              <Route path="/admin/paper/:id" element={<PaperDetailsPage />} />
+              <Route path="/admin/notifications" element={<NotificationsPage />} />
+              <Route path="/admin/profile" element={<ProfilePage />} />
+            </Route>
           </Route>
-        </Route>
 
-        {/* ─── RESEARCHER routes ─── */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.RESEARCHER]} />}>
-          <Route element={<Suspense fallback={<PageLoader />}><ResearcherLayout /></Suspense>}>
-            <Route path="/researcher" element={<ResearcherDashboardPage />} end />
-            <Route path="/researcher/search" element={<PaperSearchPage />} />
-            <Route path="/researcher/trends" element={<TrendsPage />} />
-            <Route path="/researcher/analytics" element={<ResearcherDashboardPage />} />
-            <Route path="/researcher/bookmarks" element={<BookmarksPage />} />
-            <Route path="/researcher/profile" element={<ProfilePage />} />
+          {/* ─── RESEARCHER routes ─── */}
+          <Route element={<ProtectedRoute allowedRoles={[ROLES.RESEARCHER]} />}>
+            <Route element={<Suspense fallback={<PageLoader />}><ResearcherLayout /></Suspense>}>
+              <Route path="/researcher" element={<ResearcherDashboardPage />} end />
+              <Route path="/researcher/search" element={<PaperSearchPage />} />
+              <Route path="/researcher/trends" element={<TrendsPage />} />
+              <Route path="/researcher/analytics" element={<ResearcherDashboardPage />} />
+              <Route path="/researcher/bookmarks" element={<BookmarksPage />} />
+              <Route path="/researcher/paper/:id" element={<PaperDetailsPage />} />
+              <Route path="/researcher/upload" element={<PaperUploadPage />} />
+              <Route path="/researcher/notifications" element={<NotificationsPage />} />
+              <Route path="/researcher/profile" element={<ProfilePage />} />
+            </Route>
           </Route>
-        </Route>
 
-        {/* ─── ACADEMIC (LECTURER / STUDENT) routes ─── */}
-        <Route element={<ProtectedRoute allowedRoles={[ROLES.LECTURER, ROLES.STUDENT]} />}>
-          <Route element={<Suspense fallback={<PageLoader />}><AcademicLayout /></Suspense>}>
-            <Route path="/academic" element={<AcademicDashboardPage />} end />
-            <Route path="/academic/search" element={<PaperSearchPage />} />
-            <Route path="/academic/trends" element={<TrendsPage />} />
-            <Route path="/academic/bookmarks" element={<BookmarksPage />} />
-            <Route path="/academic/notifications" element={<NotificationsPage />} />
-            <Route path="/academic/profile" element={<ProfilePage />} />
+          {/* ─── ACADEMIC (LECTURER / STUDENT) routes ─── */}
+          <Route element={<ProtectedRoute allowedRoles={[ROLES.LECTURER, ROLES.STUDENT]} />}>
+            <Route element={<Suspense fallback={<PageLoader />}><AcademicLayout /></Suspense>}>
+              <Route path="/academic" element={<AcademicDashboardPage />} end />
+              <Route path="/academic/search" element={<PaperSearchPage />} />
+              <Route path="/academic/trends" element={<TrendsPage />} />
+              <Route path="/academic/paper/:id" element={<PaperDetailsPage />} />
+              <Route path="/academic/bookmarks" element={<BookmarksPage />} />
+              <Route path="/academic/notifications" element={<NotificationsPage />} />
+              <Route path="/academic/profile" element={<ProfilePage />} />
+            </Route>
           </Route>
-        </Route>
 
-      </Routes>
+        </Routes>
       </AnimatePresence>
     </>
   );

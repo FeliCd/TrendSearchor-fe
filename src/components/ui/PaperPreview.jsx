@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { ExternalLink, Bookmark, X, BookOpen, Users, Tag, FileText, Award, Globe, Bold, Italic, Underline as UnderlineIcon, Loader2, FolderPlus } from 'lucide-react';
+import { ExternalLink, Bookmark, X, BookOpen, Users, Tag, FileText, Award, Globe, Bold, Italic, Underline as UnderlineIcon, Loader2, FolderPlus, Sparkles } from 'lucide-react';
 import { useLenis } from '@/providers/LenisProvider';
 import { noteService } from '@/services/noteService';
+import { aiService } from '@/services/aiService';
 
-export default function PaperPreview({ paper, isBookmarked, isToggling, onBookmark, onAddToCollection, onClose }) {
+export default function PaperPreview({ paper, isBookmarked, isToggling, onBookmark, onClose, onViewPaper }) {
   const [note, setNote] = useState('');
   const [noteLoading, setNoteLoading] = useState(false);
   const [noteSaving, setNoteSaving] = useState(false);
+  const [aiSummary, setAiSummary] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
   const [showAllAuthors, setShowAllAuthors] = useState(false);
   const [showAllKeywords, setShowAllKeywords] = useState(false);
   const editorRef = useRef(null);
@@ -37,7 +40,21 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
       setNote('');
       if (editorRef.current) editorRef.current.innerHTML = '';
     }
+    setAiSummary(null);
   }, [paper]);
+
+  const handleGenerateAiSummary = async () => {
+    if (!paper) return;
+    setAiLoading(true);
+    try {
+      const summary = await aiService.summarizePaper(paper);
+      setAiSummary(summary);
+    } catch (err) {
+      console.error('Failed to generate AI summary:', err);
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const handleSaveNote = async () => {
     if (!paper || !paper.externalId) return;
@@ -185,43 +202,88 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
           </div>
         )}
 
-        <div className="pt-4 flex gap-3 mt-2">
+        <div className="pt-4 flex flex-col gap-2.5 mt-2">
+          <div className="flex gap-3">
+            {onViewPaper && (
+              <button
+                onClick={onViewPaper}
+                className="flex-1 flex items-center justify-center gap-2 h-11 border-2 border-transparent bg-[#0058be] text-white rounded-none hover:bg-[#004a9f] transition-all text-[11px] font-black uppercase tracking-widest shadow-none"
+              >
+                <FileText className="w-4 h-4" />
+                View Paper
+              </button>
+            )}
+            <button
+              onClick={onBookmark}
+              disabled={isToggling || !paper.externalId}
+              className={`flex-1 flex items-center justify-center gap-2 h-11 border-2 rounded-none transition-all disabled:opacity-50 text-[11px] font-black uppercase tracking-widest shadow-none ${
+                isBookmarked
+                  ? 'bg-[#0058be] border-[#0058be] text-white hover:bg-[#004a9f]'
+                  : 'bg-transparent border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 hover:bg-[#2a2a2a]'
+              }`}
+            >
+              {isToggling ? (
+                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-none animate-spin" />
+              ) : (
+                <>
+                  <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                  {isBookmarked ? 'Saved' : 'Save'}
+                </>
+              )}
+            </button>
+          </div>
           {paper.paperUri && (
             <a
               href={paper.paperUri}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 h-11 border-2 border-transparent bg-[#0058be] text-white rounded-none hover:bg-[#004a9f] transition-all text-[11px] font-black uppercase tracking-widest shadow-none"
+              className="w-full flex items-center justify-center gap-2 h-11 border-2 border-gray-800 bg-[#1e1e1e] text-gray-400 rounded-none hover:border-gray-600 hover:text-white transition-all text-[11px] font-black uppercase tracking-widest"
             >
               <ExternalLink className="w-4 h-4" />
-              View Paper
+              View Source
             </a>
           )}
-          <button
-            onClick={onBookmark}
-            disabled={isToggling || !paper.externalId}
-            className={`flex-1 flex items-center justify-center gap-2 h-11 border-2 rounded-none transition-all disabled:opacity-50 text-[11px] font-black uppercase tracking-widest shadow-none ${
-              isBookmarked
-                ? 'bg-[#0058be] border-[#0058be] text-white hover:bg-[#004a9f]'
-                : 'bg-transparent border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 hover:bg-[#2a2a2a]'
-            }`}
-          >
-            {isToggling ? (
-              <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-none animate-spin" />
-            ) : (
-              <>
-                <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
-                {isBookmarked ? 'Saved' : 'Save'}
-              </>
-            )}
-          </button>
-          <button
-            onClick={() => onAddToCollection(paper)}
-            disabled={!paper.externalId}
-            className="flex-1 flex items-center justify-center gap-2 h-11 border-2 rounded-none transition-all disabled:opacity-50 text-[11px] font-black uppercase tracking-widest shadow-none bg-transparent border-gray-700 text-gray-400 hover:text-white hover:border-gray-500 hover:bg-[#2a2a2a]"
-          >
-            <FolderPlus className="w-4 h-4" /> Collection
-          </button>
+        </div>
+
+        <div className="pt-6 border-t-2 border-gray-800 mt-6">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-[#0058be] text-xs font-black uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> AI Research Takeaways
+            </h4>
+            <button
+              onClick={handleGenerateAiSummary}
+              disabled={aiLoading}
+              className="flex items-center gap-1.5 px-3 py-1 bg-[#0058be]/10 hover:bg-[#0058be] text-[#4A90E2] hover:text-white border border-[#0058be]/40 text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
+            >
+              {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+              {aiLoading ? 'Analyzing...' : aiSummary ? 'Regenerate' : 'Generate AI Summary'}
+            </button>
+          </div>
+
+          {aiSummary && (
+            <div className="bg-[#1a1a1a] border border-gray-800 p-4 space-y-3.5 mb-6">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 block mb-1">Executive Summary</span>
+                <p className="text-xs text-gray-200 leading-relaxed">{aiSummary.executiveSummary}</p>
+              </div>
+              {aiSummary.keyContributions?.length > 0 && (
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 block mb-1">Key Contributions & Methodology</span>
+                  <ul className="list-disc list-inside space-y-1 text-xs text-gray-300">
+                    {aiSummary.keyContributions.map((point, idx) => (
+                      <li key={idx} className="leading-relaxed">{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {aiSummary.practicalImplications && (
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 block mb-1">Practical Implications</span>
+                  <p className="text-xs text-gray-300 leading-relaxed">{aiSummary.practicalImplications}</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="pt-6 border-t-2 border-gray-800 mt-6">

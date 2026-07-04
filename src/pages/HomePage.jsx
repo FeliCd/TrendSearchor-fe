@@ -26,7 +26,7 @@ export default function HomePage() {
                 wrapper: container,
                 content: container.firstElementChild,
                 orientation: 'horizontal',
-                gestureOrientation: 'vertical', 
+                gestureOrientation: 'vertical',
                 smoothWheel: true,
                 wheelMultiplier: 1.5, // Slightly faster for horizontal feel
                 duration: 1.5, // Slower smoothing for "story telling" feel
@@ -49,12 +49,12 @@ export default function HomePage() {
     }, [disableGlobal, enableGlobal]);
 
     return (
-        <div 
+        <div
             ref={scrollContainerRef}
             className="bg-[#151515] text-white relative h-screen w-full flex overflow-x-auto overflow-y-hidden hide-scrollbar overscroll-x-none"
         >
             {/* Background Grid Pattern */}
-            <div 
+            <div
                 className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none"
                 style={{
                     backgroundImage: `
