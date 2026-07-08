@@ -409,53 +409,11 @@ function AbstractEditor({ editorRef, required }) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex items-center justify-between mb-1.5">
         <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400">
           <AlignLeft className="w-3.5 h-3.5" />
           Abstract {required && <span className="text-red-400">*</span>}
         </label>
-        <div className="flex items-center gap-1.5">
-          {aiLoading ? (
-            <span className="text-xs text-[#5ba3ff] flex items-center gap-1">
-              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Processing AI...
-            </span>
-          ) : (
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => handleAiAction('SPELLCHECK')}
-                className="px-2 py-0.5 bg-[#0058be]/20 border border-[#0058be] text-[#5ba3ff] hover:bg-[#0058be] hover:text-white transition-all text-[10px] font-bold uppercase flex items-center gap-1"
-                title="AI Grammar & Spell Check"
-              >
-                <Sparkles className="w-3 h-3" /> Fix Grammar
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAiAction('CLEANUP')}
-                className="px-2 py-0.5 bg-[#0058be]/20 border border-[#0058be] text-[#5ba3ff] hover:bg-[#0058be] hover:text-white transition-all text-[10px] font-bold uppercase flex items-center gap-1"
-                title="AI Clean Up & Formal Academic Tone"
-              >
-                <Sparkles className="w-3 h-3" /> Polish Tone
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAiAction('SUGGEST_MISSING')}
-                className="px-2 py-0.5 bg-purple-500/20 border border-purple-500 text-purple-300 hover:bg-purple-600 hover:text-white transition-all text-[10px] font-bold uppercase flex items-center gap-1"
-                title="Suggest Missing Aspects"
-              >
-                Suggestions
-              </button>
-              <button
-                type="button"
-                onClick={() => handleAiAction('EVALUATE')}
-                className="px-2 py-0.5 bg-green-500/20 border border-green-500 text-green-300 hover:bg-green-600 hover:text-white transition-all text-[10px] font-bold uppercase flex items-center gap-1"
-                title="Evaluate Abstract Quality"
-              >
-                Score
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       {aiFeedback && (
@@ -478,21 +436,50 @@ function AbstractEditor({ editorRef, required }) {
       )}
 
       {/* Toolbar */}
-      <div className="flex items-center gap-0 border-2 border-b-0 border-gray-800 bg-[#1e1e1e] px-1 py-1">
-        {ABSTRACT_TOOLBAR_BUTTONS.map(({ command, Icon, title, value }, idx) => (
-          <button
-            key={command}
-            type="button"
-            title={title}
-            onMouseDown={(e) => {
-              e.preventDefault(); // prevent losing focus from editor
-              applyFormat(command, value ?? null);
-            }}
-            className={`flex items-center justify-center w-8 h-7 text-gray-400 hover:text-white hover:bg-gray-700 transition-colors rounded-none ${idx > 0 ? 'border-l border-gray-800' : ''}`}
-          >
-            <Icon className="w-3.5 h-3.5" />
-          </button>
-        ))}
+      <div className="flex items-center justify-between gap-2 border-2 border-b-0 border-gray-800 bg-[#1e1e1e] px-1.5 py-1 flex-wrap">
+        <div className="flex items-center gap-0">
+          {ABSTRACT_TOOLBAR_BUTTONS.map(({ command, Icon, title, value }, idx) => (
+            <button
+              key={command}
+              type="button"
+              title={title}
+              onMouseDown={(e) => {
+                e.preventDefault(); // prevent losing focus from editor
+                applyFormat(command, value ?? null);
+              }}
+              className={`flex items-center justify-center w-8 h-7 text-gray-400 hover:text-white hover:bg-gray-700 transition-colors rounded-none ${idx > 0 ? 'border-l border-gray-800' : ''}`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-1.5 ml-auto">
+          {aiLoading ? (
+            <span className="text-xs text-[#5ba3ff] flex items-center gap-1 px-2 font-bold">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Processing AI...
+            </span>
+          ) : (
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => handleAiAction('SPELLCHECK')}
+                className="px-2 py-1 bg-[#0058be]/20 border border-[#0058be] text-[#5ba3ff] hover:bg-[#0058be] hover:text-white transition-all text-[10px] font-bold uppercase flex items-center gap-1"
+                title="AI Grammar & Spell Check"
+              >
+                <Sparkles className="w-3 h-3" /> Fix Grammar
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAiAction('SUGGEST_MISSING')}
+                className="px-2 py-1 bg-purple-500/20 border border-purple-500 text-purple-300 hover:bg-purple-600 hover:text-white transition-all text-[10px] font-bold uppercase flex items-center gap-1"
+                title="Suggest Missing Aspects"
+              >
+                Suggestions
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Editor area */}
