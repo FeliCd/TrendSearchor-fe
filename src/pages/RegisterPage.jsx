@@ -117,6 +117,18 @@ export default function RegisterPage() {
                 </a>
               </div>
             </div>
+
+            <div className="space-y-3 mt-8 pt-6 border-t border-gray-800/50 text-[10.5px] leading-relaxed text-gray-500">
+              <p>
+                People who use our service may have uploaded your contact information to TrendSearchor. <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Learn more.</a>
+              </p>
+              <p>
+                By clicking Continue or registering with a social provider, you agree to our <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Terms</a>, <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Privacy Policy</a> and <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Cookies Policy</a>.
+              </p>
+              <p>
+                The <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Privacy Policy</a> describes the ways we can use the information we collect when you create an account. For example, we use this information to provide, personalize and improve our products, including research trend analysis.
+              </p>
+            </div>
           </div>
         )}
 
@@ -154,6 +166,18 @@ export default function RegisterPage() {
                   description="Deep analysis, topic reports"
                   selected={formData.role === 'RESEARCHER'} onChange={handleChange} />
               </div>
+            </div>
+
+            <div className="space-y-3 mt-6 text-[10.5px] leading-relaxed text-gray-500">
+              <p>
+                People who use our service may have uploaded your contact information to TrendSearchor. <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Learn more.</a>
+              </p>
+              <p>
+                By clicking Create account, you agree to our <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Terms</a>, <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Privacy Policy</a> and <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Cookies Policy</a>.
+              </p>
+              <p>
+                The <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Privacy Policy</a> describes the ways we can use the information we collect when you create an account. For example, we use this information to provide, personalize and improve our products, including research trend analysis.
+              </p>
             </div>
 
             <div className="flex gap-4 mt-6">
