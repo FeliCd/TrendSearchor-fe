@@ -48,10 +48,11 @@ export default function PageHeader({ title, description, action, actionLabel, on
               </motion.button>
             )}
             
+            <NotificationBell />
+
             {(action || true) && <div className="h-6 w-px bg-gray-700 hidden sm:block" />}
 
             <div className="flex items-center gap-3">
-              <NotificationBell />
               <UserAvatar user={user} size="md" className="border border-gray-700 shadow-sm" />
               <div className="hidden md:block min-w-0">
                 <p className="text-sm font-bold text-white truncate">

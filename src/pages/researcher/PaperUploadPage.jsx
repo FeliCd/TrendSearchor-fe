@@ -359,7 +359,6 @@ const ABSTRACT_TOOLBAR_BUTTONS = [
   { command: 'underline', Icon: UnderlineIcon, title: 'Underline' },
   { command: 'insertUnorderedList', Icon: List, title: 'Bullet list' },
   { command: 'insertOrderedList', Icon: ListOrdered, title: 'Numbered list' },
-  { command: 'hiliteColor', Icon: Highlighter, title: 'Highlight', value: '#FDE047' },
 ];
 
 function AbstractEditor({ editorRef, required }) {
@@ -400,7 +399,8 @@ function AbstractEditor({ editorRef, required }) {
         contentEditable
         suppressContentEditableWarning
         data-placeholder="Summarize the paper's contribution, methodology, and key findings..."
-        className="w-full min-h-[160px] bg-[#1e1e1e] border-2 border-gray-800 text-white text-sm px-4 py-3 focus:border-[#0058be] focus:outline-none transition-colors overflow-y-auto leading-relaxed break-words"
+        data-lenis-prevent="true"
+        className="w-full min-h-[160px] max-h-[240px] bg-[#1e1e1e] border-2 border-gray-800 text-white text-sm px-4 py-3 focus:border-[#0058be] focus:outline-none transition-colors overflow-y-auto leading-relaxed break-words"
         style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
         onPaste={(e) => {
           e.preventDefault();
@@ -667,18 +667,23 @@ function MyUploadsPanel({ onPreviewPaper }) {
   });
 
   return (
-    <div>
+    <div className="flex flex-col flex-grow">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h2 className="text-base font-bold text-white">My Submissions</h2>
-          <p className="text-xs text-gray-500 mt-0.5">
-            {totalElements} paper{totalElements !== 1 ? 's' : ''} submitted
-          </p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 border-2 border-[#0058be] flex items-center justify-center bg-[#0058be]/10">
+            <FileText className="w-5 h-5 text-[#5ba3ff]" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-white">My Submissions</h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {totalElements} paper{totalElements !== 1 ? 's' : ''} submitted
+            </p>
+          </div>
         </div>
         <button
           onClick={() => fetchUploads(page)}
-          className="p-2 border-2 border-gray-800 text-gray-500 hover:text-white hover:border-gray-600 transition-all"
+          className="p-2 border-2 border-gray-800 text-gray-500 hover:text-white hover:border-gray-600 transition-all flex items-center justify-center w-10 h-10 bg-[#1e1e1e]"
           title="Refresh"
         >
           <RefreshCw className="w-4 h-4" />
@@ -721,54 +726,56 @@ function MyUploadsPanel({ onPreviewPaper }) {
       </div>
 
       {/* Content */}
-      {loading ? (
-        <div className="flex justify-center py-16">
-          <LoadingSpinner />
-        </div>
-      ) : error ? (
-        <p className="text-sm text-red-400 py-8 text-center">{error}</p>
-      ) : papers.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="w-14 h-14 border-2 border-gray-800 flex items-center justify-center mb-4">
-            <FileText className="w-6 h-6 text-gray-700" />
+      <div className="flex-grow flex flex-col justify-between">
+        {loading ? (
+          <div className="flex-grow flex items-center justify-center py-16">
+            <LoadingSpinner />
           </div>
-          <p className="text-sm text-gray-500">No papers submitted yet.</p>
-          <p className="text-xs text-gray-700 mt-1">Use the form to submit your first paper.</p>
-        </div>
-      ) : filteredPapers.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center border-2 border-dashed border-gray-800 bg-[#1e1e1e]/50 p-4">
-          <p className="text-xs text-gray-500">No matching papers found.</p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {filteredPapers.map((paper, i) => (
-            <PaperRow key={paper.id ?? paper.externalId} paper={paper} index={i} onPreview={onPreviewPaper} />
-          ))}
-        </div>
-      )}
+        ) : error ? (
+          <p className="text-sm text-red-400 py-8 text-center flex-grow flex items-center justify-center">{error}</p>
+        ) : papers.length === 0 ? (
+          <div className="flex-grow flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-14 h-14 border-2 border-gray-800 flex items-center justify-center mb-4">
+              <FileText className="w-6 h-6 text-gray-700" />
+            </div>
+            <p className="text-sm text-gray-500">No papers submitted yet.</p>
+            <p className="text-xs text-gray-700 mt-1">Use the form to submit your first paper.</p>
+          </div>
+        ) : filteredPapers.length === 0 ? (
+          <div className="flex-grow flex flex-col items-center justify-center py-8 text-center border-2 border-dashed border-gray-800 bg-[#1e1e1e]/50 p-4">
+            <p className="text-xs text-gray-500">No matching papers found.</p>
+          </div>
+        ) : (
+          <div className="space-y-2 flex-grow">
+            {filteredPapers.map((paper, i) => (
+              <PaperRow key={paper.id ?? paper.externalId} paper={paper} index={i} onPreview={onPreviewPaper} />
+            ))}
+          </div>
+        )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 mt-4">
-          <button
-            onClick={() => fetchUploads(page - 1)}
-            disabled={page === 0}
-            className="p-2 border-2 border-gray-800 text-gray-400 hover:border-gray-600 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <span className="text-xs font-medium text-gray-400">
-            Page {page + 1} of {totalPages}
-          </span>
-          <button
-            onClick={() => fetchUploads(page + 1)}
-            disabled={page >= totalPages - 1}
-            className="p-2 border-2 border-gray-800 text-gray-400 hover:border-gray-600 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-gray-800">
+            <button
+              onClick={() => fetchUploads(page - 1)}
+              disabled={page === 0}
+              className="p-2 border-2 border-gray-800 text-gray-400 hover:border-gray-600 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-xs font-medium text-gray-400">
+              Page {page + 1} of {totalPages}
+            </span>
+            <button
+              onClick={() => fetchUploads(page + 1)}
+              disabled={page >= totalPages - 1}
+              className="p-2 border-2 border-gray-800 text-gray-400 hover:border-gray-600 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -791,26 +798,26 @@ export default function PaperUploadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#151515] relative">
+    <div className="flex-grow flex flex-col bg-[#151515] relative">
       <PageBackground />
       {toast && (
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
       )}
 
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-col flex-grow">
         <PageHeader
           title="Upload Research Paper"
           description="Submit papers for review. Approved papers appear in search results."
         />
 
-        <div className="w-full px-6 pb-10 mt-6">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+        <div className="w-full px-6 flex-grow flex flex-col mt-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch flex-grow pb-6">
             {/* Left – Upload form */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35 }}
-              className="border-2 border-gray-800 bg-[#1a1a1a] p-6"
+              className="border-2 border-gray-800 bg-[#1a1a1a] p-6 flex flex-col h-full"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 border-2 border-[#0058be] flex items-center justify-center bg-[#0058be]/10">
@@ -832,7 +839,7 @@ export default function PaperUploadPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: 0.08 }}
-              className="border-2 border-gray-800 bg-[#1a1a1a] p-6"
+              className="border-2 border-gray-800 bg-[#1a1a1a] p-6 flex flex-col h-full"
             >
               <MyUploadsPanel onPreviewPaper={setPreviewTarget} />
             </motion.div>

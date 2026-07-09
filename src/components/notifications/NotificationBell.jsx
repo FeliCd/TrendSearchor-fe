@@ -85,7 +85,7 @@ export default function NotificationBell() {
       {isOpen && (
         <div
           ref={panelRef}
-          className="absolute right-0 top-full mt-2 w-[380px] bg-[#1a1a1a] border border-gray-800 rounded-xl shadow-2xl shadow-black/60 z-50 flex flex-col overflow-hidden"
+          className="absolute right-0 top-full mt-2 w-[380px] bg-[#1a1a1a] border border-gray-800 rounded-none shadow-2xl shadow-black/60 z-50 flex flex-col overflow-hidden"
           style={{ maxHeight: '480px' }}
         >
           {/* Panel header */}
@@ -107,7 +107,7 @@ export default function NotificationBell() {
                   id="btn-bell-mark-all-read"
                   onClick={handleMarkAllRead}
                   title="Mark all as read"
-                  className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-500 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                  className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-500 hover:text-white hover:bg-white/5 rounded-none transition-colors"
                 >
                   <CheckCheck className="w-3.5 h-3.5" />
                   All read
@@ -115,7 +115,7 @@ export default function NotificationBell() {
               )}
               <button
                 onClick={close}
-                className="p-1 text-gray-600 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                className="p-1 text-gray-600 hover:text-white hover:bg-white/5 rounded-none transition-colors"
                 aria-label="Close notifications"
               >
                 <X className="w-4 h-4" />
@@ -156,7 +156,7 @@ export default function NotificationBell() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-1">
                         <span
-                          className={`text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${getTypeColor(notification.notificationType)}`}
+                          className={`text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-none ${getTypeColor(notification.notificationType)}`}
                         >
                           {notification.notificationType?.replace('_', ' ')}
                         </span>
@@ -183,7 +183,7 @@ export default function NotificationBell() {
                         id={`btn-bell-mark-read-${notification.id}`}
                         onClick={() => handleMarkRead(notification.id)}
                         title="Mark as read"
-                        className="p-1.5 text-gray-600 hover:text-[#0058be] hover:bg-[#0058be]/10 rounded-lg transition-colors flex-shrink-0 mt-0.5"
+                        className="p-1.5 text-gray-600 hover:text-[#0058be] hover:bg-[#0058be]/10 rounded-none transition-colors flex-shrink-0 mt-0.5"
                       >
                         <Check className="w-3.5 h-3.5" />
                       </button>
