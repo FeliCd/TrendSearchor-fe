@@ -5,6 +5,7 @@ import StatCard from '@/components/ui/StatCard';
 import SectionCard from '@/components/ui/SectionCard';
 import { dashboardService } from '@/services/dashboardService';
 import { trendService } from '@/services/trendService';
+import ResearcherLeaderboardWidget from '@/components/dashboard/ResearcherLeaderboardWidget';
 
 export default function ResearcherDashboardPage() {
   const [stats, setStats] = useState(null);
@@ -205,6 +206,9 @@ export default function ResearcherDashboardPage() {
               ))}
             </div>
           </SectionCard>
+        </div>
+        <div className="lg:col-span-2">
+          <ResearcherLeaderboardWidget />
         </div>
       </div>
     </DashboardLayout>

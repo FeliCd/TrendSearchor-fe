@@ -236,6 +236,8 @@ function ReviewModal({ paper, onClose, onSubmit, submitting }) {
 
 // ─── Revoke Confirmation Modal ───────────────────────────────────────────────
 function RevokeModal({ paper, onClose, onConfirm, submitting }) {
+  const [comments, setComments] = useState('');
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <motion.div
@@ -263,7 +265,7 @@ function RevokeModal({ paper, onClose, onConfirm, submitting }) {
           </div>
           <div>
             <h3 className="text-base font-bold text-white">Revoke Moderation</h3>
-            <p className="text-xs text-gray-500 mt-0.5">Revert paper status to pending review</p>
+            <p className="text-xs text-gray-500 mt-0.5">Revert paper status to revoked status</p>
           </div>
         </div>
         <div className="p-4 bg-[#1e1e1e] border-2 border-gray-800 mb-5">
@@ -272,8 +274,24 @@ function RevokeModal({ paper, onClose, onConfirm, submitting }) {
             Current status: <StatusBadge status={paper.status} />
           </p>
         </div>
+
+        {/* Comments / Reason */}
+        <div className="mb-5">
+          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+            <MessageSquare className="w-3.5 h-3.5" />
+            Revocation Comments / Reason
+          </label>
+          <textarea
+            value={comments}
+            onChange={(e) => setComments(e.target.value)}
+            placeholder="Explain why this decision is being revoked (e.g. co-author dispute)..."
+            rows={3}
+            className="w-full bg-[#1e1e1e] border-2 border-gray-800 text-white text-sm px-3 py-2.5 focus:border-red-500 focus:outline-none transition-colors placeholder-gray-600 resize-none"
+          />
+        </div>
+
         <p className="text-xs text-gray-400 mb-6 leading-relaxed">
-          Are you sure you want to revoke this decision? The paper will be removed from public view and moved back to the "Awaiting Moderation" list for re-evaluation.
+          Are you sure you want to revoke this decision? The paper will be removed from public view and marked as revoked.
         </p>
         <div className="flex gap-3">
           <button
@@ -283,7 +301,7 @@ function RevokeModal({ paper, onClose, onConfirm, submitting }) {
             Cancel
           </button>
           <button
-            onClick={onConfirm}
+            onClick={() => onConfirm(comments)}
             disabled={submitting}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-red-500 bg-red-500 hover:bg-red-600 text-white text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
           >
@@ -494,14 +512,14 @@ export default function PaperModerationPage() {
     }
   };
 
-  const handleSubmitRevoke = async () => {
+  const handleSubmitRevoke = async (comments) => {
     if (!revokeTarget) return;
     setRevoking(true);
     try {
-      await paperUploadService.revokePaper(revokeTarget.id);
+      await paperUploadService.revokePaper(revokeTarget.id, { comments });
       // Optimistically update status to REVOKED in history list
       history.setPapers((prev) => 
-        prev.map((p) => p.id === revokeTarget.id ? { ...p, status: 'REVOKED' } : p)
+        prev.map((p) => p.id === revokeTarget.id ? { ...p, status: 'REVOKED', statusComments: comments } : p)
             .filter((p) => history.status === 'ALL' || history.status === p.status)
       );
       showToast('Paper moderation status revoked successfully.', 'success');

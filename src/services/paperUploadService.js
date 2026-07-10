@@ -42,8 +42,8 @@ export const paperUploadService = {
    * POST /api/admin/papers/{id}/revoke
    * Revoke a decision made on a paper (revert back to PENDING) (ADMIN only).
    */
-  revokePaper: async (id) => {
-    const res = await api.post(`/api/admin/papers/${id}/revoke`);
+  revokePaper: async (id, payload) => {
+    const res = await api.post(`/api/admin/papers/${id}/revoke`, payload);
     return res.data;
   },
 
