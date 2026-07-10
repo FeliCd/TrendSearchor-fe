@@ -28,7 +28,7 @@ const ABSTRACT_STYLES = `
  * @param {Object} props.paper - The paper data object
  * @param {Function} props.onViewPaper - Callback when "View Paper" is clicked
  */
-export default function PaperPreviewModal({ paper, onClose, onViewPaper }) {
+export default function PaperPreviewModal({ paper, onClose, onViewPaper, hideYear }) {
   if (!paper) return null;
 
   const authors = paper.authors || [];
@@ -87,7 +87,7 @@ export default function PaperPreviewModal({ paper, onClose, onViewPaper }) {
                 <span className="text-gray-300">{paper.uploadedBy}</span>
               </span>
             )}
-            {paper.year && (
+            {paper.year && !hideYear && (
               <span className="flex items-center gap-1.5 px-2 py-1 bg-[#1a1a1a] border border-gray-800">
                 <Clock className="w-3 h-3" />
                 <span className="text-gray-300">{paper.year}</span>

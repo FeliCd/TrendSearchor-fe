@@ -23,6 +23,7 @@ import {
   ListOrdered,
   Highlighter,
   Info,
+  RotateCcw,
 } from 'lucide-react';
 import { paperUploadService } from '@/services/paperUploadService';
 import { topicService } from '@/services/topicService';
@@ -56,6 +57,7 @@ function StatusBadge({ status }) {
     [PAPER_STATUS.PENDING]: <Clock className="w-3 h-3" />,
     [PAPER_STATUS.APPROVED]: <CheckCircle2 className="w-3 h-3" />,
     [PAPER_STATUS.REJECTED]: <XCircle className="w-3 h-3" />,
+    [PAPER_STATUS.REVOKED]: <RotateCcw className="w-3 h-3" />,
   };
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-1 text-[10px] font-black uppercase tracking-widest ${style}`}>
@@ -489,7 +491,7 @@ function UploadPaperForm({ onSuccess }) {
         authors: allAuthors,
         journals: form.journals,
         keywords: form.keywords,
-        // year is omitted — backend derives from submission timestamp
+        year: new Date().getFullYear(),
         // paperUri is omitted — system-generated on approval
       });
 
@@ -612,9 +614,6 @@ function PaperRow({ paper, index, onPreview }) {
         <p className="text-sm font-bold text-white truncate leading-snug">{paper.title}</p>
         <div className="flex flex-wrap items-center gap-2 mt-1">
           <StatusBadge status={paper.status} />
-          {paper.year && (
-            <span className="text-[10px] text-gray-500 font-medium">{paper.year}</span>
-          )}
           {paper.authors?.length > 0 && (
             <span className="text-[10px] text-gray-500">
               {paper.authors.map((a) => a.name || a).slice(0, 3).join(', ')}
@@ -853,6 +852,7 @@ export default function PaperUploadPage() {
             paper={previewTarget}
             onClose={() => setPreviewTarget(null)}
             onViewPaper={() => navigate(`/researcher/paper/${previewTarget.id || previewTarget.externalId}`)}
+            hideYear
           />
         )}
       </AnimatePresence>
