@@ -90,7 +90,10 @@ export default function ResearcherDashboardPage() {
               ) : (
                 <div className="p-2 border-2 border-gray-800 bg-[#1e1e1e]">
                   <ResponsiveContainer width="100%" height={230}>
-                    <AreaChart data={yearlyStats} margin={{ top: 15, right: 15, bottom: 5, left: -20 }}>
+                    <AreaChart 
+                      data={yearlyStats.filter(y => y.year >= 2010).length > 0 ? yearlyStats.filter(y => y.year >= 2010) : yearlyStats} 
+                      margin={{ top: 15, right: 15, bottom: 5, left: -20 }}
+                    >
                       <defs>
                         <linearGradient id="publicationGrad" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#0058be" stopOpacity={0.4} />
@@ -99,7 +102,7 @@ export default function ResearcherDashboardPage() {
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
                       <XAxis dataKey="year" tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 'bold' }} tickLine={false} axisLine={{ stroke: '#ffffff15' }} />
-                      <YAxis tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 'bold' }} tickLine={false} axisLine={false} allowDecimals={false} />
+                      <YAxis domain={[0, 'dataMax + 2']} tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 'bold' }} tickLine={false} axisLine={false} allowDecimals={false} />
                       <Tooltip content={<TimelineTooltip />} />
                       <Area
                         type="monotone"
@@ -109,7 +112,8 @@ export default function ResearcherDashboardPage() {
                         strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#publicationGrad)"
-                        activeDot={{ r: 6, fill: '#5ba3ff', stroke: '#0058be', strokeWidth: 2 }}
+                        dot={{ r: 5, fill: '#0058be', stroke: '#5ba3ff', strokeWidth: 2 }}
+                        activeDot={{ r: 7, fill: '#5ba3ff', stroke: '#0058be', strokeWidth: 2 }}
                       />
                     </AreaChart>
                   </ResponsiveContainer>
