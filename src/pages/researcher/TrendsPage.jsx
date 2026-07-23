@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { trendService } from '@/services/trendService';
 import { bookmarkService } from '@/services/bookmarkService';
@@ -13,6 +14,9 @@ import NetworkTab from '@/components/trends/NetworkTab';
 import { TOPIC_STATUS_CONFIG } from '@/constants/chartConfig';
 
 export default function TrendsPage() {
+  const [searchParams] = useSearchParams();
+  const urlQuery = searchParams.get('q');
+
   /* ── State ─────────────────────────────────────────────────────── */
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -132,6 +136,14 @@ export default function TrendsPage() {
       setAnalysisLoading(false);
     }
   }, [startYear, endYear]);
+
+  useEffect(() => {
+    if (urlQuery && urlQuery.trim()) {
+      const kw = urlQuery.trim();
+      setSearchInput(kw);
+      analyzeKeyword(kw);
+    }
+  }, [urlQuery, analyzeKeyword]);
 
   const handleSearch = useCallback((value) => {
     const keyword = value.trim();
