@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-export default function DashboardSidebar({ config }) {
+export default function DashboardSidebar({ config, onCloseMobile }) {
 
   const {
     navItems,
@@ -38,6 +38,7 @@ export default function DashboardSidebar({ config }) {
             end={item.end}
             onClick={(e) => {
               if (item.comingSoon) e.preventDefault();
+              else if (onCloseMobile) onCloseMobile();
             }}
             className={({ isActive }) =>
               `group relative flex items-center justify-between px-4 py-3 text-[11px] font-black uppercase tracking-widest transition-all duration-200 ${

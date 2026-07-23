@@ -42,13 +42,13 @@ export default function AdminDashboardPage() {
 
   return (
     <DashboardLayout title="Admin Dashboard" description="Platform overview and real-time database synchronization status.">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {statCards.map((s) => (
           <StatCard key={s.label} label={s.label} value={s.value} icon={s.icon} color={s.color} bg={s.bg} />
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Data Source Sync Status */}
         <SectionCard title="External Data Sources & Sync Status">
           <div className="space-y-3">

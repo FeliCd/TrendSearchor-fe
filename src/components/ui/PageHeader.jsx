@@ -18,8 +18,8 @@ export default function PageHeader({ title, description, action, actionLabel, on
   const config = user?.role ? ROLE_SIDEBAR_CONFIG[user.role] : ROLE_SIDEBAR_CONFIG.USER;
   const roleLabel = config?.roleLabel || 'User';
   return (
-    <div className="h-[72px] border-b-2 border-gray-800 bg-[#151515] sticky top-0 z-20 flex items-center">
-      <div className="w-full px-6">
+    <div className="min-h-[64px] sm:h-[72px] border-b-2 border-gray-800 bg-[#151515] sticky top-0 z-20 flex items-center py-2 sm:py-0">
+      <div className="w-full px-4 sm:px-6">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3">

@@ -20,7 +20,7 @@ export default function DashboardLayout({ title, description, children, action, 
           actionLabel={actionLabel}
           onAction={onAction}
         />
-        <div className="w-full px-6 py-6">
+        <div className="w-full px-4 sm:px-6 py-4 md:py-6 overflow-x-hidden">
           {children}
         </div>
       </div>

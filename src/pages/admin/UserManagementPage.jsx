@@ -192,7 +192,7 @@ export default function UserManagementPage() {
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <div className="relative z-10">
         <PageHeader title="User Management" description="Manage all users, roles, and account statuses." />
-        <div className="w-full px-6 pb-10 mt-6">
+        <div className="w-full px-4 sm:px-6 pb-10 mt-4 sm:mt-6 overflow-x-hidden">
           <AnimatePresence>
             {error && (
               <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
