@@ -53,6 +53,7 @@ function StatusBadge({ status }) {
     [PAPER_STATUS.PENDING]: <Clock className="w-3 h-3" />,
     [PAPER_STATUS.APPROVED]: <CheckCircle2 className="w-3 h-3" />,
     [PAPER_STATUS.REJECTED]: <XCircle className="w-3 h-3" />,
+    [PAPER_STATUS.REVOKED]: <RotateCcw className="w-3 h-3" />,
   };
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-1 text-[10px] font-black uppercase tracking-widest ${style}`}>
@@ -235,6 +236,8 @@ function ReviewModal({ paper, onClose, onSubmit, submitting }) {
 
 // ─── Revoke Confirmation Modal ───────────────────────────────────────────────
 function RevokeModal({ paper, onClose, onConfirm, submitting }) {
+  const [comments, setComments] = useState('');
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <motion.div
@@ -262,7 +265,7 @@ function RevokeModal({ paper, onClose, onConfirm, submitting }) {
           </div>
           <div>
             <h3 className="text-base font-bold text-white">Revoke Moderation</h3>
-            <p className="text-xs text-gray-500 mt-0.5">Revert paper status to pending review</p>
+            <p className="text-xs text-gray-500 mt-0.5">Revert paper status to revoked status</p>
           </div>
         </div>
         <div className="p-4 bg-[#1e1e1e] border-2 border-gray-800 mb-5">
@@ -271,8 +274,24 @@ function RevokeModal({ paper, onClose, onConfirm, submitting }) {
             Current status: <StatusBadge status={paper.status} />
           </p>
         </div>
+
+        {/* Comments / Reason */}
+        <div className="mb-5">
+          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+            <MessageSquare className="w-3.5 h-3.5" />
+            Revocation Comments / Reason
+          </label>
+          <textarea
+            value={comments}
+            onChange={(e) => setComments(e.target.value)}
+            placeholder="Explain why this decision is being revoked (e.g. co-author dispute)..."
+            rows={3}
+            className="w-full bg-[#1e1e1e] border-2 border-gray-800 text-white text-sm px-3 py-2.5 focus:border-red-500 focus:outline-none transition-colors placeholder-gray-600 resize-none"
+          />
+        </div>
+
         <p className="text-xs text-gray-400 mb-6 leading-relaxed">
-          Are you sure you want to revoke this decision? The paper will be removed from public view and moved back to the "Awaiting Moderation" list for re-evaluation.
+          Are you sure you want to revoke this decision? The paper will be removed from public view and marked as revoked.
         </p>
         <div className="flex gap-3">
           <button
@@ -282,7 +301,7 @@ function RevokeModal({ paper, onClose, onConfirm, submitting }) {
             Cancel
           </button>
           <button
-            onClick={onConfirm}
+            onClick={() => onConfirm(comments)}
             disabled={submitting}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-red-500 bg-red-500 hover:bg-red-600 text-white text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50"
           >
@@ -372,7 +391,7 @@ function PendingPaperCard({ paper, index, onReview, onPreview }) {
 }
 
 // ─── History Paper card ───────────────────────────────────────────────────────
-function HistoryPaperCard({ paper, index, onPreview, onRevoke }) {
+function HistoryPaperCard({ paper, index, onPreview, onRevoke, onReview }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -412,13 +431,24 @@ function HistoryPaperCard({ paper, index, onPreview, onRevoke }) {
         </div>
 
         <div className="flex flex-col gap-2 flex-shrink-0">
-          <button
-            onClick={() => onRevoke(paper)}
-            className="flex items-center gap-1.5 px-3 py-2 border-2 border-red-500/30 bg-red-500/5 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
-          >
-            <RotateCcw className="w-3 h-3" />
-            Revoke
-          </button>
+          {paper.status === PAPER_STATUS.REVOKED && (
+            <button
+              onClick={() => onReview(paper)}
+              className="flex items-center gap-1.5 px-3 py-2 border-2 border-[#0058be] bg-[#0058be]/10 text-[#5ba3ff] text-[10px] font-black uppercase tracking-widest hover:bg-[#0058be] hover:text-white transition-all"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Review
+            </button>
+          )}
+          {paper.status === PAPER_STATUS.APPROVED && (
+            <button
+              onClick={() => onRevoke(paper)}
+              className="flex items-center gap-1.5 px-3 py-2 border-2 border-red-500/30 bg-red-500/5 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Revoke
+            </button>
+          )}
           <button
             onClick={() => onPreview(paper)}
             className="flex items-center gap-1.5 px-3 py-2 border-2 border-gray-800 bg-[#1e1e1e] text-gray-400 text-[10px] font-black uppercase tracking-widest hover:border-gray-600 hover:text-white transition-all"
@@ -472,7 +502,7 @@ export default function PaperModerationPage() {
       setReviewTarget(null);
       const action = payload.status === PAPER_STATUS.APPROVED ? 'approved' : 'rejected';
       showToast(`Paper ${action} successfully.`, payload.status === PAPER_STATUS.APPROVED ? 'success' : 'warning');
-      
+
       // Refresh both lists to update counts
       pending.fetchPending(0, searchQuery);
       history.fetchHistory(0, searchQuery, history.status);
@@ -483,13 +513,16 @@ export default function PaperModerationPage() {
     }
   };
 
-  const handleSubmitRevoke = async () => {
+  const handleSubmitRevoke = async (comments) => {
     if (!revokeTarget) return;
     setRevoking(true);
     try {
-      await paperUploadService.revokePaper(revokeTarget.id);
-      // Optimistically remove from history list
-      history.setPapers((prev) => prev.filter((p) => p.id !== revokeTarget.id));
+      await paperUploadService.revokePaper(revokeTarget.id, { comments });
+      // Optimistically update status to REVOKED in history list
+      history.setPapers((prev) => 
+        prev.map((p) => p.id === revokeTarget.id ? { ...p, status: 'REVOKED', statusComments: comments } : p)
+            .filter((p) => history.status === 'ALL' || history.status === p.status)
+      );
       showToast('Paper moderation status revoked successfully.', 'success');
       setRevokeTarget(null);
 
@@ -604,22 +637,20 @@ export default function PaperModerationPage() {
                 <button
                   id="tab-pending-moderation"
                   onClick={() => { setActiveTab('pending'); pending.fetchPending(0, searchQuery); }}
-                  className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest transition-colors ${
-                    activeTab === 'pending'
+                  className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest transition-colors ${activeTab === 'pending'
                       ? 'bg-[#0058be] text-white'
                       : 'text-gray-500 hover:text-white hover:bg-[#252525]'
-                  }`}
+                    }`}
                 >
                   Awaiting Moderation ({pending.totalElements})
                 </button>
                 <button
                   id="tab-moderation-history"
                   onClick={() => { setActiveTab('history'); history.fetchHistory(0, searchQuery, history.status); }}
-                  className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest transition-colors ${
-                    activeTab === 'history'
+                  className={`px-4 h-full text-[11px] font-bold uppercase tracking-widest transition-colors ${activeTab === 'history'
                       ? 'bg-[#0058be] text-white'
                       : 'text-gray-500 hover:text-white hover:bg-[#252525]'
-                  }`}
+                    }`}
                 >
                   Moderation History ({history.totalElements})
                 </button>
@@ -651,15 +682,14 @@ export default function PaperModerationPage() {
                 {/* Status Filter for History tab */}
                 {activeTab === 'history' && (
                   <div className="flex items-center border-2 border-gray-700 h-10">
-                    {['ALL', 'APPROVED', 'REJECTED'].map((statusOption) => (
+                    {['ALL', 'APPROVED', 'REJECTED', 'REVOKED'].map((statusOption) => (
                       <button
                         key={statusOption}
                         onClick={() => handleStatusFilterChange(statusOption)}
-                        className={`px-3 h-full text-[10px] font-bold uppercase tracking-widest transition-colors ${
-                          history.status === statusOption
+                        className={`px-3 h-full text-[10px] font-bold uppercase tracking-widest transition-colors ${history.status === statusOption
                             ? 'bg-gray-800 text-white'
                             : 'text-gray-500 hover:text-white hover:bg-[#252525]'
-                        }`}
+                          }`}
                       >
                         {statusOption}
                       </button>
@@ -733,6 +763,7 @@ export default function PaperModerationPage() {
                         index={i}
                         onPreview={handleOpenPreview}
                         onRevoke={handleOpenRevoke}
+                        onReview={handleOpenReview}
                       />
                     ))}
                   </div>

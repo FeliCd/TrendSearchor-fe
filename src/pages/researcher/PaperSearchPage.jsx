@@ -218,7 +218,13 @@ export default function PaperSearchPage() {
                 {selectedPaper ? (
                   <PaperPreview paper={selectedPaper} isBookmarked={bookmarkedIds.has(selectedPaper.externalId)}
                     isToggling={togglingId === selectedPaper.externalId} onBookmark={() => handleBookmark(selectedPaper)} onClose={() => setSelectedPaper(null)}
-                    onViewPaper={() => navigate(`/${role}/paper/${selectedPaper.id}`)} />
+                    onViewPaper={() => {
+                      if (selectedPaper.isSelfPublished && selectedPaper.id) {
+                        navigate(`/${role}/paper/${selectedPaper.id}`);
+                      } else if (selectedPaper.paperUri) {
+                        window.open(selectedPaper.paperUri, '_blank', 'noopener,noreferrer');
+                      }
+                    }} />
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center h-full px-6 min-h-[400px]">
                     <div className="w-14 h-14 border-2 border-[#0058be] bg-[#0058be]/10 flex items-center justify-center mb-4">
