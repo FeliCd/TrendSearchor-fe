@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Trophy, Medal, Award, User, BookOpen, Loader2 } from 'lucide-react';
 import { leaderboardService } from '@/services/leaderboardService';
 import SectionCard from '@/components/ui/SectionCard';
 
 export default function ResearcherLeaderboardWidget() {
+  const navigate = useNavigate();
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,13 +42,13 @@ export default function ResearcherLeaderboardWidget() {
   const getRankBg = (rank) => {
     switch (rank) {
       case 1:
-        return 'border-[#fbbf24]/30 bg-[#fbbf24]/5';
+        return 'border-[#fbbf24]/30 bg-[#fbbf24]/5 hover:border-[#fbbf24]/60';
       case 2:
-        return 'border-[#94a3b8]/30 bg-[#94a3b8]/5';
+        return 'border-[#94a3b8]/30 bg-[#94a3b8]/5 hover:border-[#94a3b8]/60';
       case 3:
-        return 'border-[#b45309]/30 bg-[#b45309]/5';
+        return 'border-[#b45309]/30 bg-[#b45309]/5 hover:border-[#b45309]/60';
       default:
-        return 'border-gray-800 bg-[#1e1e1e]/40';
+        return 'border-gray-800 bg-[#1e1e1e]/40 hover:border-gray-700';
     }
   };
 
@@ -69,7 +71,8 @@ export default function ResearcherLeaderboardWidget() {
             return (
               <div
                 key={item.mail}
-                className={`flex items-center justify-between p-3.5 border-2 transition-all hover:border-gray-700 ${getRankBg(
+                onClick={() => navigate(`/researcher/search?q=${encodeURIComponent(item.fullName || item.mail)}`)}
+                className={`flex items-center justify-between p-3.5 border-2 transition-all cursor-pointer ${getRankBg(
                   rank
                 )}`}
               >

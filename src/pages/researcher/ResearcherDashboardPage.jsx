@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Database, Layers, BookOpen, TrendingUp, Map, Target, ArrowUpRight, Zap, Loader2 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import DashboardLayout from '@/components/ui/DashboardLayout';
@@ -23,6 +24,7 @@ function TimelineTooltip({ active, payload, label }) {
 }
 
 export default function ResearcherDashboardPage() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [trendingTopics, setTrendingTopics] = useState([]);
   const [emergingTopics, setEmergingTopics] = useState([]);
@@ -72,10 +74,18 @@ export default function ResearcherDashboardPage() {
     >
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <StatCard label="Total Publications" value={loading ? '...' : formatNumber(stats?.totalPapers)} icon={Database} color="text-[#0058be]" bg="bg-[#0058be]/10" />
-        <StatCard label="Indexed Journals" value={loading ? '...' : formatNumber(stats?.totalJournals)} icon={BookOpen} color="text-emerald-500" bg="bg-emerald-500/10" />
-        <StatCard label="Research Domains" value={loading ? '...' : formatNumber(stats?.totalKeywords)} icon={Layers} color="text-purple-500" bg="bg-purple-500/10" />
-        <StatCard label="Total Authors" value={loading ? '...' : formatNumber(stats?.totalAuthors)} icon={TrendingUp} color="text-amber-500" bg="bg-amber-500/10" />
+        <div onClick={() => navigate('/researcher/search')} className="cursor-pointer transition-transform hover:scale-[1.01]">
+          <StatCard label="Total Publications" value={loading ? '...' : formatNumber(stats?.totalPapers)} icon={Database} color="text-[#0058be]" bg="bg-[#0058be]/10" />
+        </div>
+        <div onClick={() => navigate('/researcher/trends')} className="cursor-pointer transition-transform hover:scale-[1.01]">
+          <StatCard label="Indexed Journals" value={loading ? '...' : formatNumber(stats?.totalJournals)} icon={BookOpen} color="text-emerald-500" bg="bg-emerald-500/10" />
+        </div>
+        <div onClick={() => navigate('/researcher/trends')} className="cursor-pointer transition-transform hover:scale-[1.01]">
+          <StatCard label="Research Domains" value={loading ? '...' : formatNumber(stats?.totalKeywords)} icon={Layers} color="text-purple-500" bg="bg-purple-500/10" />
+        </div>
+        <div onClick={() => navigate('/researcher/search')} className="cursor-pointer transition-transform hover:scale-[1.01]">
+          <StatCard label="Total Authors" value={loading ? '...' : formatNumber(stats?.totalAuthors)} icon={TrendingUp} color="text-amber-500" bg="bg-amber-500/10" />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -133,7 +143,11 @@ export default function ResearcherDashboardPage() {
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 text-center py-6">No trending data</p>
               ) : (
                 trendingTopics.slice(0, 3).map((topic, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 border-2 border-gray-800 bg-[#1e1e1e]">
+                  <div 
+                    key={i} 
+                    onClick={() => navigate(`/researcher/trends?q=${encodeURIComponent(topic.keyword || topic.displayName)}`)}
+                    className="flex items-center justify-between p-3 border-2 border-gray-800 bg-[#1e1e1e] hover:border-[#0058be] transition-colors cursor-pointer"
+                  >
                     <span className="text-sm font-bold text-white truncate pr-2">{topic.displayName || topic.keyword}</span>
                     <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2 py-1 border-2 border-emerald-500/20 shrink-0">{formatGrowth(topic.growthRate)}</span>
                   </div>
@@ -150,7 +164,11 @@ export default function ResearcherDashboardPage() {
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 text-center py-6">No emerging data</p>
               ) : (
                 emergingTopics.slice(0, 3).map((topic, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 border-2 border-gray-800 bg-[#1e1e1e]">
+                  <div 
+                    key={i} 
+                    onClick={() => navigate(`/researcher/trends?q=${encodeURIComponent(topic.keyword || topic.displayName)}`)}
+                    className="flex items-center gap-3 p-3 border-2 border-gray-800 bg-[#1e1e1e] hover:border-amber-500 transition-colors cursor-pointer"
+                  >
                     <div className="w-8 h-8 flex items-center justify-center border-2 border-amber-500/30 bg-amber-500/10 shrink-0">
                       <Zap className="w-4 h-4 text-amber-500" />
                     </div>
@@ -176,7 +194,11 @@ export default function ResearcherDashboardPage() {
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 text-center py-6">No journal data</p>
             ) : (
               (stats?.topJournals || []).slice(0, 3).map((journal, i) => (
-                <div key={i} className="flex items-center justify-between p-3 border-2 border-gray-800 bg-[#1e1e1e] hover:border-gray-600 transition-colors cursor-pointer">
+                <div 
+                  key={i} 
+                  onClick={() => navigate(`/researcher/search?q=${encodeURIComponent(journal.name)}`)}
+                  className="flex items-center justify-between p-3 border-2 border-gray-800 bg-[#1e1e1e] hover:border-[#0058be] transition-colors cursor-pointer"
+                >
                   <div className="flex-1 min-w-0 pr-4">
                     <p className="text-sm font-bold text-white truncate">{journal.name}</p>
                     <p className="text-[10px] uppercase tracking-widest font-black text-gray-500 mt-1">{journal.paperCount || 0} Pubs</p>
@@ -226,7 +248,11 @@ export default function ResearcherDashboardPage() {
             </div>
             <div className="space-y-3">
               {(trendingTopics.length > 0 ? trendingTopics.slice(0, 3) : [{keyword: 'AI Safety'}, {keyword: 'Human-AI Collaboration'}, {keyword: 'Autonomous Agents'}]).map((topic, i) => (
-                <div key={i} className="flex items-center justify-between p-3 border-2 border-gray-800 bg-[#1e1e1e] group hover:border-[#0058be] transition-colors cursor-pointer">
+                <div 
+                  key={i} 
+                  onClick={() => navigate(`/researcher/trends?q=${encodeURIComponent(topic.keyword || topic.displayName)}`)}
+                  className="flex items-center justify-between p-3 border-2 border-gray-800 bg-[#1e1e1e] group hover:border-[#0058be] transition-colors cursor-pointer"
+                >
                   <span className="text-sm font-bold text-white truncate pr-2">{topic.displayName || topic.keyword}</span>
                   <ArrowUpRight className="w-4 h-4 text-gray-600 group-hover:text-[#0058be] transition-colors shrink-0" />
                 </div>
