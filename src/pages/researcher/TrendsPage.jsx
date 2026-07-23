@@ -170,10 +170,16 @@ export default function TrendsPage() {
   /* ── Topic select (from ranking, related keywords, etc.) ──────── */
 
   const handleTopicSelect = useCallback((topic) => {
-    const keyword = topic.displayName || topic.keyword;
-    setSearchInput(keyword);
-    analyzeKeyword(keyword);
-  }, [analyzeKeyword]);
+    const keyword = typeof topic === 'string' ? topic : (topic.displayName || topic.keyword);
+    if (!keyword) return;
+
+    if (selectedKeyword && selectedKeyword.toLowerCase() === keyword.toLowerCase()) {
+      handleClearSearch();
+    } else {
+      setSearchInput(keyword);
+      analyzeKeyword(keyword);
+    }
+  }, [selectedKeyword, handleClearSearch, analyzeKeyword]);
 
   const handleKeywordSelectFromNetwork = useCallback((keyword) => {
     setSearchInput(keyword);

@@ -72,20 +72,24 @@ export function RelatedKeywords({ tags, selectedKeyword, bookmarkedKeywordIds, o
     <div className="bg-[#1e1e1e] border-2 border-gray-800 rounded-none p-5">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-white">Related Keywords</h3>
-        <span className="text-xs text-gray-500">Click to explore</span>
+        <span className="text-xs text-gray-500">Click to explore / deselect</span>
       </div>
       <div className="flex flex-wrap gap-2">
         {tags.slice(0, 20).map((kw) => {
           const name = kw.displayName || kw.keyword;
-          const isSelected = name === selectedKeyword;
+          const isSelected = selectedKeyword && (name.toLowerCase() === selectedKeyword.toLowerCase());
           const isBookmarked = bookmarkedKeywordIds.has(kw.id);
           return (
             <div key={kw.keyword} className="group relative">
-              <button onClick={() => onSelect(kw)}
+              <button 
+                onClick={() => onSelect(kw)}
+                title={isSelected ? "Click again to deselect" : "Click to explore"}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none text-xs font-medium transition-all ${
-                  isSelected ? 'bg-[#0058be]/20 text-[#0058be] border border-[#0058be]/40'
+                  isSelected 
+                    ? 'bg-[#0058be] text-white border-2 border-[#0058be] shadow-md font-bold'
                     : 'bg-[#151515] text-gray-400 border-2 border-gray-800 hover:bg-[#151515]/60 hover:text-white'
-                }`}>
+                }`}
+              >
                 {name}
               </button>
               <button onClick={(e) => { e.stopPropagation(); onBookmark(kw); }}
