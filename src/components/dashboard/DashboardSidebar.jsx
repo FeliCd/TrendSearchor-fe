@@ -10,13 +10,13 @@ export default function DashboardSidebar({ config, collapsed, onToggleCollapse }
       collapsed ? 'w-16 sm:w-20' : 'w-16 sm:w-20 lg:w-[240px]'
     }`}>
       {/* Sidebar Header */}
-      <div className="flex items-center h-[72px] px-3 lg:px-6 border-b border-gray-800 flex-shrink-0 justify-between">
+      <div className="flex items-center h-[72px] px-3 lg:px-4 border-b border-gray-800 flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex items-center justify-center w-9 h-9 flex-shrink-0">
             <img src="/logo.svg" alt="TrendSearchor" className="w-8 h-8 drop-shadow-sm brightness-0 invert" />
           </div>
           <div className={`min-w-0 flex flex-col justify-center pt-0.5 ${collapsed ? 'hidden' : 'hidden lg:flex'}`}>
-            <p className="text-[15px] font-bold text-white tracking-wide leading-none" style={{ fontFamily: "'M PLUS U', sans-serif" }}>
+            <p className="text-[15px] font-bold text-white tracking-wide leading-none truncate" style={{ fontFamily: "'M PLUS U', sans-serif" }}>
               TrendSearchor
             </p>
             <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider truncate mt-1">
@@ -24,15 +24,6 @@ export default function DashboardSidebar({ config, collapsed, onToggleCollapse }
             </p>
           </div>
         </div>
-        
-        {/* Toggle Collapse Button */}
-        <button
-          onClick={onToggleCollapse}
-          className="hidden lg:flex items-center justify-center w-7 h-7 border border-gray-800 bg-[#1e1e1e] text-gray-400 hover:text-white transition-colors"
-          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </button>
       </div>
 
       {/* Navigation Items */}
@@ -76,6 +67,22 @@ export default function DashboardSidebar({ config, collapsed, onToggleCollapse }
           </NavLink>
         ))}
       </nav>
+
+      {/* Sidebar Footer / Collapse Toggle */}
+      <div className="p-3 border-t border-gray-800 flex-shrink-0">
+        <button
+          onClick={onToggleCollapse}
+          className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-center lg:justify-between'} p-2.5 border-2 border-gray-800 bg-[#1e1e1e] text-gray-400 hover:text-white hover:border-[#0058be] transition-all group`}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <div className="flex items-center gap-2">
+            {collapsed ? <ChevronRight className="w-4 h-4 text-[#0058be]" /> : <ChevronLeft className="w-4 h-4 text-[#0058be]" />}
+            <span className={`text-[10px] font-black uppercase tracking-widest ${collapsed ? 'hidden' : 'hidden lg:inline'}`}>
+              Collapse
+            </span>
+          </div>
+        </button>
+      </div>
     </aside>
   );
 }
