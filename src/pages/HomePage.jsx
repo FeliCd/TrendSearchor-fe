@@ -1,53 +1,79 @@
+import { useEffect, useRef } from 'react';
 import HeroSection from '@/components/home/HeroSection';
-import StatsSection from '@/components/home/StatsSection';
 import FeaturesSection from '@/components/home/FeaturesSection';
+import StatsMarqueeSection from '@/components/home/StatsMarqueeSection';
+import Footer from '@/components/layout/Footer';
+import { useLenis } from '@/providers/LenisProvider';
+import { heroData, featuresData, statsData, ctaData } from '@/mocks/homeData';
 import CTASection from '@/components/home/CTASection';
-import TrendingChartsSection from '@/components/home/TrendingChartsSection';
-import { ArrowUp } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export default function HomePage() {
-  const [showTopBtn, setShowTopBtn] = useState(false);
+    const scrollContainerRef = useRef(null);
+    const { disableGlobal, enableGlobal } = useLenis();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowTopBtn(window.scrollY > 400);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    useEffect(() => {
+        // Disable the global vertical Lenis instance to prevent conflicts
+        disableGlobal();
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-  };
+        let lenisInstance = null;
+        let rafId = null;
 
-  return (
-    <div className="bg-[#0d1117] text-[#e6edf3] relative">
-      <HeroSection />
-      <StatsSection />
-      <TrendingChartsSection />
-      <FeaturesSection />
-      <CTASection />
+        import('lenis').then(({ default: Lenis }) => {
+            const container = scrollContainerRef.current;
+            if (!container) return;
 
-      <AnimatePresence>
-        {showTopBtn && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            onClick={scrollToTop}
-            className="fixed bottom-8 right-8 z-50 p-3 rounded-full bg-[#4A90E2] text-white shadow-lg shadow-[#4A90E2]/30 hover:bg-[#357ABD] hover:shadow-[#4A90E2]/50 hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4A90E2] focus:ring-offset-[#0d1117]"
-            aria-label="Back to top"
-          >
-            <ArrowUp className="w-5 h-5" />
-          </motion.button>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+            lenisInstance = new Lenis({
+                wrapper: container,
+                content: container.firstElementChild,
+                orientation: 'horizontal',
+                gestureOrientation: 'vertical',
+                smoothWheel: true,
+                wheelMultiplier: 1.5, // Slightly faster for horizontal feel
+                duration: 1.5, // Slower smoothing for "story telling" feel
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            });
+
+            const raf = (time) => {
+                lenisInstance.raf(time);
+                rafId = requestAnimationFrame(raf);
+            };
+            rafId = requestAnimationFrame(raf);
+        });
+
+        return () => {
+            if (rafId) cancelAnimationFrame(rafId);
+            if (lenisInstance) lenisInstance.destroy();
+            // Re-enable global Lenis when leaving the homepage
+            enableGlobal();
+        };
+    }, [disableGlobal, enableGlobal]);
+
+    return (
+        <div
+            ref={scrollContainerRef}
+            className="bg-[#151515] text-white relative h-screen w-full flex overflow-x-auto overflow-y-hidden hide-scrollbar overscroll-x-none"
+        >
+            {/* Background Grid Pattern */}
+            <div
+                className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none"
+                style={{
+                    backgroundImage: `
+                        linear-gradient(to right, #ffffff 1px, transparent 1px),
+                        linear-gradient(to bottom, #ffffff 1px, transparent 1px)
+                    `,
+                    backgroundSize: '40px 40px'
+                }}
+            />
+
+            {/* The single content wrapper that Lenis will translate horizontally */}
+            <div className="flex flex-nowrap h-full w-max relative z-10 pr-1">
+                <HeroSection scrollContainer={scrollContainerRef} data={heroData} />
+                <FeaturesSection scrollContainer={scrollContainerRef} data={featuresData} />
+                <StatsMarqueeSection scrollContainer={scrollContainerRef} data={statsData} />
+                <div className="w-screen h-screen shrink-0 relative flex flex-col justify-center items-center bg-transparent">
+                    <Footer />
+                </div>
+            </div>
+        </div>
+    );
 }

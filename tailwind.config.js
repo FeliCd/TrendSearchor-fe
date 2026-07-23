@@ -4,37 +4,80 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: "class",
   theme: {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#246E52",
-          50:  '#eef5f2',
-          100: '#d1e8e0',
-          200: '#a3d1c1',
-          300: '#73b9a1',
-          400: '#4da286',
-          500: '#2d8d6d',
-          600: '#246E52',
-          700: '#1e5943',
-          800: '#184533',
-          900: '#123123',
+          DEFAULT: '#0058be',
+          50:  '#e6f0ff',
+          100: '#cce0ff',
+          200: '#99c1ff',
+          300: '#66a2ff',
+          400: '#3383ff',
+          500: '#0064f5',
+          600: '#0058be',
+          700: '#004faf',
+          800: '#003d87',
+          900: '#002b60',
         },
-        accent: {
-          400: '#4A90E2',
-          500: '#3A7BD5',
-          600: '#2D6DC4',
+        secondary: {
+          DEFAULT: '#0058be',
+          container: '#2170e4',
+        },
+        tertiary: {
+          DEFAULT: '#009668',
+          container: '#002113',
+        },
+        surface: {
+          lowest:    '#ffffff',
+          low:       '#eff4ff',
+          DEFAULT:   '#f8f9ff',
+          container: '#e5eeff',
+          high:      '#dce9ff',
+          highest:   '#d3e4fe',
+          dim:       '#cbdbf5',
+        },
+        'on-surface': {
+          DEFAULT: '#0b1c30',
+          variant: '#45464d',
+        },
+        background: {
+          DEFAULT: '#f8f9ff',
+        },
+        outline: {
+          DEFAULT: '#76777d',
+          variant: '#c6c6cd',
+        },
+        inverse: {
+          surface: '#213145',
+          'on-surface': '#eaf1ff',
+          primary: '#bec6e0',
+        },
+        error: {
+          DEFAULT: '#ba1a1a',
+          container: '#ffdad6',
+        },
+        'on-error': {
+          DEFAULT: '#ffffff',
+          container: '#93000a',
         },
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
-        display: ['Sora', 'sans-serif'],
+        sans: ['"M PLUS U"', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
+      },
+      borderRadius: {
+        sm:  '0.125rem',
+        DEFAULT: '0.25rem',
+        md:  '0.375rem',
+        lg:  '0.5rem',
+        xl:  '0.75rem',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.4s ease-out',
+        pulse: 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        marquee: 'marquee 25s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -45,6 +88,14 @@ export default {
           '0%': { opacity: '0', transform: 'translateY(16px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        pulse: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.7' },
+        },
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        }
       },
     },
   },

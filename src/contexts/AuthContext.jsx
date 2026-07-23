@@ -39,28 +39,41 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  const login = useCallback(async (credentials) => {
-    setIsLoading(true);
-    try {
-      const data = await authService.login(credentials);
-      // Backend should return { accessToken, user: { ... } }
-      // If user object is in response, use it; otherwise fetch /me
-      let userData = data?.user || null;
+  // Poll /api/auth/me every 30s to detect session invalidation (e.g. admin reset password)
+  useEffect(() => {
+    if (!user) return;
 
-      if (!userData) {
-        try {
-          userData = await authService.getMe();
-        } catch {
-          // Fallback: extract from login response if backend sends role
-          userData = { username: credentials.username, role: data?.role };
+    const interval = setInterval(async () => {
+      try {
+        const data = await authService.getMe();
+        // Update user data (e.g. mustChangePassword flag changes)
+        setUser(data);
+      } catch (err) {
+        // If 401, the axios interceptor in api.js will handle redirect to /login
+        // We just clear the interval to stop further polling
+        if (err.response?.status === 401) {
+          clearInterval(interval);
         }
       }
+    }, 30_000);
 
-      setUser(userData);
-      return data;
-    } finally {
-      setIsLoading(false);
+    return () => clearInterval(interval);
+  }, [!!user]); // Only re-run when user changes between null <-> non-null
+
+  const login = useCallback(async (credentials) => {
+    const data = await authService.login(credentials);
+    let userData = data?.user || null;
+
+    if (!userData) {
+      try {
+        userData = await authService.getMe();
+      } catch {
+        userData = { email: credentials.email, role: data?.role };
+      }
     }
+
+    setUser(userData);
+    return data;
   }, []);
 
   const logout = useCallback(async () => {
@@ -68,9 +81,18 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    try {
+      const data = await authService.getMe();
+      setUser(data);
+    } catch {
+      // silently fail — keep existing user
+    }
+  }, []);
+
   const value = useMemo(
-    () => ({ user, isAuthenticated, isLoading, login, logout, setUser }),
-    [user, isAuthenticated, isLoading, login, logout]
+    () => ({ user, isAuthenticated, isLoading, login, logout, setUser, refreshUser }),
+    [user, isAuthenticated, isLoading, login, logout, refreshUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

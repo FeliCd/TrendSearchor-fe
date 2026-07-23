@@ -1,72 +1,103 @@
-import { ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import HeroSearchBar from './HeroSearchBar';
-import TrendingKeywords from './TrendingKeywords';
+import Logo from '@/components/layout/Logo';
 
-const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 24 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, delay, ease: 'easeOut' },
-});
+export default function HeroSection({ scrollContainer, data }) {
+  const { scrollXProgress } = useScroll({ container: scrollContainer });
+  const opacity = useTransform(scrollXProgress, [0, 0.3], [1, 0]);
+  const x = useTransform(scrollXProgress, [0, 0.3], [0, -100]);
 
-export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden pt-12 pb-20 px-4">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#246E52]/10 rounded-full blur-[120px]" />
-        <div className="absolute top-20 right-0 w-[400px] h-[400px] bg-[#4A90E2]/8 rounded-full blur-[100px]" />
-      </div>
-
-      <div className="max-w-4xl mx-auto text-center">
-        <motion.div {...fadeUp(0)} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full
-          bg-[#161b22] border border-white/10 text-[#8b949e] text-xs font-medium mb-8">
-          <Sparkles className="w-3.5 h-3.5 text-[#4A90E2]" />
-          <span>Powered by Semantic Scholar · OpenAlex · Crossref</span>
-        </motion.div>
-
-        <motion.h1 {...fadeUp(0.1)} className="font-display font-extrabold text-4xl sm:text-5xl
-          md:text-6xl leading-tight tracking-tight text-[#e6edf3] mb-6">
-          Track the pulse of{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4A90E2] to-[#246E52]">
-            scientific research
-          </span>
-        </motion.h1>
-
-        <motion.p {...fadeUp(0.2)} className="text-[#8b949e] text-lg leading-relaxed
-          max-w-2xl mx-auto mb-10">
-          Discover emerging research trends, track publication patterns across journals,
-          and stay ahead in your field — all in one intelligent dashboard.
-        </motion.p>
-
-        <motion.div {...fadeUp(0.3)}>
-          <HeroSearchBar />
-        </motion.div>
-
-        <motion.div {...fadeUp(0.4)}>
-          <TrendingKeywords />
-        </motion.div>
-
-        <motion.div {...fadeUp(0.5)} className="flex flex-col sm:flex-row items-center
-          justify-center gap-3 mt-8">
-          <Link
-            to="/register"
-            className="flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold
-              text-white bg-[#246E52] hover:bg-[#1e5943] transition-colors
-              shadow-lg shadow-emerald-500/20"
-          >
-            Get Started Free
-            <ArrowRight className="w-4 h-4" />
+    <section className="relative h-screen w-screen shrink-0 flex flex-col lg:flex-row bg-transparent overflow-hidden">
+      {/* LEFT COLUMN - DARK */}
+      <motion.div 
+        style={{ opacity, x }}
+        className="w-full lg:w-1/2 flex flex-col relative z-10 px-8 py-6 lg:px-16 lg:py-10 h-screen overflow-y-auto hide-scrollbar"
+      >
+        
+        {/* Custom Header */}
+        <div className="flex flex-wrap items-center justify-between gap-6 mb-20 w-full shrink-0 relative z-10">
+          <Link to="/">
+            <Logo variant="navbar" />
           </Link>
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold
-              text-[#8b949e] bg-[#161b22] border border-white/10 hover:border-white/20
-              hover:text-white transition-all"
+          
+          <nav className="flex flex-wrap items-center gap-6 sm:gap-8 text-xs font-semibold text-white/80">
+            {data.navigation.map((nav, i) => (
+              <Link key={i} to={nav.to} className="hover:text-white transition-colors uppercase tracking-widest">{nav.label}</Link>
+            ))}
+            <Link to="/login" className="bg-white text-black px-6 py-2 text-xs font-bold uppercase tracking-widest hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#5b58ff] transition-all">
+              Login
+            </Link>
+          </nav>
+        </div>
+
+        {/* Hero Content */}
+        <div className="flex-1 flex flex-col justify-center max-w-xl">
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+            className="text-[#5b58ff] text-sm font-semibold mb-4 tracking-wider"
           >
-            Explore Dashboard
-          </Link>
-        </motion.div>
+            {data.subTitle}
+          </motion.p>
+          
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-5xl sm:text-6xl lg:text-[72px] leading-[1.05] font-bold text-white tracking-tight mb-10"
+            style={{ fontFamily: "'M PLUS U', sans-serif" }}
+          >
+            {data.titleLine1}<br />{data.titleLine2}
+          </motion.h1>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>
+            <HeroSearchBar />
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-16 bg-[#5b58ff] p-6 inline-block self-start shadow-xl"
+          >
+            <p className="text-white text-xs font-bold uppercase tracking-widest leading-relaxed">
+              {data.highlightBadge.line1}<br />{data.highlightBadge.line2}
+            </p>
+            <div className="w-10 h-0.5 bg-white mt-4" />
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* RIGHT COLUMN - MONDRIAN GRID */}
+      <div className="w-full lg:w-1/2 h-screen relative bg-white hidden lg:block border-l-4 border-black">
+        <div className="absolute inset-0 grid grid-cols-4 grid-rows-5 gap-0">
+          
+          {/* ROW 1 */}
+          <div className="bg-[#7bf5ea] col-start-1 col-end-2 row-start-1 row-end-2 border-r-4 border-b-4 border-black"></div>
+          <div className="bg-[#f4f4f5] col-start-2 col-end-4 row-start-1 row-end-3 relative overflow-hidden flex items-center justify-center border-r-4 border-b-4 border-black">
+            <img src="/images/grid1.png" alt="Student" className="w-full h-full object-cover" />
+          </div>
+          <div className="bg-[#8233ff] col-start-4 col-end-5 row-start-1 row-end-2 border-b-4 border-black"></div>
+
+          {/* ROW 2 */}
+          <div className="bg-[#18153a] col-start-1 col-end-2 row-start-2 row-end-3 border-r-4 border-b-4 border-black"></div>
+          <div className="bg-[#0e77ff] col-start-4 col-end-5 row-start-2 row-end-3 border-b-4 border-black"></div>
+
+          {/* ROW 3 */}
+          <div className="bg-[#1231f4] col-start-1 col-end-2 row-start-3 row-end-5 border-r-4 border-b-4 border-black"></div>
+          <div className="bg-white col-start-2 col-end-4 row-start-3 row-end-4 border-r-4 border-b-4 border-black"></div>
+          <div className="bg-black col-start-4 col-end-5 row-start-3 row-end-4 relative overflow-hidden flex items-center justify-center border-b-4 border-black">
+             <img src="/images/grid3.png" alt="Expert" className="w-full h-full object-cover" />
+          </div>
+
+          {/* ROW 4 */}
+          <div className="bg-white col-start-2 col-end-4 row-start-4 row-end-6 relative overflow-hidden z-10 border-r-4 border-black flex items-center justify-center shadow-2xl">
+            <img src="/images/grid2.png" alt="Mentor" className="w-full h-full object-cover object-top" />
+          </div>
+          <div className="bg-[#8233ff] col-start-4 col-end-5 row-start-4 row-end-5 border-b-4 border-black"></div>
+
+          {/* ROW 5 */}
+          <div className="bg-[#ff86c8] col-start-1 col-end-2 row-start-5 row-end-6 border-r-4 border-black"></div>
+          <div className="bg-[#18153a] col-start-4 col-end-5 row-start-5 row-end-6"></div>
+
+        </div>
       </div>
     </section>
   );

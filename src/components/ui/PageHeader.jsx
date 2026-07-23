@@ -1,28 +1,72 @@
-import { Plus } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
+import { ROLE_SIDEBAR_CONFIG } from '@/constants/sidebarConfig';
+import UserAvatar from '@/components/ui/UserAvatar';
+import NotificationBell from '@/components/notifications/NotificationBell';
 
 export default function PageHeader({ title, description, action, actionLabel, onAction }) {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
+  const config = user?.role ? ROLE_SIDEBAR_CONFIG[user.role] : ROLE_SIDEBAR_CONFIG.USER;
+  const roleLabel = config?.roleLabel || 'User';
   return (
-    <div className="border-b border-white/[0.06] bg-[#0d1117]/80 backdrop-blur-sm sticky top-0 z-20">
-      <div className="max-w-[1200px] mx-auto px-6 py-5">
+    <div className="h-[72px] border-b-2 border-gray-800 bg-[#151515] sticky top-0 z-20 flex items-center">
+      <div className="w-full px-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-white">{title}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl font-bold text-white">{title}</h1>
+              <div className="h-5 w-px bg-gray-700 hidden sm:block" />
+              {description && (
+                <p className="text-sm text-gray-400 hidden sm:block">{description}</p>
+              )}
+            </div>
             {description && (
-              <p className="text-sm text-[#8b949e] mt-0.5">{description}</p>
+              <p className="text-sm text-gray-400 mt-0.5 sm:hidden">{description}</p>
             )}
           </div>
-          {action && (
-            <button
-              onClick={onAction}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold
-                bg-[#4A90E2] hover:bg-[#357ABD] text-white transition-all duration-200
-                shadow-lg shadow-[#4A90E2]/20 border border-[#4A90E2]/50
-                hover:shadow-[#4A90E2]/30 hover:-translate-y-0.5 active:translate-y-0"
-            >
-              {action}
-              <span>{actionLabel}</span>
-            </button>
-          )}
+          <div className="flex items-center gap-4">
+            {action && (
+              <motion.button
+                whileHover={{ scale: 1.03, y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={onAction}
+                className="flex items-center gap-2 px-4 py-3 border-2 border-transparent text-[10px] font-black uppercase tracking-widest
+                  bg-[#0058be] hover:bg-[#004395] text-white transition-all duration-200
+                  shadow-none"
+              >
+                {action}
+                <span>{actionLabel}</span>
+              </motion.button>
+            )}
+            
+            <NotificationBell />
+
+            <div className="flex items-center gap-3">
+              <UserAvatar user={user} size="md" className="border border-gray-700 shadow-sm" />
+              <div className="hidden md:block min-w-0">
+                <p className="text-sm font-bold text-white truncate">
+                  {user?.fullName || user?.mail || roleLabel}
+                </p>
+                <p className="text-[11px] font-medium text-gray-500 truncate uppercase tracking-wider">{roleLabel}</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="ml-2 p-2 border-2 border-transparent text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all flex-shrink-0 hover:border-red-500"
+                title="Sign out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
