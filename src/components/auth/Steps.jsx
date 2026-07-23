@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react';
 
 export function Steps({ current }) {
-  const steps = ['Account', 'Details'];
+  const steps = ['Account', 'Details', 'Agreement'];
   return (
     <div className="flex items-center justify-center gap-2 mb-6">
       {steps.map((label, i) => {

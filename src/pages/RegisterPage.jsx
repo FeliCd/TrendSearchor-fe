@@ -4,15 +4,17 @@ import AuthLayout from '@/components/auth/AuthLayout';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { ToastContainer } from '@/components/ui/Toast';
 import { useToast } from '@/hooks/useToast';
-import { User, Mail, Lock, Phone, Calendar, Building2 } from 'lucide-react';
+import { User, Mail, Lock, Phone, Calendar, Building2, ShieldCheck } from 'lucide-react';
 import { Steps } from '@/components/auth/Steps';
 import { AuthField } from '@/components/auth/AuthField';
 import { AuthSelect } from '@/components/auth/AuthSelect';
 import { RoleCard } from '@/components/auth/RoleCard';
+import TermsModal from '@/components/modals/TermsModal';
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
-  const { formData, errors, globalError, successMsg, isLoading, handleChange, handleSubmit, validateStep1 } = useRegisterForm();
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const { formData, errors, globalError, successMsg, isLoading, handleChange, handleSubmit, validateStep1, validateStep2 } = useRegisterForm();
   const { toasts, addToast, removeToast } = useToast();
   const prevErrorsRef = useRef({});
 
@@ -35,9 +37,14 @@ export default function RegisterPage() {
     if (successMsg) addToast(successMsg, 'success');
   }, [successMsg, addToast]);
 
-  const handleNext = () => {
+  const handleNextFromStep1 = () => {
     if (!validateStep1()) return;
     setStep(2);
+  };
+
+  const handleNextFromStep2 = () => {
+    if (!validateStep2()) return;
+    setStep(3);
   };
 
   return (
@@ -50,6 +57,7 @@ export default function RegisterPage() {
       isWide={true}
     >
       <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Steps current={step} />
@@ -71,7 +79,7 @@ export default function RegisterPage() {
                 value={formData.confirmPassword} onChange={handleChange} icon={Lock}
                 error={errors.confirmPassword} autoComplete="new-password" />
             </div>
-            <button type="button" onClick={handleNext}
+            <button type="button" onClick={handleNextFromStep1}
               className="w-full py-3.5 bg-white text-black text-sm font-black uppercase tracking-widest
                 hover:bg-gray-200 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2">
               Continue
@@ -117,18 +125,6 @@ export default function RegisterPage() {
                 </a>
               </div>
             </div>
-
-            <div className="space-y-3 mt-8 pt-6 border-t border-gray-800/50 text-[10.5px] leading-relaxed text-gray-500">
-              <p>
-                People who use our service may have uploaded your contact information to TrendSearchor. <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Learn more.</a>
-              </p>
-              <p>
-                By clicking Continue or registering with a social provider, you agree to our <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Terms</a>, <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Privacy Policy</a> and <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Cookies Policy</a>.
-              </p>
-              <p>
-                The <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Privacy Policy</a> describes the ways we can use the information we collect when you create an account. For example, we use this information to provide, personalize and improve our products, including research trend analysis.
-              </p>
-            </div>
           </div>
         )}
 
@@ -166,18 +162,7 @@ export default function RegisterPage() {
                   description="Deep analysis, topic reports"
                   selected={formData.role === 'RESEARCHER'} onChange={handleChange} />
               </div>
-            </div>
-
-            <div className="space-y-3 mt-6 text-[10.5px] leading-relaxed text-gray-500">
-              <p>
-                People who use our service may have uploaded your contact information to TrendSearchor. <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Learn more.</a>
-              </p>
-              <p>
-                By clicking Create account, you agree to our <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Terms</a>, <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Privacy Policy</a> and <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Cookies Policy</a>.
-              </p>
-              <p>
-                The <a href="#" className="text-gray-300 hover:text-white underline transition-colors">Privacy Policy</a> describes the ways we can use the information we collect when you create an account. For example, we use this information to provide, personalize and improve our products, including research trend analysis.
-              </p>
+              {errors.role && <p className="text-xs text-red-400 mt-1.5">{errors.role}</p>}
             </div>
 
             <div className="flex gap-4 mt-6">
@@ -187,9 +172,141 @@ export default function RegisterPage() {
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" /></svg>
                 Back
               </button>
-              <button type="submit" disabled={isLoading}
+              <button type="button" onClick={handleNextFromStep2}
                 className="w-2/3 py-3.5 bg-white text-black font-black uppercase tracking-widest text-xs
-                  hover:bg-gray-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                  hover:bg-gray-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                Continue
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="space-y-5">
+            {/* Step 3 Header */}
+            <div className="p-4 bg-[#1e1e1e] border-2 border-gray-800 flex items-center gap-3">
+              <div className="w-9 h-9 border border-[#0058be] bg-[#0058be]/10 flex items-center justify-center text-[#5ba3ff]">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-xs font-black uppercase tracking-widest text-white">Terms & Policy Agreement</h4>
+                <p className="text-[11px] text-gray-400 mt-0.5">Please review and accept our policies before creating your account.</p>
+              </div>
+            </div>
+
+            {/* Legal Information Box */}
+            <div className="p-4 bg-[#181818] border border-gray-800 space-y-3 text-[11px] leading-relaxed text-gray-400">
+              <p>
+                People who use our service may have uploaded your contact information to TrendSearchor.{' '}
+                <button
+                  type="button"
+                  onClick={() => setIsTermsOpen(true)}
+                  className="text-gray-200 hover:text-white underline font-medium transition-colors"
+                >
+                  Learn more.
+                </button>
+              </p>
+              <p>
+                By clicking Continue or registering with a social provider, you agree to our{' '}
+                <button
+                  type="button"
+                  onClick={() => setIsTermsOpen(true)}
+                  className="text-gray-200 hover:text-white underline font-medium transition-colors"
+                >
+                  Terms
+                </button>
+                ,{' '}
+                <button
+                  type="button"
+                  onClick={() => setIsTermsOpen(true)}
+                  className="text-gray-200 hover:text-white underline font-medium transition-colors"
+                >
+                  Privacy Policy
+                </button>{' '}
+                and{' '}
+                <button
+                  type="button"
+                  onClick={() => setIsTermsOpen(true)}
+                  className="text-gray-200 hover:text-white underline font-medium transition-colors"
+                >
+                  Cookies Policy
+                </button>
+                .
+              </p>
+              <p>
+                The{' '}
+                <button
+                  type="button"
+                  onClick={() => setIsTermsOpen(true)}
+                  className="text-gray-200 hover:text-white underline font-medium transition-colors"
+                >
+                  Privacy Policy
+                </button>{' '}
+                describes the ways we can use the information we collect when you create an account. For example, we use this information to provide, personalize and improve our products, including research trend analysis.
+              </p>
+            </div>
+
+            {/* Checkbox Box Tích Đồng Ý */}
+            <div>
+              <label className="flex items-start gap-3 p-4 bg-[#1e1e1e] border-2 border-gray-800 hover:border-gray-700 cursor-pointer transition-all rounded-none group">
+                <input
+                  type="checkbox"
+                  name="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onChange={handleChange}
+                  className="mt-0.5 w-4 h-4 rounded-none accent-[#0058be] cursor-pointer flex-shrink-0"
+                />
+                <span className="text-xs text-gray-300 font-medium leading-relaxed">
+                  I have read and agree to TrendSearchor's{' '}
+                  <button
+                    type="button"
+                    onClick={() => setIsTermsOpen(true)}
+                    className="text-white font-bold underline hover:text-[#5ba3ff] transition-colors"
+                  >
+                    Terms
+                  </button>
+                  ,{' '}
+                  <button
+                    type="button"
+                    onClick={() => setIsTermsOpen(true)}
+                    className="text-white font-bold underline hover:text-[#5ba3ff] transition-colors"
+                  >
+                    Privacy Policy
+                  </button>
+                  , and{' '}
+                  <button
+                    type="button"
+                    onClick={() => setIsTermsOpen(true)}
+                    className="text-white font-bold underline hover:text-[#5ba3ff] transition-colors"
+                  >
+                    Cookies Policy
+                  </button>
+                  .
+                </span>
+              </label>
+              {errors.agreeToTerms && (
+                <p className="text-xs text-red-400 font-semibold mt-1.5">{errors.agreeToTerms}</p>
+              )}
+            </div>
+
+            {/* Account Summary Preview */}
+            <div className="p-3 bg-[#151515] border border-gray-800/80 text-[11px] text-gray-400 flex flex-wrap items-center justify-between gap-2">
+              <div><span className="text-gray-500 uppercase text-[9.5px] font-bold block">Account:</span> <span className="text-white font-semibold">{formData.fullName || '—'}</span> ({formData.mail || '—'})</div>
+              <div><span className="text-gray-500 uppercase text-[9.5px] font-bold block">Role:</span> <span className="text-white font-semibold">{formData.role === 'RESEARCHER' ? 'Researcher' : 'Student / Lecturer'}</span></div>
+            </div>
+
+            {/* Step 3 Action Buttons */}
+            <div className="flex gap-4 mt-6">
+              <button type="button" onClick={() => setStep(2)}
+                className="w-1/3 py-3.5 border-2 border-gray-800 text-white font-bold uppercase tracking-widest text-xs
+                  hover:bg-[#1e1e1e] transition-all flex items-center justify-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12" /></svg>
+                Back
+              </button>
+              <button type="submit" disabled={isLoading || !formData.agreeToTerms}
+                className="w-2/3 py-3.5 bg-white text-black font-black uppercase tracking-widest text-xs
+                  hover:bg-gray-200 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
                 {isLoading ? <LoadingSpinner label="Creating..." /> : 'Create account'}
               </button>
             </div>

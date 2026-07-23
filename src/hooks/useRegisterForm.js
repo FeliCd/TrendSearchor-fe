@@ -16,6 +16,7 @@ export function useRegisterForm() {
     gender: 'MALE',
     workplace: '',
     role: '',
+    agreeToTerms: false,
   });
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState('');
@@ -23,8 +24,9 @@ export function useRegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    const val = type === 'checkbox' ? checked : value;
+    setFormData((prev) => ({ ...prev, [name]: val }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
@@ -59,21 +61,35 @@ export function useRegisterForm() {
     return Object.keys(errs).length === 0;
   };
 
-  const validate = () => {
-    const errs = validateStep1Fields();
+  const validateStep2Fields = () => {
+    const errs = {};
     if (!formData.phone.trim()) {
       errs.phone = 'Phone number is required';
     } else if (!isValidPhone(formData.phone)) {
       errs.phone = 'Phone must be 10 digits starting with 09, 03, 05, 07, or 08';
     }
     if (!isValidDob(formData.dob)) {
-      errs.dob = 'Date of birth must be in the past and year ≥ 1920';
+      errs.dob = 'You must be at least 18 years old to create an account';
     }
     if (!formData.gender) errs.gender = 'Gender is required';
     if (!formData.workplace.trim()) errs.workplace = 'Workplace / University is required';
     if (!formData.role) errs.role = 'Account type is required';
     else if (!['STUDENT', 'RESEARCHER'].includes(formData.role)) {
       errs.role = 'Account type must be Student/Lecturer or Researcher';
+    }
+    return errs;
+  };
+
+  const validateStep2 = () => {
+    const errs = validateStep2Fields();
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const validate = () => {
+    const errs = { ...validateStep1Fields(), ...validateStep2Fields() };
+    if (!formData.agreeToTerms) {
+      errs.agreeToTerms = 'You must agree to the Terms, Privacy Policy, and Cookies Policy to proceed';
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -89,7 +105,7 @@ export function useRegisterForm() {
 
     setIsLoading(true);
     try {
-      const { confirmPassword, ...payload } = formData;
+      const { confirmPassword, agreeToTerms, ...payload } = formData;
       await authService.register(payload);
       setSuccessMsg('Account created! Redirecting to sign in...');
       setTimeout(() => navigate('/login'), 2000);
@@ -105,5 +121,5 @@ export function useRegisterForm() {
     }
   };
 
-  return { formData, errors, globalError, successMsg, isLoading, handleChange, handleSubmit, validateStep1 };
+  return { formData, errors, globalError, successMsg, isLoading, handleChange, handleSubmit, validateStep1, validateStep2 };
 }

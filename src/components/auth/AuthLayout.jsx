@@ -64,7 +64,7 @@ export default function AuthLayout({
         <div className="w-full">
           {/* Header */}
           {title && (
-            <div className="mb-8">
+            <div className="mb-8 text-center">
               <h1 className="text-3xl font-black text-white tracking-tight mb-2">{title}</h1>
               {subtitle && <p className="text-sm font-medium text-gray-400">{subtitle}</p>}
             </div>
