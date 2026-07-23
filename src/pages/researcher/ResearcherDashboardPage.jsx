@@ -1,11 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Database, Layers, BookOpen, TrendingUp, Map, Target, ArrowUpRight, Zap, Loader2 } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import DashboardLayout from '@/components/ui/DashboardLayout';
 import StatCard from '@/components/ui/StatCard';
 import SectionCard from '@/components/ui/SectionCard';
 import { dashboardService } from '@/services/dashboardService';
 import { trendService } from '@/services/trendService';
 import ResearcherLeaderboardWidget from '@/components/dashboard/ResearcherLeaderboardWidget';
+
+function TimelineTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-[#1e1e1e] border-2 border-gray-800 px-3 py-2 shadow-2xl">
+      <p className="text-xs font-black uppercase tracking-widest text-[#5ba3ff] mb-1">Year {label}</p>
+      <div className="flex items-center gap-2 text-xs font-bold text-white">
+        <div className="w-2 h-2 rounded-full bg-[#0058be]" />
+        <span>Publications:</span>
+        <span className="text-[#5ba3ff] font-black">{payload[0].value?.toLocaleString()}</span>
+      </div>
+    </div>
+  );
+}
 
 export default function ResearcherDashboardPage() {
   const [stats, setStats] = useState(null);
@@ -20,8 +35,8 @@ export default function ResearcherDashboardPage() {
       try {
         const [dashData, trending, emerging, yearly] = await Promise.allSettled([
           dashboardService.getUserDashboard(),
-          trendService.getTrendingRanking(5),
-          trendService.getEmergingTopics(5),
+          trendService.getTrendingRanking(3),
+          trendService.getEmergingTopics(3),
           trendService.getYearlyStats(),
         ]);
         if (dashData.status === 'fulfilled') setStats(dashData.value);
@@ -50,8 +65,6 @@ export default function ResearcherDashboardPage() {
     return `${sign}${(rate * 100).toFixed(0)}%`;
   };
 
-  const maxYearly = yearlyStats.length > 0 ? Math.max(...yearlyStats.map(y => y.paperCount || 0)) : 1;
-
   return (
     <DashboardLayout 
       title="Trend Intelligence" 
@@ -69,28 +82,38 @@ export default function ResearcherDashboardPage() {
         {/* Trend Timeline Chart */}
         <div className="lg:col-span-2">
           <SectionCard title="Publication Trend Timeline" className="h-full">
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full justify-center">
               {yearlyStats.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center min-h-[200px] border-2 border-gray-800 bg-[#1e1e1e]">
+                <div className="flex-1 flex items-center justify-center min-h-[220px] border-2 border-gray-800 bg-[#1e1e1e]">
                   {loading ? <Loader2 className="w-6 h-6 text-gray-500 animate-spin" /> : <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">No data available</span>}
                 </div>
               ) : (
-                <>
-                  <div className="flex-1 relative min-h-[200px] border-2 border-gray-800 bg-[#1e1e1e] p-4 flex items-end gap-1">
-                    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                    {yearlyStats.map((y, i) => (
-                      <div key={i} className="relative z-10 flex-1 flex flex-col items-center justify-end h-full group">
-                        <span className="text-[9px] font-bold text-gray-400 mb-1 opacity-0 group-hover:opacity-100 transition-opacity">{y.paperCount}</span>
-                        <div className="w-full max-w-[24px] bg-[#0058be] border border-[#0058be] group-hover:bg-[#004a9f] transition-colors" style={{ height: `${Math.max((y.paperCount / maxYearly) * 100, 2)}%` }} />
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex justify-between mt-2 text-[10px] font-black text-gray-500 uppercase tracking-widest px-4">
-                    <span>{yearlyStats[0]?.year}</span>
-                    {yearlyStats.length > 2 && <span>{yearlyStats[Math.floor(yearlyStats.length / 2)]?.year}</span>}
-                    <span>{yearlyStats[yearlyStats.length - 1]?.year}</span>
-                  </div>
-                </>
+                <div className="p-2 border-2 border-gray-800 bg-[#1e1e1e]">
+                  <ResponsiveContainer width="100%" height={230}>
+                    <AreaChart data={yearlyStats} margin={{ top: 15, right: 15, bottom: 5, left: -20 }}>
+                      <defs>
+                        <linearGradient id="publicationGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#0058be" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="#0058be" stopOpacity={0.0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                      <XAxis dataKey="year" tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 'bold' }} tickLine={false} axisLine={{ stroke: '#ffffff15' }} />
+                      <YAxis tick={{ fontSize: 10, fill: '#9ca3af', fontWeight: 'bold' }} tickLine={false} axisLine={false} allowDecimals={false} />
+                      <Tooltip content={<TimelineTooltip />} />
+                      <Area
+                        type="monotone"
+                        dataKey="paperCount"
+                        name="Publications"
+                        stroke="#0058be"
+                        strokeWidth={3}
+                        fillOpacity={1}
+                        fill="url(#publicationGrad)"
+                        activeDot={{ r: 6, fill: '#5ba3ff', stroke: '#0058be', strokeWidth: 2 }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
               )}
             </div>
           </SectionCard>
@@ -105,10 +128,10 @@ export default function ResearcherDashboardPage() {
               ) : trendingTopics.length === 0 ? (
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 text-center py-6">No trending data</p>
               ) : (
-                trendingTopics.map((topic, i) => (
+                trendingTopics.slice(0, 3).map((topic, i) => (
                   <div key={i} className="flex items-center justify-between p-3 border-2 border-gray-800 bg-[#1e1e1e]">
-                    <span className="text-sm font-bold text-white">{topic.displayName || topic.keyword}</span>
-                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2 py-1 border-2 border-emerald-500/20">{formatGrowth(topic.growthRate)}</span>
+                    <span className="text-sm font-bold text-white truncate pr-2">{topic.displayName || topic.keyword}</span>
+                    <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2 py-1 border-2 border-emerald-500/20 shrink-0">{formatGrowth(topic.growthRate)}</span>
                   </div>
                 ))
               )}
@@ -122,13 +145,13 @@ export default function ResearcherDashboardPage() {
               ) : emergingTopics.length === 0 ? (
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 text-center py-6">No emerging data</p>
               ) : (
-                emergingTopics.map((topic, i) => (
+                emergingTopics.slice(0, 3).map((topic, i) => (
                   <div key={i} className="flex items-center gap-3 p-3 border-2 border-gray-800 bg-[#1e1e1e]">
                     <div className="w-8 h-8 flex items-center justify-center border-2 border-amber-500/30 bg-amber-500/10 shrink-0">
                       <Zap className="w-4 h-4 text-amber-500" />
                     </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-white">{topic.displayName || topic.keyword}</h4>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-sm font-bold text-white truncate">{topic.displayName || topic.keyword}</h4>
                       <span className="text-[10px] uppercase tracking-widest font-black text-gray-500">{topic.statusLabel || 'Emerging'}</span>
                     </div>
                   </div>
@@ -148,7 +171,7 @@ export default function ResearcherDashboardPage() {
             ) : (stats?.topJournals || []).length === 0 ? (
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 text-center py-6">No journal data</p>
             ) : (
-              (stats?.topJournals || []).map((journal, i) => (
+              (stats?.topJournals || []).slice(0, 3).map((journal, i) => (
                 <div key={i} className="flex items-center justify-between p-3 border-2 border-gray-800 bg-[#1e1e1e] hover:border-gray-600 transition-colors cursor-pointer">
                   <div className="flex-1 min-w-0 pr-4">
                     <p className="text-sm font-bold text-white truncate">{journal.name}</p>
@@ -200,8 +223,8 @@ export default function ResearcherDashboardPage() {
             <div className="space-y-3">
               {(trendingTopics.length > 0 ? trendingTopics.slice(0, 3) : [{keyword: 'AI Safety'}, {keyword: 'Human-AI Collaboration'}, {keyword: 'Autonomous Agents'}]).map((topic, i) => (
                 <div key={i} className="flex items-center justify-between p-3 border-2 border-gray-800 bg-[#1e1e1e] group hover:border-[#0058be] transition-colors cursor-pointer">
-                  <span className="text-sm font-bold text-white">{topic.displayName || topic.keyword}</span>
-                  <ArrowUpRight className="w-4 h-4 text-gray-600 group-hover:text-[#0058be] transition-colors" />
+                  <span className="text-sm font-bold text-white truncate pr-2">{topic.displayName || topic.keyword}</span>
+                  <ArrowUpRight className="w-4 h-4 text-gray-600 group-hover:text-[#0058be] transition-colors shrink-0" />
                 </div>
               ))}
             </div>
