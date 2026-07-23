@@ -4,10 +4,21 @@ export const paperUploadService = {
   /**
    * POST /api/papers/upload
    * Upload a new research paper (RESEARCHER & ADMIN only).
-   * @param {Object} payload - { title, abstractText, year, paperUri, authors[], journals[], keywords[] }
+   * @param {Object} payload - { title, abstractText, year, paperUri, authors[], journals[], keywords[], license, publicationType, ownershipConfirmed, termsAccepted, embargoUntil }
    */
   uploadPaper: async (payload) => {
     const res = await api.post('/api/papers/upload', payload);
+    return res.data;
+  },
+
+  /**
+   * POST /api/papers/{id}/copyright-report
+   * Submit a copyright violation report for a paper.
+   * @param {number|string} paperId - Paper ID
+   * @param {Object} payload - { reason: string }
+   */
+  reportCopyright: async (paperId, payload) => {
+    const res = await api.post(`/api/papers/${paperId}/copyright-report`, payload);
     return res.data;
   },
 

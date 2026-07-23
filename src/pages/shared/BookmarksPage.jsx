@@ -57,28 +57,28 @@ function EmptyState({ icon: Icon, title, subtitle }) {
 /* ─── Main Page ───────────────────────────────────────────────────── */
 
 export default function BookmarksPage() {
-  const [rawBookmarks, setRawBookmarks]     = useState([]);
-  const [networkData, setNetworkData]       = useState({ nodes: [], links: [] });
-  const [collections, setCollections]       = useState([]);
+  const [rawBookmarks, setRawBookmarks] = useState([]);
+  const [networkData, setNetworkData] = useState({ nodes: [], links: [] });
+  const [collections, setCollections] = useState([]);
   const [selectedCollectionId, setSelectedCollectionId] = useState(null);
-  const [search, setSearch]                 = useState('');
-  const [tagSearch, setTagSearch]           = useState('');
+  const [search, setSearch] = useState('');
+  const [tagSearch, setTagSearch] = useState('');
   const [connectionSearch, setConnectionSearch] = useState('');
-  const [selectedTag, setSelectedTag]       = useState('All');
+  const [selectedTag, setSelectedTag] = useState('All');
   const [selectedNodeId, setSelectedNodeId] = useState(null);
-  const [loading, setLoading]               = useState(true);
-  const [deleting, setDeleting]             = useState(null);
-  const [dragOverId, setDragOverId]         = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(null);
+  const [dragOverId, setDragOverId] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState('');
   const [newCollectionDesc, setNewCollectionDesc] = useState('');
   const [creatingCollection, setCreatingCollection] = useState(false);
-  
+
   const [deleteModalCollection, setDeleteModalCollection] = useState(null);
   const [deletingCollection, setDeletingCollection] = useState(false);
   const [totalBookmarksCount, setTotalBookmarksCount] = useState(0);
   // viewMode only controls Pane 3 content
-  const [viewMode, setViewMode]             = useState('list');
+  const [viewMode, setViewMode] = useState('list');
 
   const graphRef = useRef(null);
   const fgRef = useRef(null);
@@ -141,27 +141,27 @@ export default function BookmarksPage() {
       .filter(b => b.paper || b.keyword)
       .map(b => b.paper
         ? {
-            id:         String(b.id),
-            bookmarkId: b.id,
-            title:      b.paper.title || 'Untitled',
-            url:        b.paper.paperUri || '#',
-            year:       b.paper.year || '—',
-            citations:  b.paper.citationCount ?? 0,
-            tags:       b.paper.keywords || [],
-            type:       'PAPER',
-          }
+          id: String(b.id),
+          bookmarkId: b.id,
+          title: b.paper.title || 'Untitled',
+          url: b.paper.paperUri || '#',
+          year: b.paper.year || '—',
+          citations: b.paper.citationCount ?? 0,
+          tags: b.paper.keywords || [],
+          type: 'PAPER',
+        }
         : {
-            id:         String(b.id),
-            bookmarkId: b.id,
-            title:      b.keyword.displayName || b.keyword.name,
-            url:        '#',
-            year:       '—',
-            citations:  0,
-            tags:       [b.keyword.displayName || b.keyword.name],
-            type:       'KEYWORD',
-          }
+          id: String(b.id),
+          bookmarkId: b.id,
+          title: b.keyword.displayName || b.keyword.name,
+          url: '#',
+          year: '—',
+          citations: 0,
+          tags: [b.keyword.displayName || b.keyword.name],
+          type: 'KEYWORD',
+        }
       ),
-  [rawBookmarks]);
+    [rawBookmarks]);
 
   const nodesWithRelations = useMemo(() =>
     nodes.map(node => {
@@ -173,7 +173,7 @@ export default function BookmarksPage() {
         .map(l => l.source === node.id ? l.target : l.source);
       return { ...node, relatedIds: [...new Set([...byTag, ...byCitation])] };
     }),
-  [nodes, networkData]);
+    [nodes, networkData]);
 
   const graphData = useMemo(() => {
     const gNodes = nodes.map(n => ({ id: n.id, title: n.title }));
@@ -216,9 +216,9 @@ export default function BookmarksPage() {
     nodesWithRelations.filter(n => {
       const q = search.toLowerCase();
       return (!q || n.title.toLowerCase().includes(q)) &&
-             (selectedTag === 'All' || n.tags.includes(selectedTag));
+        (selectedTag === 'All' || n.tags.includes(selectedTag));
     }),
-  [nodesWithRelations, search, selectedTag]);
+    [nodesWithRelations, search, selectedTag]);
 
   const activeNode = useMemo(
     () => nodesWithRelations.find(n => n.id === selectedNodeId),
@@ -254,8 +254,8 @@ export default function BookmarksPage() {
   const ViewToggle = () => (
     <div className="flex items-center border-2 border-gray-700 h-10">
       {[
-        { mode: 'list',  Icon: LayoutList, label: 'List'  },
-        { mode: 'graph', Icon: Share2,     label: 'Graph' },
+        { mode: 'list', Icon: LayoutList, label: 'List' },
+        { mode: 'graph', Icon: Share2, label: 'Graph' },
       ].map(({ mode, Icon, label }) => (
         <button
           key={mode}
@@ -293,14 +293,14 @@ export default function BookmarksPage() {
 
           {/* ── LEFT PANEL: Collections + Tags (260px) ── */}
           <div className="w-[300px] shrink-0 border-r-2 border-gray-800 bg-[#151515] flex flex-col min-h-0">
-            
+
             {/* Collections Section */}
             <div className="flex-1 min-h-0 flex flex-col border-b-2 border-gray-800">
               <SectionHeader
                 icon={Folder}
                 label="Collections"
                 actions={
-                  <button 
+                  <button
                     className="p-1 hover:bg-[#1e1e1e] rounded text-[#0058be] transition-colors"
                     title="Create Collection"
                     onClick={() => {
@@ -350,8 +350,8 @@ export default function BookmarksPage() {
                       }
                     }}
                     className={`group relative w-full flex items-center gap-2 px-3 py-2 text-left transition-colors border-l-2 cursor-pointer
-                      ${dragOverId === col.id 
-                        ? 'border-[#0058be] bg-[#0058be]/30 text-white' 
+                      ${dragOverId === col.id
+                        ? 'border-[#0058be] bg-[#0058be]/30 text-white'
                         : selectedCollectionId === col.id
                           ? 'border-[#0058be] bg-[#0058be]/10 text-white'
                           : 'border-transparent text-gray-400 hover:bg-[#1e1e1e] hover:text-white hover:border-gray-700'}`}
@@ -429,14 +429,14 @@ export default function BookmarksPage() {
 
           {/* ── CENTER PANEL: Papers / Graph (flex-1) ── */}
           <div className="flex-1 min-w-0 bg-[#151515] flex flex-col min-h-0 border-r-2 border-gray-800">
-            
+
             <SectionHeader
               icon={viewMode === 'list' ? Bookmark : Share2}
               label={
                 viewMode === 'list'
-                  ? (selectedCollectionId 
-                      ? collections.find(c => c.id === selectedCollectionId)?.name || 'Bookmarks'
-                      : 'All Bookmarks')
+                  ? (selectedCollectionId
+                    ? collections.find(c => c.id === selectedCollectionId)?.name || 'Bookmarks'
+                    : 'All Bookmarks')
                   : 'Network View'
               }
               actions={
@@ -474,8 +474,8 @@ export default function BookmarksPage() {
                 ) : (
                   <div className="p-4 grid grid-cols-1 gap-3">
                     {filteredNodes.map(node => (
-                      <div 
-                        key={node.id} 
+                      <div
+                        key={node.id}
                         className="relative group"
                         draggable="true"
                         onDragStart={(e) => {
@@ -588,7 +588,7 @@ export default function BookmarksPage() {
                 <>
                   <div className="h-14 px-4 border-b-2 border-gray-800 bg-[#1e1e1e] flex items-center justify-between shrink-0">
                     <span className="flex items-center gap-2 text-[13px] font-black uppercase tracking-widest text-white">
-                      <MousePointerClick className="w-4 h-4 text-[#0058be]" /> 
+                      <MousePointerClick className="w-4 h-4 text-[#0058be]" />
                       Select Paper
                     </span>
                   </div>
@@ -606,92 +606,92 @@ export default function BookmarksPage() {
                   <div className="flex-1 min-h-0 flex flex-col border-b-2 border-gray-800 z-20">
                     <div className="h-14 px-4 border-b-2 border-gray-800 bg-[#1e1e1e] flex items-center justify-between shrink-0">
                       <span className="flex items-center gap-2 text-[13px] font-black uppercase tracking-widest text-white">
-                        <MousePointerClick className="w-4 h-4 text-[#0058be]" /> 
+                        <MousePointerClick className="w-4 h-4 text-[#0058be]" />
                         Details
                       </span>
                     </div>
                     <div className="flex-1 min-h-0 overflow-y-auto scroll-smooth scrollbar-thin" data-lenis-prevent="true">
                       <div className="p-5">
-                      <h2 className="text-base font-semibold text-white leading-snug mb-3 line-clamp-3" title={activeNode.title}>
-                        {activeNode.title}
-                      </h2>
-                    <div className="flex flex-wrap items-center gap-2 text-sm mb-5 font-medium">
-                      <span className="px-2 py-0.5 border-2 border-gray-800 text-gray-300 rounded-none bg-[#1e1e1e]">{activeNode.year}</span>
-                      <span className="px-2 py-0.5 border-2 border-[#0058be]/50 text-[#4A90E2] rounded-none bg-[#0058be]/10">{activeNode.citations.toLocaleString()} citations</span>
-                      {activeNode.tags?.length > 0 && (
-                        <span className="px-2 py-0.5 border-2 border-[#0058be]/30 text-[#4A90E2] text-[11px] font-bold uppercase tracking-wide rounded-none bg-[#0058be]/5">{activeNode.tags.length} tags</span>
-                      )}
-                    </div>
-                    
-                  </div>
-                  </div>
-
-                  {/* Fixed bottom controls of Top Details */}
-                  <div className="shrink-0 p-5 bg-[#151515] border-t-2 border-gray-800 relative z-50">
-                    <div className="flex gap-2 mb-6">
-                      {activeNode.url && activeNode.url !== '#' && (
-                        <a
-                          href={activeNode.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="h-10 flex-1 flex justify-center items-center gap-2 px-4 bg-[#1e1e1e] hover:bg-[#252525] text-white text-[11px] font-black uppercase tracking-widest transition-colors border-2 border-gray-700 hover:border-gray-500 rounded-none"
-                        >
-                          <ExternalLink className="w-4 h-4" /> Open
-                        </a>
-                      )}
-                      <button
-                        onClick={() => handleDelete(activeNode.bookmarkId)}
-                        disabled={deleting === activeNode.bookmarkId}
-                        className="h-10 flex-1 flex justify-center items-center gap-2 px-4 bg-[#1e1e1e] hover:bg-red-500/10 text-red-500 text-[11px] font-black uppercase tracking-widest transition-colors border-2 border-gray-700 hover:border-red-500/50 rounded-none"
-                        title="Remove bookmark"
-                      >
-                        {deleting === activeNode.bookmarkId ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-3.5 h-3.5" />
-                        )}
-                        Remove
-                      </button>
-                    </div>
-
-                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 block">Collection</span>
-                    <div className="relative group">
-                      <button className="w-full flex items-center justify-between px-4 py-3 bg-[#1e1e1e] border-2 border-gray-800 hover:border-gray-600 transition-colors text-left rounded-none">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <Folder className="w-4 h-4 text-[#0058be] shrink-0" />
-                          <span className="text-sm font-semibold text-gray-300 truncate">
-                            {selectedCollectionId 
-                              ? collections.find(c => c.id === selectedCollectionId)?.name || 'All Bookmarks'
-                              : 'All Bookmarks'}
-                          </span>
+                        <h2 className="text-base font-semibold text-white leading-snug mb-3 line-clamp-3" title={activeNode.title}>
+                          {activeNode.title}
+                        </h2>
+                        <div className="flex flex-wrap items-center gap-2 text-sm mb-5 font-medium">
+                          <span className="px-2 py-0.5 border-2 border-gray-800 text-gray-300 rounded-none bg-[#1e1e1e]">{activeNode.year}</span>
+                          <span className="px-2 py-0.5 border-2 border-[#0058be]/50 text-[#4A90E2] rounded-none bg-[#0058be]/10">{activeNode.citations.toLocaleString()} citations</span>
+                          {activeNode.tags?.length > 0 && (
+                            <span className="px-2 py-0.5 border-2 border-[#0058be]/30 text-[#4A90E2] text-[11px] font-bold uppercase tracking-wide rounded-none bg-[#0058be]/5">{activeNode.tags.length} tags</span>
+                          )}
                         </div>
-                        <span className="text-[10px] text-gray-500 font-bold uppercase">Change</span>
-                      </button>
-                      <div className="absolute top-full left-0 mt-1 w-full bg-[#1e1e1e] border-2 border-gray-800 hidden group-hover:block shadow-2xl max-h-48 overflow-y-auto scrollbar-thin rounded-none z-[100]" data-lenis-prevent="true">
-                        {collections.length === 0 ? (
-                          <div className="p-4 text-xs text-gray-500 font-bold uppercase tracking-widest text-center">No collections</div>
-                        ) : (
-                          collections.map(c => (
-                            <button
-                              key={c.id}
-                              onClick={async () => {
-                                try {
-                                  await collectionService.addBookmarkToCollection(c.id, activeNode.bookmarkId);
-                                  fetchCollections();
-                                } catch (err) {
-                                  console.error('Failed:', err);
-                                }
-                              }}
-                              className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-[#0058be] group/item transition-colors"
-                            >
-                              <Folder className="w-4 h-4 text-gray-500 group-hover/item:text-white" />
-                              <span className="text-sm font-semibold text-gray-400 group-hover/item:text-white">{c.name}</span>
-                            </button>
-                          ))
-                        )}
+
                       </div>
                     </div>
-                  </div>
+
+                    {/* Fixed bottom controls of Top Details */}
+                    <div className="shrink-0 p-5 bg-[#151515] border-t-2 border-gray-800 relative z-50">
+                      <div className="flex gap-2 mb-6">
+                        {activeNode.url && activeNode.url !== '#' && (
+                          <a
+                            href={activeNode.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="h-10 flex-1 flex justify-center items-center gap-2 px-4 bg-[#1e1e1e] hover:bg-[#252525] text-white text-[11px] font-black uppercase tracking-widest transition-colors border-2 border-gray-700 hover:border-gray-500 rounded-none"
+                          >
+                            <ExternalLink className="w-4 h-4" /> Open
+                          </a>
+                        )}
+                        <button
+                          onClick={() => handleDelete(activeNode.bookmarkId)}
+                          disabled={deleting === activeNode.bookmarkId}
+                          className="h-10 flex-1 flex justify-center items-center gap-2 px-4 bg-[#1e1e1e] hover:bg-red-500/10 text-red-500 text-[11px] font-black uppercase tracking-widest transition-colors border-2 border-gray-700 hover:border-red-500/50 rounded-none"
+                          title="Remove bookmark"
+                        >
+                          {deleting === activeNode.bookmarkId ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-3.5 h-3.5" />
+                          )}
+                          Remove
+                        </button>
+                      </div>
+
+                      <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 block">Collection</span>
+                      <div className="relative group">
+                        <button className="w-full flex items-center justify-between px-4 py-3 bg-[#1e1e1e] border-2 border-gray-800 hover:border-gray-600 transition-colors text-left rounded-none">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Folder className="w-4 h-4 text-[#0058be] shrink-0" />
+                            <span className="text-sm font-semibold text-gray-300 truncate">
+                              {selectedCollectionId
+                                ? collections.find(c => c.id === selectedCollectionId)?.name || 'All Bookmarks'
+                                : 'All Bookmarks'}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-gray-500 font-bold uppercase">Change</span>
+                        </button>
+                        <div className="absolute top-full left-0 mt-1 w-full bg-[#1e1e1e] border-2 border-gray-800 hidden group-hover:block shadow-2xl max-h-48 overflow-y-auto scrollbar-thin rounded-none z-[100]" data-lenis-prevent="true">
+                          {collections.length === 0 ? (
+                            <div className="p-4 text-xs text-gray-500 font-bold uppercase tracking-widest text-center">No collections</div>
+                          ) : (
+                            collections.map(c => (
+                              <button
+                                key={c.id}
+                                onClick={async () => {
+                                  try {
+                                    await collectionService.addBookmarkToCollection(c.id, activeNode.bookmarkId);
+                                    fetchCollections();
+                                  } catch (err) {
+                                    console.error('Failed:', err);
+                                  }
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-[#0058be] group/item transition-colors"
+                              >
+                                <Folder className="w-4 h-4 text-gray-500 group-hover/item:text-white" />
+                                <span className="text-sm font-semibold text-gray-400 group-hover/item:text-white">{c.name}</span>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* BOTTOM CONNECTIONS */}
@@ -776,7 +776,7 @@ export default function BookmarksPage() {
               <h3 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
                 <FolderPlus className="w-4 h-4 text-[#0058be]" /> Create Collection
               </h3>
-              <button 
+              <button
                 onClick={() => setIsCreateModalOpen(false)}
                 className="text-gray-500 hover:text-white transition-colors"
               >
@@ -847,7 +847,7 @@ export default function BookmarksPage() {
               <h3 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
                 <Trash2 className="w-4 h-4 text-red-500" /> Delete Collection
               </h3>
-              <button 
+              <button
                 onClick={() => setDeleteModalCollection(null)}
                 className="text-gray-500 hover:text-white transition-colors"
               >

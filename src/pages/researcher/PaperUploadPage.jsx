@@ -24,16 +24,21 @@ import {
   Highlighter,
   Info,
   RotateCcw,
+  ShieldCheck,
+  AlertTriangle,
+  Calendar,
 } from 'lucide-react';
 import { paperUploadService } from '@/services/paperUploadService';
 import { topicService } from '@/services/topicService';
 import { useMyUploads } from '@/hooks/useMyUploads';
 import { PAPER_STATUS, PAPER_STATUS_LABELS, PAPER_STATUS_STYLES } from '@/constants/paperStatus';
+import { LICENSE_OPTIONS, PUBLICATION_TYPE_OPTIONS } from '@/constants/paperOptions';
 import { useAuth } from '@/contexts/AuthContext';
 import PageHeader from '@/components/ui/PageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Toast from '@/components/ui/Toast';
 import PaperPreviewModal from '@/components/modals/PaperPreviewModal';
+import TermsModal from '@/components/modals/TermsModal';
 
 // ─── Background grid ─────────────────────────────────────────────────────────
 function PageBackground() {
@@ -445,9 +450,18 @@ function UploadPaperForm({ onSuccess }) {
     collab: [],
     journals: [],
     keywords: [],
+    license: 'CC_BY',
+    publicationType: 'ORIGINAL_THESIS',
+    embargoUntil: '',
+    ownershipConfirmed: false,
+    termsAccepted: false,
   });
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const [showTermsModal, setShowTermsModal] = useState(false);
+
+  // Minimum date for embargo picker (tomorrow onwards)
+  const minEmbargoDate = new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
   const handleChange = (field) => (e) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -475,6 +489,14 @@ function UploadPaperForm({ onSuccess }) {
       setFormError('At least one keyword is required.');
       return;
     }
+    if (!form.ownershipConfirmed) {
+      setFormError('You must confirm ownership/rights to publish this paper.');
+      return;
+    }
+    if (!form.termsAccepted) {
+      setFormError('You must agree to the Terms of Service to proceed.');
+      return;
+    }
 
     setFormError('');
     setSubmitting(true);
@@ -492,11 +514,25 @@ function UploadPaperForm({ onSuccess }) {
         journals: form.journals,
         keywords: form.keywords,
         year: new Date().getFullYear(),
-        // paperUri is omitted — system-generated on approval
+        license: form.license,
+        publicationType: form.publicationType,
+        ownershipConfirmed: true,
+        termsAccepted: true,
+        embargoUntil: form.embargoUntil ? form.embargoUntil : null,
       });
 
       // Reset form
-      setForm({ title: '', collab: [], journals: [], keywords: [] });
+      setForm({
+        title: '',
+        collab: [],
+        journals: [],
+        keywords: [],
+        license: 'CC_BY',
+        publicationType: 'ORIGINAL_THESIS',
+        embargoUntil: '',
+        ownershipConfirmed: false,
+        termsAccepted: false,
+      });
       if (abstractRef.current) abstractRef.current.innerHTML = '';
 
       onSuccess('Paper submitted successfully and is now awaiting review.');
@@ -511,98 +547,222 @@ function UploadPaperForm({ onSuccess }) {
     'w-full bg-[#1e1e1e] border-2 border-gray-800 text-white text-sm px-3 py-1.5 focus:border-[#0058be] focus:outline-none transition-colors placeholder-gray-600';
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      {/* Title */}
-      <div>
-        <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
-          <FileText className="w-3.5 h-3.5" />
-          Title <span className="text-red-400">*</span>
-        </label>
-        <input
-          id="paper-title"
-          type="text"
-          value={form.title}
-          onChange={handleChange('title')}
-          placeholder="Enter research paper title"
-          required
-          className={inputClass}
+    <>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Title */}
+        <div>
+          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
+            <FileText className="w-3.5 h-3.5" />
+            Title <span className="text-red-400">*</span>
+          </label>
+          <input
+            id="paper-title"
+            type="text"
+            value={form.title}
+            onChange={handleChange('title')}
+            placeholder="Enter research paper title"
+            required
+            className={inputClass}
+          />
+        </div>
+
+        {/* License & Publication Type (Grid) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* License */}
+          <div>
+            <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              License <span className="text-red-400">*</span>
+            </label>
+            <select
+              value={form.license}
+              onChange={handleChange('license')}
+              className={`${inputClass} cursor-pointer`}
+            >
+              {LICENSE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Publication Type */}
+          <div>
+            <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
+              <BookOpen className="w-3.5 h-3.5" />
+              Publication Type <span className="text-red-400">*</span>
+            </label>
+            <select
+              value={form.publicationType}
+              onChange={handleChange('publicationType')}
+              className={`${inputClass} cursor-pointer`}
+            >
+              {PUBLICATION_TYPE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Warning banner for PREVIOUSLY_PUBLISHED */}
+        <AnimatePresence>
+          {form.publicationType === 'PREVIOUSLY_PUBLISHED' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="p-3 border-2 border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs flex items-start gap-2.5"
+            >
+              <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-400" />
+              <span>
+                Warning: For previously published papers, ensure you hold the rights or have publisher permission to share this work online.
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Embargo Date Picker */}
+        <div>
+          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
+            <Calendar className="w-3.5 h-3.5" />
+            Embargo Until (Optional)
+          </label>
+          <input
+            type="date"
+            min={minEmbargoDate}
+            value={form.embargoUntil}
+            onChange={handleChange('embargoUntil')}
+            className={inputClass}
+          />
+          <p className="text-[10px] text-gray-600 mt-0.5">
+            Select a future date if the paper must be embargoed before public access.
+          </p>
+        </div>
+
+        {/* Abstract — rich text editor */}
+        <AbstractEditor editorRef={abstractRef} required />
+
+        {/* Collab */}
+        <TagInput
+          label="Collab"
+          icon={Users}
+          values={form.collab}
+          onChange={(collab) => setForm((prev) => ({ ...prev, collab }))}
+          placeholder="Add collaborator gmail and press Enter..."
+          required={false}
+          validate={(val) => val.toLowerCase().endsWith('@gmail.com')}
+          validationMessage="Collaborator must be a @gmail.com address"
         />
-      </div>
 
-      {/* Abstract — rich text editor */}
-      <AbstractEditor editorRef={abstractRef} required />
+        {/* Journals */}
+        <TagInput
+          label="Journals / Conferences"
+          icon={BookOpen}
+          values={form.journals}
+          onChange={(journals) => setForm((prev) => ({ ...prev, journals }))}
+          placeholder="Type journal or conference name..."
+          required
+          hint="Journals are curated by administrators. Type to suggest a journal."
+        />
 
-      {/* Collab */}
-      <TagInput
-        label="Collab"
-        icon={Users}
-        values={form.collab}
-        onChange={(collab) => setForm((prev) => ({ ...prev, collab }))}
-        placeholder="Add collaborator gmail and press Enter..."
-        required={false}
-        validate={(val) => val.toLowerCase().endsWith('@gmail.com')}
-        validationMessage="Collaborator must be a @gmail.com address"
-      />
+        {/* Keywords */}
+        <AsyncTagInput
+          label="Keywords / Topics"
+          icon={Tag}
+          values={form.keywords}
+          onChange={(keywords) => setForm((prev) => ({ ...prev, keywords }))}
+          placeholder="Add keyword or topic..."
+          required
+          hint="Type to search existing topics. If not found, you can create a new one."
+          fetchSuggestions={(query) => topicService.searchTopics(query)}
+        />
 
-      {/* Journals */}
-      <TagInput
-        label="Journals / Conferences"
-        icon={BookOpen}
-        values={form.journals}
-        onChange={(journals) => setForm((prev) => ({ ...prev, journals }))}
-        placeholder="Type journal or conference name..."
-        required
-        hint="Journals are curated by administrators. Type to suggest a journal."
-      />
+        {/* Checkboxes Section */}
+        <div className="space-y-2 pt-2 border-t border-gray-800">
+          <label className="flex items-start gap-2.5 cursor-pointer text-xs text-gray-300">
+            <input
+              type="checkbox"
+              checked={form.ownershipConfirmed}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, ownershipConfirmed: e.target.checked }))
+              }
+              className="mt-0.5 rounded-none border-gray-800 bg-[#1e1e1e] text-[#0058be] focus:ring-0 focus:ring-offset-0"
+            />
+            <span>
+              I confirm that I am the author or have legal rights to publish this paper. <span className="text-red-400">*</span>
+            </span>
+          </label>
 
-      {/* Keywords */}
-      <AsyncTagInput
-        label="Keywords / Topics"
-        icon={Tag}
-        values={form.keywords}
-        onChange={(keywords) => setForm((prev) => ({ ...prev, keywords }))}
-        placeholder="Add keyword or topic..."
-        required
-        hint="Type to search existing topics. If not found, you can create a new one."
-        fetchSuggestions={(query) => topicService.searchTopics(query)}
-      />
+          <label className="flex items-start gap-2.5 cursor-pointer text-xs text-gray-300">
+            <input
+              type="checkbox"
+              checked={form.termsAccepted}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, termsAccepted: e.target.checked }))
+              }
+              className="mt-0.5 rounded-none border-gray-800 bg-[#1e1e1e] text-[#0058be] focus:ring-0 focus:ring-offset-0"
+            />
+            <span>
+              I have read and agree to the{' '}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowTermsModal(true);
+                }}
+                className="text-[#5ba3ff] underline hover:text-[#7cb6ff] transition-colors font-semibold"
+              >
+                Terms of Service
+              </button>
+              . <span className="text-red-400">*</span>
+            </span>
+          </label>
+        </div>
 
-      {/* Error */}
-      <AnimatePresence>
-        {formError && (
-          <motion.p
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="text-sm text-red-400 flex items-center gap-2"
-          >
-            <XCircle className="w-4 h-4 flex-shrink-0" />
-            {formError}
-          </motion.p>
-        )}
-      </AnimatePresence>
+        {/* Error */}
+        <AnimatePresence>
+          {formError && (
+            <motion.p
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="text-sm text-red-400 flex items-center gap-2"
+            >
+              <XCircle className="w-4 h-4 flex-shrink-0" />
+              {formError}
+            </motion.p>
+          )}
+        </AnimatePresence>
 
-      {/* Submit */}
-      <motion.button
-        type="submit"
-        disabled={submitting}
-        whileHover={{ scale: 1.02, y: -1 }}
-        whileTap={{ scale: 0.98 }}
-        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#0058be] hover:bg-[#004395] border-2 border-transparent text-white text-[11px] font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {submitting ? (
-          <RefreshCw className="w-4 h-4 animate-spin" />
-        ) : (
-          <Upload className="w-4 h-4" />
-        )}
-        {submitting ? 'Submitting...' : 'Submit for Review'}
-      </motion.button>
-    </form>
+        {/* Submit */}
+        <motion.button
+          type="submit"
+          disabled={submitting || !form.ownershipConfirmed || !form.termsAccepted}
+          whileHover={{ scale: 1.02, y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#0058be] hover:bg-[#004395] border-2 border-transparent text-white text-[11px] font-black uppercase tracking-widest transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {submitting ? (
+            <RefreshCw className="w-4 h-4 animate-spin" />
+          ) : (
+            <Upload className="w-4 h-4" />
+          )}
+          {submitting ? 'Submitting...' : 'Submit for Review'}
+        </motion.button>
+      </form>
+
+      <TermsModal isOpen={showTermsModal} onClose={() => setShowTermsModal(false)} />
+    </>
   );
 }
 
 // ─── Paper row ────────────────────────────────────────────────────────────────
 function PaperRow({ paper, index, onPreview }) {
+  const isEmbargoed = paper.embargoUntil && new Date(paper.embargoUntil) > new Date();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -614,6 +774,12 @@ function PaperRow({ paper, index, onPreview }) {
         <p className="text-sm font-bold text-white truncate leading-snug">{paper.title}</p>
         <div className="flex flex-wrap items-center gap-2 mt-1">
           <StatusBadge status={paper.status} />
+          {isEmbargoed && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/30">
+              <Clock className="w-3 h-3" />
+              Embargoed until {paper.embargoUntil}
+            </span>
+          )}
           {paper.authors?.length > 0 && (
             <span className="text-[10px] text-gray-500">
               {paper.authors.map((a) => a.name || a).slice(0, 3).join(', ')}

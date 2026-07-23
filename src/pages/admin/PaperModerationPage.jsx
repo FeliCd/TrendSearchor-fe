@@ -431,7 +431,7 @@ function HistoryPaperCard({ paper, index, onPreview, onRevoke, onReview }) {
         </div>
 
         <div className="flex flex-col gap-2 flex-shrink-0">
-          {paper.status === PAPER_STATUS.REVOKED ? (
+          {paper.status === PAPER_STATUS.REVOKED && (
             <button
               onClick={() => onReview(paper)}
               className="flex items-center gap-1.5 px-3 py-2 border-2 border-[#0058be] bg-[#0058be]/10 text-[#5ba3ff] text-[10px] font-black uppercase tracking-widest hover:bg-[#0058be] hover:text-white transition-all"
@@ -439,7 +439,8 @@ function HistoryPaperCard({ paper, index, onPreview, onRevoke, onReview }) {
               <ShieldCheck className="w-3.5 h-3.5" />
               Review
             </button>
-          ) : (
+          )}
+          {paper.status === PAPER_STATUS.APPROVED && (
             <button
               onClick={() => onRevoke(paper)}
               className="flex items-center gap-1.5 px-3 py-2 border-2 border-red-500/30 bg-red-500/5 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
