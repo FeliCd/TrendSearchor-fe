@@ -74,18 +74,10 @@ export default function ResearcherDashboardPage() {
     >
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div onClick={() => navigate('/researcher/search')} className="cursor-pointer transition-transform hover:scale-[1.01]">
-          <StatCard label="Total Publications" value={loading ? '...' : formatNumber(stats?.totalPapers)} icon={Database} color="text-[#0058be]" bg="bg-[#0058be]/10" />
-        </div>
-        <div onClick={() => navigate('/researcher/trends')} className="cursor-pointer transition-transform hover:scale-[1.01]">
-          <StatCard label="Indexed Journals" value={loading ? '...' : formatNumber(stats?.totalJournals)} icon={BookOpen} color="text-emerald-500" bg="bg-emerald-500/10" />
-        </div>
-        <div onClick={() => navigate('/researcher/trends')} className="cursor-pointer transition-transform hover:scale-[1.01]">
-          <StatCard label="Research Domains" value={loading ? '...' : formatNumber(stats?.totalKeywords)} icon={Layers} color="text-purple-500" bg="bg-purple-500/10" />
-        </div>
-        <div onClick={() => navigate('/researcher/search')} className="cursor-pointer transition-transform hover:scale-[1.01]">
-          <StatCard label="Total Authors" value={loading ? '...' : formatNumber(stats?.totalAuthors)} icon={TrendingUp} color="text-amber-500" bg="bg-amber-500/10" />
-        </div>
+        <StatCard label="Total Publications" value={loading ? '...' : formatNumber(stats?.totalPapers)} icon={Database} color="text-[#0058be]" bg="bg-[#0058be]/10" />
+        <StatCard label="Indexed Journals" value={loading ? '...' : formatNumber(stats?.totalJournals)} icon={BookOpen} color="text-emerald-500" bg="bg-emerald-500/10" />
+        <StatCard label="Research Domains" value={loading ? '...' : formatNumber(stats?.totalKeywords)} icon={Layers} color="text-purple-500" bg="bg-purple-500/10" />
+        <StatCard label="Total Authors" value={loading ? '...' : formatNumber(stats?.totalAuthors)} icon={TrendingUp} color="text-amber-500" bg="bg-amber-500/10" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
