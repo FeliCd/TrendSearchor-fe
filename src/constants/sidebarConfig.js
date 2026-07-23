@@ -11,6 +11,7 @@ import {
   UserCircle,
   Upload,
   ClipboardCheck,
+  Settings,
 } from 'lucide-react';
 
 const ACADEMIC_CONFIG = {
@@ -38,6 +39,7 @@ export const ROLE_SIDEBAR_CONFIG = {
     navItems: [
       { to: '/admin/users', label: 'User Management', icon: Users, end: false },
       { to: '/admin/papers/pending', label: 'Paper Moderation', icon: ClipboardCheck },
+      { to: '/admin/config', label: 'Configuration', icon: Settings },
       { to: '/admin/profile', label: 'My Profile', icon: UserCircle },
     ],
   },

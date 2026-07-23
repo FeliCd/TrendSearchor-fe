@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileText,
   Users,
@@ -10,10 +10,15 @@ import {
   Link2,
   ChevronLeft,
   Calendar,
+  Flag,
 } from 'lucide-react';
 import { searchService } from '@/services/searchService';
+import { useAuth } from '@/contexts/AuthContext';
+import { LICENSE_BADGE_LABELS, LICENSE_BADGE_STYLES } from '@/constants/paperOptions';
 import PageHeader from '@/components/ui/PageHeader';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import Toast from '@/components/ui/Toast';
+import CopyrightReportModal from '@/components/modals/CopyrightReportModal';
 
 const ABSTRACT_STYLES = `
   .paper-article ul { list-style-type: disc; padding-left: 1.25rem; margin: 0.5rem 0; }
@@ -41,9 +46,18 @@ function PageBackground() {
 export default function PaperDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
   const [paper, setPaper] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
+  };
 
   useEffect(() => {
     const fetchPaper = async () => {
@@ -52,7 +66,7 @@ export default function PaperDetailsPage() {
         const data = await searchService.getPaper(id);
         setPaper(data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to fetch paper details.');
+        setError(err.response?.data?.message || 'The requested paper could not be found.');
       } finally {
         setLoading(false);
       }
@@ -80,7 +94,9 @@ export default function PaperDetailsPage() {
           <FileText className="w-8 h-8 text-red-400" />
         </div>
         <h2 className="text-xl font-bold text-white mb-2">Paper Not Found</h2>
-        <p className="text-gray-500 mb-6">{error || 'The requested paper could not be found.'}</p>
+        <p className="text-gray-500 max-w-md mb-6">
+          {error || 'The requested paper could not be found. It may be under embargo, removed due to copyright, or does not exist.'}
+        </p>
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 px-6 py-2.5 bg-[#1e1e1e] border-2 border-gray-800 text-gray-300 hover:text-white hover:border-gray-600 transition-all font-black uppercase tracking-widest text-xs"
@@ -100,6 +116,10 @@ export default function PaperDetailsPage() {
     <div className="min-h-screen bg-[#151515] relative">
       <PageBackground />
       <style>{ABSTRACT_STYLES}</style>
+
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
+      )}
 
       <div className="relative z-10 w-full max-w-[95%] mx-auto pb-20">
         {/* Navigation Bar */}
@@ -130,6 +150,18 @@ export default function PaperDetailsPage() {
                     </span>
                   );
                 })}
+
+                {/* License Badge */}
+                {paper.license && (
+                  <span
+                    className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-widest ${
+                      LICENSE_BADGE_STYLES[paper.license] ||
+                      'bg-gray-500/10 text-gray-400 border border-gray-500/30'
+                    }`}
+                  >
+                    {LICENSE_BADGE_LABELS[paper.license] || paper.license}
+                  </span>
+                )}
               </div>
               
               <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight mb-6">
@@ -175,9 +207,9 @@ export default function PaperDetailsPage() {
                 </div>
               </div>
 
-              {/* Source Link */}
-              {paper.paperUri && (
-                <div className="mt-6 pt-6 border-t border-gray-800">
+              {/* Action Buttons Row */}
+              <div className="mt-6 pt-6 border-t border-gray-800 flex flex-wrap items-center gap-3">
+                {paper.paperUri && (
                   <a
                     href={paper.paperUri}
                     target="_blank"
@@ -187,8 +219,19 @@ export default function PaperDetailsPage() {
                     <Link2 className="w-4 h-4" />
                     Access Original Source
                   </a>
-                </div>
-              )}
+                )}
+
+                {isAuthenticated && (
+                  <button
+                    type="button"
+                    onClick={() => setShowReportModal(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border-2 border-red-500/30 text-red-400 hover:text-red-300 text-xs font-black uppercase tracking-widest transition-colors"
+                  >
+                    <Flag className="w-4 h-4" />
+                    Report Copyright Violation
+                  </button>
+                )}
+              </div>
             </header>
 
             {/* Article Body */}
@@ -230,6 +273,15 @@ export default function PaperDetailsPage() {
           </motion.article>
         </div>
       </div>
+
+      {/* Copyright Report Modal */}
+      <CopyrightReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        paperId={paper.id || paper.externalId || id}
+        paperTitle={paper.title}
+        onSuccess={(msg) => showToast(msg, 'success')}
+      />
     </div>
   );
 }
