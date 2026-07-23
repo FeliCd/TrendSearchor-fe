@@ -55,7 +55,6 @@ export const ROLE_SIDEBAR_CONFIG = {
       { to: '/researcher', label: 'Dashboard', icon: LayoutDashboard, end: true },
       { to: '/researcher/search', label: 'Search Papers', icon: Search },
       { to: '/researcher/trends', label: 'Trends', icon: TrendingUp },
-      { to: '/researcher/analytics', label: 'Analytics', icon: BarChart2, comingSoon: true },
       { to: '/researcher/bookmarks', label: 'Bookmarks', icon: BookOpen },
       { to: '/researcher/upload', label: 'Upload Paper', icon: Upload },
       { to: '/researcher/profile', label: 'My Profile', icon: UserCircle },
