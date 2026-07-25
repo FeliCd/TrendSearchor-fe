@@ -30,8 +30,22 @@ import { ROLES } from '@/constants/roles';
 export default function SearchChatbot() {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const userId = user?.id || user?.mail || user?.email || 'guest';
+  const messagesKey = `ts_chatbot_messages_${userId}`;
+  const openKey = `ts_chatbot_open_${userId}`;
+
+  const defaultWelcomeMessage = [
+    {
+      id: 'welcome',
+      sender: 'bot',
+      text: 'Hello! I am your AI Search assistant. Ask me to find papers in natural language. For example:\n\n"Find papers about deep learning by Yann LeCun in Nature in 2021"',
+      type: 'text'
+    }
+  ];
+
   const [isOpen, setIsOpen] = useState(() => {
-    const saved = sessionStorage.getItem('ts_chatbot_open');
+    const saved = sessionStorage.getItem(openKey);
     return saved === 'true';
   });
   const [input, setInput] = useState('');
@@ -59,18 +73,20 @@ export default function SearchChatbot() {
     }
   };
 
-  // Chat message history
+  // Chat message history (scoped per user)
   const [messages, setMessages] = useState(() => {
-    const saved = sessionStorage.getItem('ts_chatbot_messages');
-    return saved ? JSON.parse(saved) : [
-      {
-        id: 'welcome',
-        sender: 'bot',
-        text: 'Hello! I am your AI Search assistant. Ask me to find papers in natural language. For example:\n\n"Find papers about deep learning by Yann LeCun in Nature in 2021"',
-        type: 'text'
-      }
-    ];
+    const saved = sessionStorage.getItem(messagesKey);
+    return saved ? JSON.parse(saved) : defaultWelcomeMessage;
   });
+
+  // Reload history if active user changes (e.g. log out / switch account)
+  useEffect(() => {
+    const savedMessages = sessionStorage.getItem(messagesKey);
+    setMessages(savedMessages ? JSON.parse(savedMessages) : defaultWelcomeMessage);
+
+    const savedOpen = sessionStorage.getItem(openKey);
+    setIsOpen(savedOpen === 'true');
+  }, [userId]);
 
   const messagesEndRef = useRef(null);
   const abortRef = useRef(false);
@@ -78,14 +94,16 @@ export default function SearchChatbot() {
   const handleClearChat = () => {
     abortRef.current = true;
     setLoading(false);
-    setMessages([
+    const newWelcome = [
       {
         id: 'welcome-' + Date.now(),
         sender: 'bot',
         text: 'Hello! I am your AI Search assistant. Ask me to find papers in natural language. For example:\n\n"Find papers about deep learning by Yann LeCun in Nature in 2021"',
         type: 'text'
       }
-    ]);
+    ];
+    setMessages(newWelcome);
+    sessionStorage.setItem(messagesKey, JSON.stringify(newWelcome));
   };
 
   const handleStopGeneration = () => {
@@ -102,14 +120,18 @@ export default function SearchChatbot() {
     });
   };
 
-  // Sync state to sessionStorage
+  // Sync state to sessionStorage per user
   useEffect(() => {
-    sessionStorage.setItem('ts_chatbot_messages', JSON.stringify(messages));
-  }, [messages]);
+    if (userId) {
+      sessionStorage.setItem(messagesKey, JSON.stringify(messages));
+    }
+  }, [messages, messagesKey, userId]);
 
   useEffect(() => {
-    sessionStorage.setItem('ts_chatbot_open', String(isOpen));
-  }, [isOpen]);
+    if (userId) {
+      sessionStorage.setItem(openKey, String(isOpen));
+    }
+  }, [isOpen, openKey, userId]);
 
   // Auto scroll to bottom of chat
   useEffect(() => {
