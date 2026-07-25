@@ -22,6 +22,7 @@ export const authService = {
       console.error('Logout error:', err);
     } finally {
       localStorage.removeItem('accessToken');
+      sessionStorage.clear();
     }
   },
 

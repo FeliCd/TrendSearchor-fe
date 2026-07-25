@@ -4,6 +4,7 @@ import { MousePointerClick, FolderPlus, X, Folder, Loader2, Bookmark, User, Book
 import { searchService } from '@/services/searchService';
 import { bookmarkService } from '@/services/bookmarkService';
 import { collectionService } from '@/services/collectionService';
+import { useAuth } from '@/contexts/AuthContext';
 import PaperPreview from '@/components/ui/PaperPreview';
 import Toast from '@/components/ui/Toast';
 import PageHeader from '@/components/ui/PageHeader';
@@ -12,6 +13,10 @@ import PaperResults from '@/components/papers/PaperResults';
 import { useLenis } from '@/providers/LenisProvider';
 
 export default function PaperSearchPage() {
+  const { user } = useAuth();
+  const userId = user?.id || user?.mail || user?.email || 'guest';
+  const prefix = `ts_search_${userId}_`;
+
   const navigate = useNavigate();
   const location = useLocation();
   const role = location.pathname.startsWith('/researcher') ? 'researcher' : 'academic';
@@ -28,27 +33,27 @@ export default function PaperSearchPage() {
     return () => { cleanupRef.current?.(); };
   }, [initScroller]);
 
-  const [query, setQuery] = useState(() => urlQuery || sessionStorage.getItem('ts_search_query') || '');
+  const [query, setQuery] = useState(() => urlQuery || sessionStorage.getItem(`${prefix}query`) || sessionStorage.getItem('ts_search_query') || '');
   const [papers, setPapers] = useState(() => {
-    const saved = sessionStorage.getItem('ts_search_papers');
+    const saved = sessionStorage.getItem(`${prefix}papers`) || sessionStorage.getItem('ts_search_papers');
     return saved ? JSON.parse(saved) : [];
   });
-  const [total, setTotal] = useState(() => parseInt(sessionStorage.getItem('ts_search_total') || '0', 10));
-  const [page, setPage] = useState(() => parseInt(sessionStorage.getItem('ts_search_page') || '0', 10));
+  const [total, setTotal] = useState(() => parseInt(sessionStorage.getItem(`${prefix}total`) || sessionStorage.getItem('ts_search_total') || '0', 10));
+  const [page, setPage] = useState(() => parseInt(sessionStorage.getItem(`${prefix}page`) || sessionStorage.getItem('ts_search_page') || '0', 10));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
   const [loadingBookmarks, setLoadingBookmarks] = useState(false);
-  const [totalPages, setTotalPages] = useState(() => parseInt(sessionStorage.getItem('ts_search_totalPages') || '0', 10));
+  const [totalPages, setTotalPages] = useState(() => parseInt(sessionStorage.getItem(`${prefix}totalPages`) || sessionStorage.getItem('ts_search_totalPages') || '0', 10));
   const [filters, setFilters] = useState(() => {
-    const saved = sessionStorage.getItem('ts_search_filters');
+    const saved = sessionStorage.getItem(`${prefix}filters`) || sessionStorage.getItem('ts_search_filters');
     return saved ? JSON.parse(saved) : { yearFrom: '', yearTo: '', sortBy: 'relevance', author: '', journal: '' };
   });
-  const [hasSearched, setHasSearched] = useState(() => sessionStorage.getItem('ts_search_hasSearched') === 'true');
+  const [hasSearched, setHasSearched] = useState(() => (sessionStorage.getItem(`${prefix}hasSearched`) || sessionStorage.getItem('ts_search_hasSearched')) === 'true');
   const [toast, setToast] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
   const [selectedPaper, setSelectedPaper] = useState(() => {
-    const saved = sessionStorage.getItem('ts_search_selectedPaper');
+    const saved = sessionStorage.getItem(`${prefix}selectedPaper`) || sessionStorage.getItem('ts_search_selectedPaper');
     return saved ? JSON.parse(saved) : null;
   });
 
@@ -56,17 +61,18 @@ export default function PaperSearchPage() {
   const [savingToCollectionPaper, setSavingToCollectionPaper] = useState(null);
   const [savingToCollectionId, setSavingToCollectionId] = useState(null);
 
+  // Sync state to user-specific sessionStorage
   useEffect(() => {
-    sessionStorage.setItem('ts_search_query', query);
-    sessionStorage.setItem('ts_search_papers', JSON.stringify(papers));
-    sessionStorage.setItem('ts_search_total', total.toString());
-    sessionStorage.setItem('ts_search_page', page.toString());
-    sessionStorage.setItem('ts_search_totalPages', totalPages.toString());
-    sessionStorage.setItem('ts_search_filters', JSON.stringify(filters));
-    sessionStorage.setItem('ts_search_hasSearched', hasSearched.toString());
-    if (selectedPaper) sessionStorage.setItem('ts_search_selectedPaper', JSON.stringify(selectedPaper));
-    else sessionStorage.removeItem('ts_search_selectedPaper');
-  }, [query, papers, total, page, totalPages, filters, hasSearched, selectedPaper]);
+    sessionStorage.setItem(`${prefix}query`, query);
+    sessionStorage.setItem(`${prefix}papers`, JSON.stringify(papers));
+    sessionStorage.setItem(`${prefix}total`, total.toString());
+    sessionStorage.setItem(`${prefix}page`, page.toString());
+    sessionStorage.setItem(`${prefix}totalPages`, totalPages.toString());
+    sessionStorage.setItem(`${prefix}filters`, JSON.stringify(filters));
+    sessionStorage.setItem(`${prefix}hasSearched`, hasSearched.toString());
+    if (selectedPaper) sessionStorage.setItem(`${prefix}selectedPaper`, JSON.stringify(selectedPaper));
+    else sessionStorage.removeItem(`${prefix}selectedPaper`);
+  }, [prefix, query, papers, total, page, totalPages, filters, hasSearched, selectedPaper]);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
