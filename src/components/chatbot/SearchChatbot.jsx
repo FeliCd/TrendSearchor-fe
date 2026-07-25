@@ -257,7 +257,7 @@ export default function SearchChatbot() {
           return [...filtered, {
             id: 'error-' + Date.now(),
             sender: 'bot',
-            text: `Lỗi từ Backend khi tìm kiếm bài báo: ${errorMsg}`,
+            text: `${errorMsg}`,
             type: 'text'
           }];
         });
