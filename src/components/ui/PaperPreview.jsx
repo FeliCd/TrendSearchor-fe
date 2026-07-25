@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ExternalLink, Bookmark, X, BookOpen, Users, Tag, FileText, Award, Globe, Bold, Italic, Underline as UnderlineIcon, Loader2, FolderPlus, Sparkles } from 'lucide-react';
+import { ExternalLink, Bookmark, X, BookOpen, Users, Tag, FileText, Award, Globe, Bold, Italic, Underline as UnderlineIcon, Loader2, FolderPlus, Sparkles, AlertCircle } from 'lucide-react';
 import { useLenis } from '@/providers/LenisProvider';
 import { noteService } from '@/services/noteService';
 import { aiService } from '@/services/aiService';
@@ -10,6 +10,7 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
   const [noteSaving, setNoteSaving] = useState(false);
   const [aiSummary, setAiSummary] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
   const [showAllAuthors, setShowAllAuthors] = useState(false);
   const [showAllKeywords, setShowAllKeywords] = useState(false);
   const editorRef = useRef(null);
@@ -41,16 +42,20 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
       if (editorRef.current) editorRef.current.innerHTML = '';
     }
     setAiSummary(null);
+    setAiError(null);
   }, [paper]);
 
   const handleGenerateAiSummary = async () => {
     if (!paper) return;
     setAiLoading(true);
+    setAiError(null);
     try {
       const summary = await aiService.summarizePaper(paper);
       setAiSummary(summary);
     } catch (err) {
       console.error('Failed to generate AI summary:', err);
+      const msg = err.response?.data?.message || err.message || 'Failed to generate AI summary.';
+      setAiError(msg);
     } finally {
       setAiLoading(false);
     }
@@ -259,6 +264,15 @@ export default function PaperPreview({ paper, isBookmarked, isToggling, onBookma
               {aiLoading ? 'Analyzing...' : aiSummary ? 'Regenerate' : 'Generate AI Summary'}
             </button>
           </div>
+
+          {aiError && (
+            <div className="bg-red-500/10 border border-red-500/40 p-3 mt-2 text-xs text-red-400 font-medium flex items-start gap-2 mb-4">
+              <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p>{aiError}</p>
+              </div>
+            </div>
+          )}
 
           {aiSummary && (
             <div className="bg-[#1a1a1a] border border-gray-800 p-4 space-y-3.5 mb-6">

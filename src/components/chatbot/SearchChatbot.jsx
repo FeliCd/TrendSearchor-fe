@@ -18,7 +18,8 @@ import {
   TrendingUp,
   Bookmark,
   Tag,
-  ChevronRight
+  ChevronRight,
+  AlertCircle
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { parseNaturalLanguageQuery } from '@/utils/nlpParser';
@@ -55,19 +56,24 @@ export default function SearchChatbot() {
   const [previewPaper, setPreviewPaper] = useState(null);
   const [aiSummary, setAiSummary] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
 
   useEffect(() => {
     setAiSummary(null);
+    setAiError(null);
   }, [previewPaper]);
 
   const handleGenerateAiSummary = async () => {
     if (!previewPaper) return;
     setAiLoading(true);
+    setAiError(null);
     try {
       const summary = await aiService.summarizePaper(previewPaper);
       setAiSummary(summary);
     } catch (err) {
       console.error('Failed to generate AI summary:', err);
+      const msg = err.response?.data?.message || err.message || 'Failed to generate AI summary.';
+      setAiError(msg);
     } finally {
       setAiLoading(false);
     }
@@ -707,6 +713,15 @@ export default function SearchChatbot() {
                     {aiLoading ? 'Analyzing...' : aiSummary ? 'Regenerate' : 'Generate AI Summary'}
                   </button>
                 </div>
+
+                {aiError && (
+                  <div className="bg-red-500/10 border border-red-500/40 p-3 mt-2 text-xs text-red-400 font-medium flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p>{aiError}</p>
+                    </div>
+                  </div>
+                )}
 
                 {aiSummary && (
                   <div className="bg-[#1a1a1a] border border-gray-800 p-4 space-y-3 mt-2">
