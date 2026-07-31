@@ -12,21 +12,22 @@ import {
   Upload,
   ClipboardCheck,
   Settings,
+  CreditCard,
 } from 'lucide-react';
 
 const ACADEMIC_CONFIG = {
-    roleLabel: 'Academic',
-    subtitle: 'Academic Portal',
-    accentColor: 'emerald-400',
-    avatarBgColor: 'bg-emerald-500',
-    HeaderIcon: GraduationCap,
-    navItems: [
-      { to: '/academic', label: 'Dashboard', icon: LayoutDashboard, end: true },
-      { to: '/academic/search', label: 'Search Papers', icon: Search },
-      { to: '/academic/trends', label: 'Trends', icon: TrendingUp },
-      { to: '/academic/bookmarks', label: 'Bookmarks', icon: BookOpen },
-      { to: '/academic/profile', label: 'My Profile', icon: UserCircle },
-    ],
+  roleLabel: 'Academic',
+  subtitle: 'Academic Portal',
+  accentColor: 'emerald-400',
+  avatarBgColor: 'bg-emerald-500',
+  HeaderIcon: GraduationCap,
+  navItems: [
+    { to: '/academic', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { to: '/academic/search', label: 'Search Papers', icon: Search },
+    { to: '/academic/trends', label: 'Trends', icon: TrendingUp },
+    { to: '/academic/bookmarks', label: 'Bookmarks', icon: BookOpen },
+    { to: '/academic/profile', label: 'My Profile', icon: UserCircle },
+  ],
 };
 
 export const ROLE_SIDEBAR_CONFIG = {
@@ -38,6 +39,7 @@ export const ROLE_SIDEBAR_CONFIG = {
     HeaderIcon: Shield,
     navItems: [
       { to: '/admin/users', label: 'User Management', icon: Users, end: false },
+      { to: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard },
       { to: '/admin/papers/pending', label: 'Paper Moderation', icon: ClipboardCheck },
       { to: '/admin/config', label: 'Configuration', icon: Settings },
       { to: '/admin/profile', label: 'My Profile', icon: UserCircle },
@@ -55,6 +57,7 @@ export const ROLE_SIDEBAR_CONFIG = {
       { to: '/researcher', label: 'Dashboard', icon: LayoutDashboard, end: true },
       { to: '/researcher/search', label: 'Search Papers', icon: Search },
       { to: '/researcher/trends', label: 'Trends', icon: TrendingUp },
+      { to: '/researcher/subscription', label: 'Subscription & Quota', icon: CreditCard },
       { to: '/researcher/analytics', label: 'Analytics', icon: BarChart2, comingSoon: true },
       { to: '/researcher/bookmarks', label: 'Bookmarks', icon: BookOpen },
       { to: '/researcher/upload', label: 'Upload Paper', icon: Upload },
