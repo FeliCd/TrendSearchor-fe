@@ -2,13 +2,15 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import {
   Bookmark, ExternalLink, Network, Search, Hash,
   ArrowRight, BookOpen, Loader2, Trash2, LayoutList,
-  Share2, MousePointerClick, Link2, X
+  Share2, MousePointerClick, Link2, X, AlertTriangle
 } from 'lucide-react';
 import ForceGraph2D from 'react-force-graph-2d';
 import { bookmarkService } from '@/services/bookmarkService';
 import { collectionService } from '@/services/collectionService';
 import PageHeader from '@/components/ui/PageHeader';
 import { Folder, FolderPlus } from 'lucide-react';
+import { PAPER_STATUS_LABELS, PAPER_STATUS_STYLES, isPaperAvailable } from '@/constants/paperStatus';
+
 
 /* ─── Sub-components ──────────────────────────────────────────────── */
 
@@ -149,6 +151,9 @@ export default function BookmarksPage() {
           citations: b.paper.citationCount ?? 0,
           tags: b.paper.keywords || [],
           type: 'PAPER',
+          status: b.paper.status,
+          statusComments: b.paper.statusComments,
+          isAvailable: isPaperAvailable(b.paper.status),
         }
         : {
           id: String(b.id),
@@ -159,6 +164,9 @@ export default function BookmarksPage() {
           citations: 0,
           tags: [b.keyword.displayName || b.keyword.name],
           type: 'KEYWORD',
+          status: null,
+          statusComments: null,
+          isAvailable: true,
         }
       ),
     [rawBookmarks]);
@@ -488,12 +496,27 @@ export default function BookmarksPage() {
                           className={`w-full text-left p-4 border-2 transition-all flex flex-col
                             ${selectedNodeId === node.id
                               ? 'border-[#0058be] bg-[#0058be]/5'
-                              : 'border-gray-800 bg-[#1e1e1e] hover:border-gray-700'}`}
+                              : (!node.isAvailable
+                                ? 'border-red-900/40 bg-red-950/10 hover:border-red-800'
+                                : 'border-gray-800 bg-[#1e1e1e] hover:border-gray-700')}`}
                         >
-                          <h3 className={`text-base font-semibold leading-snug mb-1.5
-                            ${selectedNodeId === node.id ? 'text-[#0058be]' : 'text-white'}`}>
-                            {node.title}
-                          </h3>
+                          <div className="flex items-start justify-between gap-2 mb-1.5">
+                            <h3 className={`text-base font-semibold leading-snug
+                              ${selectedNodeId === node.id ? 'text-[#0058be]' : 'text-white'}`}>
+                              {node.title}
+                            </h3>
+                            {!node.isAvailable && (
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shrink-0 ${PAPER_STATUS_STYLES[node.status] || 'bg-red-500/10 text-red-400 border border-red-500/30'}`}>
+                                {PAPER_STATUS_LABELS[node.status] || node.status || 'REVOKED'}
+                              </span>
+                            )}
+                          </div>
+                          {!node.isAvailable && (
+                            <p className="text-xs text-red-400 mb-2 flex items-center gap-1.5 font-medium">
+                              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                              This paper was removed by moderation and is no longer available.
+                            </p>
+                          )}
                           <div className="flex flex-wrap items-center gap-2 text-xs mb-3 font-medium">
                             <span className="px-2 py-0.5 border-2 border-gray-800 text-gray-300 rounded-none bg-[#1e1e1e]">{node.year}</span>
                             <span className="px-2 py-0.5 border-2 border-[#0058be]/50 text-[#4A90E2] rounded-none bg-[#0058be]/10">{node.citations.toLocaleString()} citations</span>
@@ -615,6 +638,22 @@ export default function BookmarksPage() {
                         <h2 className="text-base font-semibold text-white leading-snug mb-3 line-clamp-3" title={activeNode.title}>
                           {activeNode.title}
                         </h2>
+                        {!activeNode.isAvailable && (
+                          <div className="p-3.5 mb-4 bg-red-950/30 border-2 border-red-900/50 rounded-none text-xs text-red-300">
+                            <div className="flex items-center gap-1.5 font-bold mb-1 text-red-400">
+                              <AlertTriangle className="w-4 h-4 shrink-0" />
+                              Paper Unavailable ({PAPER_STATUS_LABELS[activeNode.status] || activeNode.status})
+                            </div>
+                            <p className="text-gray-300 leading-relaxed">
+                              This paper was removed or revoked by moderation and is no longer publicly available.
+                            </p>
+                            {activeNode.statusComments && (
+                              <div className="mt-2 pt-2 border-t border-red-900/40 text-gray-400">
+                                <span className="font-bold text-gray-300">Reason:</span> {activeNode.statusComments}
+                              </div>
+                            )}
+                          </div>
+                        )}
                         <div className="flex flex-wrap items-center gap-2 text-sm mb-5 font-medium">
                           <span className="px-2 py-0.5 border-2 border-gray-800 text-gray-300 rounded-none bg-[#1e1e1e]">{activeNode.year}</span>
                           <span className="px-2 py-0.5 border-2 border-[#0058be]/50 text-[#4A90E2] rounded-none bg-[#0058be]/10">{activeNode.citations.toLocaleString()} citations</span>
@@ -629,7 +668,7 @@ export default function BookmarksPage() {
                     {/* Fixed bottom controls of Top Details */}
                     <div className="shrink-0 p-5 bg-[#151515] border-t-2 border-gray-800 relative z-50">
                       <div className="flex gap-2 mb-6">
-                        {activeNode.url && activeNode.url !== '#' && (
+                        {activeNode.url && activeNode.url !== '#' && activeNode.isAvailable ? (
                           <a
                             href={activeNode.url}
                             target="_blank"
@@ -638,6 +677,14 @@ export default function BookmarksPage() {
                           >
                             <ExternalLink className="w-4 h-4" /> Open
                           </a>
+                        ) : (
+                          <button
+                            disabled
+                            className="h-10 flex-1 flex justify-center items-center gap-2 px-4 bg-gray-900 text-gray-600 text-[11px] font-black uppercase tracking-widest border-2 border-gray-800 rounded-none cursor-not-allowed"
+                            title="Paper is unavailable"
+                          >
+                            <ExternalLink className="w-4 h-4" /> Unavailable
+                          </button>
                         )}
                         <button
                           onClick={() => handleDelete(activeNode.bookmarkId)}
