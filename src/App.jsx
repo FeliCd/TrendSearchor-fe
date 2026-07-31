@@ -20,10 +20,12 @@ const ResearcherLayout = lazy(() => import('@/components/researcher/layout/Resea
 
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
 const UserManagementPage = lazy(() => import('@/pages/admin/UserManagementPage'));
+const SubscriptionManagementPage = lazy(() => import('@/pages/admin/SubscriptionManagementPage'));
 const PaperModerationPage = lazy(() => import('@/pages/admin/PaperModerationPage'));
 const JournalTopicManagementPage = lazy(() => import('@/pages/admin/JournalTopicManagementPage'));
 const AcademicDashboardPage = lazy(() => import('@/pages/academic/AcademicDashboardPage'));
 const ResearcherDashboardPage = lazy(() => import('@/pages/researcher/ResearcherDashboardPage'));
+const SubscriptionPage = lazy(() => import('@/pages/researcher/SubscriptionPage'));
 const PaperSearchPage = lazy(() => import('@/pages/researcher/PaperSearchPage'));
 const TrendsPage = lazy(() => import('@/pages/researcher/TrendsPage'));
 const PaperUploadPage = lazy(() => import('@/pages/researcher/PaperUploadPage'));
@@ -82,6 +84,7 @@ function AnimatedRoutes() {
             <Route element={<Suspense fallback={<PageLoader />}><AdminLayout /></Suspense>}>
               <Route path="/admin" element={<Navigate to="/admin/users" replace />} end />
               <Route path="/admin/users" element={<UserManagementPage />} />
+              <Route path="/admin/subscriptions" element={<SubscriptionManagementPage />} />
               <Route path="/admin/papers/pending" element={<PaperModerationPage />} />
               <Route path="/admin/config" element={<JournalTopicManagementPage />} />
               <Route path="/admin/paper/:id" element={<PaperDetailsPage />} />
@@ -96,6 +99,7 @@ function AnimatedRoutes() {
               <Route path="/researcher" element={<ResearcherDashboardPage />} end />
               <Route path="/researcher/search" element={<PaperSearchPage />} />
               <Route path="/researcher/trends" element={<TrendsPage />} />
+              <Route path="/researcher/subscription" element={<SubscriptionPage />} />
               <Route path="/researcher/analytics" element={<ResearcherDashboardPage />} />
               <Route path="/researcher/bookmarks" element={<BookmarksPage />} />
               <Route path="/researcher/paper/:id" element={<PaperDetailsPage />} />
