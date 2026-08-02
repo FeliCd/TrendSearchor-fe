@@ -124,14 +124,32 @@ export const subscriptionService = {
       };
     }
 
+    const normalizedMethod = paymentMethod ? paymentMethod.toUpperCase() : 'MOCK';
+
     try {
       const subRes = await api.post('/api/subscriptions/subscribe', {
         planCode: planId,
-        paymentMethod: paymentMethod ? paymentMethod.toUpperCase() : 'MOCK',
+        paymentMethod: normalizedMethod,
       });
       const transactionId = subRes.data?.transactionId;
       if (!transactionId) {
         throw new Error('Failed to initiate subscription transaction');
+      }
+
+      if (normalizedMethod === 'VNPAY') {
+        const vnpRes = await api.post('/api/payments/vnpay/create-url', {
+          transactionId,
+        });
+        const paymentUrl = vnpRes.data?.paymentUrl;
+        if (!paymentUrl) {
+          throw new Error('Failed to generate VNPay payment URL');
+        }
+        window.location.href = paymentUrl;
+        return {
+          success: true,
+          isRedirect: true,
+          paymentUrl,
+        };
       }
 
       const confirmRes = await api.post('/api/payments/mock-confirm', {

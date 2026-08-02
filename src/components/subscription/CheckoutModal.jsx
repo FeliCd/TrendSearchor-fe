@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CheckCircle2, ShieldCheck, Zap, QrCode, Wallet, Loader2 } from 'lucide-react';
+import { X, CheckCircle2, ShieldCheck, Zap, QrCode, Wallet, CreditCard, Loader2 } from 'lucide-react';
 import { PAYMENT_METHODS } from '@/constants/subscriptionPlans';
 
 const ICON_MAP = {
   Zap,
   QrCode,
   Wallet,
+  CreditCard,
 };
 
 export default function CheckoutModal({ isOpen, onClose, selectedPlan, onConfirm, isSubmitting }) {

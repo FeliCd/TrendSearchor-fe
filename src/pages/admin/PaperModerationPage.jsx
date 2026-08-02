@@ -440,7 +440,7 @@ function HistoryPaperCard({ paper, index, onPreview, onRevoke, onReview }) {
               Review
             </button>
           )}
-          {paper.status === PAPER_STATUS.APPROVED && (
+          {(paper.status === PAPER_STATUS.APPROVED || paper.status === PAPER_STATUS.REJECTED) && (
             <button
               onClick={() => onRevoke(paper)}
               className="flex items-center gap-1.5 px-3 py-2 border-2 border-red-500/30 bg-red-500/5 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"

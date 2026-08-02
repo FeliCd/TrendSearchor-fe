@@ -39,6 +39,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Toast from '@/components/ui/Toast';
 import PaperPreviewModal from '@/components/modals/PaperPreviewModal';
 import TermsModal from '@/components/modals/TermsModal';
+import EditAndResubmitModal from '@/components/papers/EditAndResubmitModal';
 
 // ─── Background grid ─────────────────────────────────────────────────────────
 function PageBackground() {
@@ -760,51 +761,77 @@ function UploadPaperForm({ onSuccess }) {
 }
 
 // ─── Paper row ────────────────────────────────────────────────────────────────
-function PaperRow({ paper, index, onPreview }) {
+function PaperRow({ paper, index, onPreview, onEditAndResubmit }) {
   const isEmbargoed = paper.embargoUntil && new Date(paper.embargoUntil) > new Date();
+  const isRejected = paper.status === PAPER_STATUS.REJECTED;
+  const feedback = paper.statusComments || paper.rejectionReason;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04 }}
-      className="border-2 border-gray-800 bg-[#1a1a1a] hover:border-gray-700 transition-colors p-3 flex items-start gap-3"
+      className="border-2 border-gray-800 bg-[#1a1a1a] hover:border-gray-700 transition-colors p-3 flex flex-col gap-2"
     >
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-white truncate leading-snug">{paper.title}</p>
-        <div className="flex flex-wrap items-center gap-2 mt-1">
-          <StatusBadge status={paper.status} />
-          {isEmbargoed && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/30">
-              <Clock className="w-3 h-3" />
-              Embargoed until {paper.embargoUntil}
-            </span>
+      <div className="flex items-start gap-3">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-white truncate leading-snug">{paper.title}</p>
+          <div className="flex flex-wrap items-center gap-2 mt-1">
+            <StatusBadge status={paper.status} />
+            {isEmbargoed && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/30">
+                <Clock className="w-3 h-3" />
+                Embargoed until {paper.embargoUntil}
+              </span>
+            )}
+            {paper.authors?.length > 0 && (
+              <span className="text-[10px] text-gray-500">
+                {paper.authors.map((a) => a.name || a).slice(0, 3).join(', ')}
+                {paper.authors.length > 3 && ` +${paper.authors.length - 3} more`}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
+          {isRejected && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditAndResubmit(paper);
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 border-2 border-[#0058be] bg-[#0058be]/10 text-[#5ba3ff] text-[10px] font-black uppercase tracking-widest hover:bg-[#0058be] hover:text-white transition-all"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Edit & Resubmit
+            </button>
           )}
-          {paper.authors?.length > 0 && (
-            <span className="text-[10px] text-gray-500">
-              {paper.authors.map((a) => a.name || a).slice(0, 3).join(', ')}
-              {paper.authors.length > 3 && ` +${paper.authors.length - 3} more`}
-            </span>
-          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPreview(paper);
+            }}
+            className="flex items-center gap-1.5 px-3 py-2 border-2 border-gray-800 bg-[#1e1e1e] text-gray-400 text-[10px] font-black uppercase tracking-widest hover:border-gray-600 hover:text-white transition-all"
+          >
+            Preview
+          </button>
         </div>
       </div>
-      <div className="flex-shrink-0 mt-0.5">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onPreview(paper);
-          }}
-          className="flex items-center gap-1.5 px-3 py-2 border-2 border-gray-800 bg-[#1e1e1e] text-gray-400 text-[10px] font-black uppercase tracking-widest hover:border-gray-600 hover:text-white transition-all"
-        >
-          Preview
-        </button>
-      </div>
+
+      {isRejected && feedback && (
+        <div className="p-2.5 bg-red-500/10 border border-red-500/20 text-xs text-red-300 flex items-start gap-2">
+          <Info className="w-3.5 h-3.5 text-red-400 mt-0.5 flex-shrink-0" />
+          <div>
+            <span className="font-bold text-red-400 uppercase text-[10px] tracking-wider block mb-0.5">Admin Feedback:</span>
+            <span>{feedback}</span>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }
 
 // ─── My Uploads panel ─────────────────────────────────────────────────────────
-function MyUploadsPanel({ onPreviewPaper }) {
+function MyUploadsPanel({ onPreviewPaper, onEditAndResubmitPaper }) {
   const { papers, loading, error, page, totalPages, totalElements, fetchUploads } = useMyUploads(5);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -913,7 +940,13 @@ function MyUploadsPanel({ onPreviewPaper }) {
         ) : (
           <div className="space-y-2 flex-grow">
             {filteredPapers.map((paper, i) => (
-              <PaperRow key={paper.id ?? paper.externalId} paper={paper} index={i} onPreview={onPreviewPaper} />
+              <PaperRow
+                key={paper.id ?? paper.externalId}
+                paper={paper}
+                index={i}
+                onPreview={onPreviewPaper}
+                onEditAndResubmit={onEditAndResubmitPaper}
+              />
             ))}
           </div>
         )}
@@ -951,6 +984,7 @@ export default function PaperUploadPage() {
   const [toast, setToast] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [previewTarget, setPreviewTarget] = useState(null);
+  const [editTarget, setEditTarget] = useState(null);
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
@@ -1006,7 +1040,10 @@ export default function PaperUploadPage() {
               transition={{ duration: 0.35, delay: 0.08 }}
               className="border-2 border-gray-800 bg-[#1a1a1a] p-6 flex flex-col h-full"
             >
-              <MyUploadsPanel onPreviewPaper={setPreviewTarget} />
+              <MyUploadsPanel
+                onPreviewPaper={setPreviewTarget}
+                onEditAndResubmitPaper={setEditTarget}
+              />
             </motion.div>
           </div>
         </div>
@@ -1019,6 +1056,13 @@ export default function PaperUploadPage() {
             onClose={() => setPreviewTarget(null)}
             onViewPaper={() => navigate(`/researcher/paper/${previewTarget.id || previewTarget.externalId}`)}
             hideYear
+          />
+        )}
+        {editTarget && (
+          <EditAndResubmitModal
+            paper={editTarget}
+            onClose={() => setEditTarget(null)}
+            onSuccess={handleUploadSuccess}
           />
         )}
       </AnimatePresence>

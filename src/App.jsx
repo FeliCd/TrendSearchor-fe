@@ -67,6 +67,10 @@ function AnimatedRoutes() {
           </Route>
 
           <Route
+            path="/subscription"
+            element={<Navigate to={`/researcher/subscription${location.search}`} replace />}
+          />
+          <Route
             path="/login"
             element={<Suspense fallback={<PageLoader />}><LoginPage /></Suspense>}
           />
