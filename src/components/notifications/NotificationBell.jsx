@@ -3,19 +3,11 @@ import { Bell, Check, CheckCheck, Loader2, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useNotificationDropdown } from '@/hooks/useNotificationDropdown';
 import { useAuth } from '@/contexts/AuthContext';
-import { getDashboardPath } from '@/utils/roleUtils';
-
-const TYPE_COLOR_MAP = {
-  SYSTEM: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
-  RECOMMENDATION: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
-  NEW_PAPER: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
-  APPROVAL: 'bg-green-500/10 text-green-400 border border-green-500/20',
-  ALERT: 'bg-rose-500/10 text-rose-400 border border-rose-500/20',
-};
-
-function getTypeColor(type) {
-  return TYPE_COLOR_MAP[type] || 'bg-gray-500/10 text-gray-400 border border-gray-500/20';
-}
+import {
+  getNormalizedNotificationType,
+  getNotificationTypeColor,
+  getNotificationTypeLabel,
+} from '@/utils/notificationUtils';
 
 export default function NotificationBell() {
   const { user } = useAuth();
@@ -138,58 +130,64 @@ export default function NotificationBell() {
               </div>
             ) : (
               <ul className="divide-y divide-gray-800/60">
-                {notifications.map((notification) => (
-                  <li
-                    key={notification.id}
-                    className={`px-4 py-3 flex items-start gap-3 transition-colors ${
-                      notification.isRead ? 'opacity-60' : 'bg-[#0058be]/5 hover:bg-[#0058be]/10'
-                    }`}
-                  >
-                    {/* Unread dot */}
-                    {!notification.isRead && (
-                      <span className="mt-1.5 w-2 h-2 rounded-full bg-[#0058be] flex-shrink-0" />
-                    )}
-                    {notification.isRead && (
-                      <span className="mt-1.5 w-2 h-2 rounded-full bg-transparent flex-shrink-0" />
-                    )}
+                {notifications.map((notification) => {
+                  const normalizedType = getNormalizedNotificationType(notification);
+                  const colorClass = getNotificationTypeColor(normalizedType);
+                  const label = getNotificationTypeLabel(normalizedType);
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <span
-                          className={`text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-none ${getTypeColor(notification.notificationType)}`}
-                        >
-                          {notification.notificationType?.replace('_', ' ')}
-                        </span>
-                      </div>
-                      <p
-                        className={`text-sm font-medium leading-snug truncate ${
-                          notification.isRead ? 'text-gray-400' : 'text-white'
-                        }`}
-                      >
-                        {notification.title}
-                      </p>
-                      {notification.message && (
-                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
-                          {notification.message}
-                        </p>
+                  return (
+                    <li
+                      key={notification.id}
+                      className={`px-4 py-3 flex items-start gap-3 transition-colors ${
+                        notification.isRead ? 'opacity-60' : 'bg-[#0058be]/5 hover:bg-[#0058be]/10'
+                      }`}
+                    >
+                      {/* Unread dot */}
+                      {!notification.isRead && (
+                        <span className="mt-1.5 w-2 h-2 rounded-full bg-[#0058be] flex-shrink-0" />
                       )}
-                      <p className="text-[10px] text-gray-600 mt-1">
-                        {new Date(notification.createdAt).toLocaleString()}
-                      </p>
-                    </div>
+                      {notification.isRead && (
+                        <span className="mt-1.5 w-2 h-2 rounded-full bg-transparent flex-shrink-0" />
+                      )}
 
-                    {!notification.isRead && (
-                      <button
-                        id={`btn-bell-mark-read-${notification.id}`}
-                        onClick={() => handleMarkRead(notification.id)}
-                        title="Mark as read"
-                        className="p-1.5 text-gray-600 hover:text-[#0058be] hover:bg-[#0058be]/10 rounded-none transition-colors flex-shrink-0 mt-0.5"
-                      >
-                        <Check className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </li>
-                ))}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span
+                            className={`text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-none ${colorClass}`}
+                          >
+                            {label}
+                          </span>
+                        </div>
+                        <p
+                          className={`text-sm font-medium leading-snug truncate ${
+                            notification.isRead ? 'text-gray-400' : 'text-white'
+                          }`}
+                        >
+                          {notification.title}
+                        </p>
+                        {notification.message && (
+                          <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                            {notification.message}
+                          </p>
+                        )}
+                        <p className="text-[10px] text-gray-600 mt-1">
+                          {new Date(notification.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+
+                      {!notification.isRead && (
+                        <button
+                          id={`btn-bell-mark-read-${notification.id}`}
+                          onClick={() => handleMarkRead(notification.id)}
+                          title="Mark as read"
+                          className="p-1.5 text-gray-600 hover:text-[#0058be] hover:bg-[#0058be]/10 rounded-none transition-colors flex-shrink-0 mt-0.5"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
