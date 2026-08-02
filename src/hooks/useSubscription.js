@@ -45,8 +45,13 @@ export function useSubscription() {
       setSubmitting(true);
       const res = await subscriptionService.subscribePlan({ planId, paymentMethod });
       if (res.success) {
-        setSubscription(res.data.subscription);
-        if (toast?.success) {
+        if (res.isRedirect) {
+          return { success: true, isRedirect: true };
+        }
+        if (res.data?.subscription) {
+          setSubscription(res.data.subscription);
+        }
+        if (toast?.success && res.message) {
           toast.success(res.message);
         }
         await fetchMySubscription();

@@ -47,6 +47,12 @@ export const SUBSCRIPTION_PLANS = {
 
 export const PAYMENT_METHODS = [
   {
+    id: 'vnpay',
+    name: 'VNPay Sandbox Gateway',
+    description: 'Pay via VNPay QR, ATM Card, or Credit Card',
+    iconName: 'CreditCard',
+  },
+  {
     id: 'mock',
     name: 'Instant Mock Payment',
     description: 'Instant sandbox payment activation for testing',
@@ -65,3 +71,4 @@ export const PAYMENT_METHODS = [
     iconName: 'Wallet',
   },
 ];
+
