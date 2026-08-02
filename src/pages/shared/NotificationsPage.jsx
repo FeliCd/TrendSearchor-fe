@@ -36,23 +36,6 @@ function EmptyState({ activeTab }) {
   );
 }
 
-const getTypeColor = (type) => {
-  switch (type) {
-    case 'SYSTEM':
-      return 'bg-blue-500/10 text-blue-400 border border-blue-500/20';
-    case 'RECOMMENDATION':
-      return 'bg-purple-500/10 text-purple-400 border border-purple-500/20';
-    case 'NEW_PAPER':
-      return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
-    case 'APPROVAL':
-      return 'bg-green-500/10 text-green-400 border border-green-500/20';
-    case 'ALERT':
-      return 'bg-rose-500/10 text-rose-400 border border-rose-500/20';
-    default:
-      return 'bg-gray-500/10 text-gray-400 border border-gray-500/20';
-  }
-};
-
 export default function NotificationsPage() {
   const {
     activeTab,
@@ -70,7 +53,7 @@ export default function NotificationsPage() {
     setCurrentPage,
   } = useNotificationsPage();
 
-  const hasUnread = notifications.some(n => !n.isRead);
+  const hasUnread = notifications.some((n) => !n.isRead);
 
   return (
     <div className="bg-[#151515] flex flex-col h-screen overflow-hidden relative">
@@ -87,7 +70,6 @@ export default function NotificationsPage() {
       {/* Main Container */}
       <div className="relative z-10 flex-1 min-h-0 flex flex-col px-6 pb-6 pt-4">
         <div className="flex-1 min-h-0 flex flex-col border-2 border-gray-800 bg-[#151515] shadow-2xl">
-          
           {/* Controls Bar */}
           <div className="h-14 px-4 border-b-2 border-gray-800 bg-[#1e1e1e] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-1 border-2 border-gray-700 h-10">
@@ -139,14 +121,19 @@ export default function NotificationsPage() {
           </div>
 
           {/* List Area */}
-          <div className="flex-1 min-h-0 overflow-y-auto scroll-smooth scrollbar-thin p-6" data-lenis-prevent="true">
+          <div
+            className="flex-1 min-h-0 overflow-y-auto scroll-smooth scrollbar-thin p-6"
+            data-lenis-prevent="true"
+          >
             {isLoading ? (
               <div className="h-full flex items-center justify-center">
                 <Loader2 className="w-8 h-8 text-gray-600 animate-spin" />
               </div>
             ) : error ? (
               <div className="h-full flex flex-col items-center justify-center text-center">
-                <p className="text-sm font-bold uppercase tracking-widest text-red-500 mb-2">Error</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-red-500 mb-2">
+                  Error
+                </p>
                 <p className="text-xs text-gray-500">{error}</p>
               </div>
             ) : notifications.length === 0 ? (
@@ -159,7 +146,6 @@ export default function NotificationsPage() {
                     notification={notification}
                     onMarkRead={handleMarkRead}
                     onDelete={handleDelete}
-                    getTypeColor={getTypeColor}
                   />
                 ))}
               </div>
@@ -176,7 +162,6 @@ export default function NotificationsPage() {
               onPageChange={setCurrentPage}
             />
           )}
-
         </div>
       </div>
     </div>
