@@ -12,6 +12,17 @@ export const paperUploadService = {
   },
 
   /**
+   * PUT /api/papers/{id}/resubmit
+   * Resubmit a rejected research paper with updated data (RESEARCHER only).
+   * @param {number|string} id - Paper ID
+   * @param {Object} payload - { title, abstractText, year, paperUri, authors[], journals[], keywords[], license, publicationType, ownershipConfirmed, termsAccepted, embargoUntil }
+   */
+  resubmitPaper: async (id, payload) => {
+    const res = await api.put(`/api/papers/${id}/resubmit`, payload);
+    return res.data;
+  },
+
+  /**
    * POST /api/papers/{id}/copyright-report
    * Submit a copyright violation report for a paper.
    * @param {number|string} paperId - Paper ID
