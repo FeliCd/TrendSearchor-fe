@@ -1,19 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, Sparkles, Zap, Shield, HelpCircle, Loader2 } from 'lucide-react';
 import { SUBSCRIPTION_PLANS, PLAN_IDS } from '@/constants/subscriptionPlans';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useAiQuota } from '@/hooks/useAiQuota';
+import { useToast } from '@/hooks/useToast';
+import { ToastContainer } from '@/components/ui/Toast';
 import CheckoutModal from '@/components/subscription/CheckoutModal';
 
 export default function SubscriptionPage() {
-  const { subscription, loading: subLoading, submitting, upgradePlan } = useSubscription();
+  const { subscription, loading: subLoading, submitting, upgradePlan, refreshSubscription } = useSubscription();
   const { quota, formattedRemainingLabel, refreshQuota } = useAiQuota();
+  const { toasts, addToast, removeToast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   const activePlanId = subscription?.planId || PLAN_IDS.FREE;
+
+  useEffect(() => {
+    const rawStatus = searchParams.get('status');
+    if (!rawStatus) return;
+
+    const status = rawStatus.toLowerCase();
+    const txnRef = searchParams.get('txnRef') || searchParams.get('txn');
+
+    if (status === 'success') {
+      addToast(`Payment successful! PRO Plan updated successfully.${txnRef ? ` (Ref: ${txnRef})` : ''}`, 'success');
+      refreshSubscription();
+      refreshQuota();
+      setSearchParams({}, { replace: true });
+    } else if (['failed', 'error', 'invalid'].includes(status)) {
+      addToast('VNPay payment was canceled or could not be verified.', 'error');
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams, addToast, refreshSubscription, refreshQuota]);
 
   const handleOpenCheckout = (plan) => {
     if (plan.id === activePlanId) return;
@@ -92,11 +115,10 @@ export default function SubscriptionPage() {
               key={plan.id}
               whileHover={{ y: -6 }}
               transition={{ duration: 0.2 }}
-              className={`relative flex flex-col justify-between rounded-3xl p-8 transition-all ${
-                isPro
+              className={`relative flex flex-col justify-between rounded-3xl p-8 transition-all ${isPro
                   ? 'border border-purple-500/40 bg-gradient-to-b from-[#0F1424] to-[#0A0D18] shadow-xl'
                   : 'border border-slate-800 bg-[#0B0F1A]'
-              }`}
+                }`}
             >
               {/* Badge for Pro */}
               {plan.badgeText && (
@@ -133,9 +155,8 @@ export default function SubscriptionPage() {
                   {plan.features.map((feature, idx) => (
                     <div key={idx} className="flex items-start gap-3 text-xs text-slate-300">
                       <div
-                        className={`p-0.5 rounded-full mt-0.5 shrink-0 ${
-                          isPro ? 'bg-purple-500/20 text-purple-400' : 'bg-slate-800 text-slate-400'
-                        }`}
+                        className={`p-0.5 rounded-full mt-0.5 shrink-0 ${isPro ? 'bg-purple-500/20 text-purple-400' : 'bg-slate-800 text-slate-400'
+                          }`}
                       >
                         <Check className="w-3.5 h-3.5" />
                       </div>
@@ -188,6 +209,8 @@ export default function SubscriptionPage() {
         onConfirm={handleConfirmCheckout}
         isSubmitting={submitting}
       />
+
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }
